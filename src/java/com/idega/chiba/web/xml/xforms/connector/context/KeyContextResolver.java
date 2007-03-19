@@ -40,6 +40,10 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             
             String key = xpath.substring(autofill_key_prefix.length());
             FacesContext ctx = FacesContext.getCurrentInstance();
+            
+            if(ctx == null)
+            	return createResponseDocument("", "foobar").getDocumentElement();
+            
             Object value = 
             	ctx.getApplication().createValueBinding(
             		new StringBuilder(faces_exp_part1)
