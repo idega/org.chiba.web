@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * $Id: IWBundleStarter.java,v 1.2 2007/03/20 12:15:09 civilis Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -23,7 +23,7 @@ import org.chiba.xml.xslt.TransformerService;
 import org.chiba.xml.xslt.impl.CachingTransformerService;
 import org.chiba.xml.xslt.impl.ResourceResolver;
 
-import com.idega.chiba.web.xml.xslt.impl.BundleResourceResolver;
+import com.idega.chiba.web.xml.xslt.impl.ChibaBundleResourceResolver;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
@@ -33,10 +33,10 @@ import com.idega.idegaweb.include.GlobalIncludeManager;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2007/03/15 10:23:42 $ by $Author: civilis $
+ * Last modified: $Date: 2007/03/20 12:15:09 $ by $Author: civilis $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -53,11 +53,10 @@ public class IWBundleStarter implements IWBundleStartable {
 	public void start(IWBundle starterBundle) {
 		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER, STYLE_SHEET_URL);
 		
-		System.out.println("starting chiba ........_________...............");
 		IWMainApplication application = starterBundle.getApplication();
 
 		// create transformer service
-		ResourceResolver resolver = new BundleResourceResolver(application);
+		ResourceResolver resolver = new ChibaBundleResourceResolver(application);
 		TransformerService transformerService = new CachingTransformerService(resolver);
 		application.setAttribute(TRANSFORMER_SERVICE, transformerService);
 

@@ -10,12 +10,12 @@ import com.idega.idegaweb.DefaultIWBundle;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 
-public class BundleResourceResolver implements ResourceResolver {
+public class ChibaBundleResourceResolver implements ResourceResolver {
 
 	private String sBundlesDirectory;
 	private IWMainApplication iwma;
 	
-	public BundleResourceResolver(IWMainApplication iwma) {
+	public ChibaBundleResourceResolver(IWMainApplication iwma) {
 		this.iwma = iwma;
 		this.sBundlesDirectory = System.getProperty(DefaultIWBundle.SYSTEM_BUNDLES_RESOURCE_DIR);
 	}
@@ -41,7 +41,7 @@ public class BundleResourceResolver implements ResourceResolver {
 		}
 		else { 
 			IWBundle bundle = iwma.getBundle(bundleIdentifier);
-			res = new BundleResource(bundle, pathWithinBundle);
+			res = new ChibaBundleResource(bundle, pathWithinBundle);
 		}
 
 		return res;

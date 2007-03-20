@@ -5,12 +5,12 @@ import java.io.InputStream;
 import org.chiba.xml.xslt.impl.Resource;
 import com.idega.idegaweb.IWBundle;
 
-public class BundleResource implements Resource {
+public class ChibaBundleResource implements Resource {
 
 	private IWBundle bundle;
 	private String pathWithinBundle;
 	
-	public BundleResource(IWBundle bundle, String pathWithinBundle) {
+	public ChibaBundleResource(IWBundle bundle, String pathWithinBundle) {
 		this.bundle = bundle;
 		this.pathWithinBundle = pathWithinBundle;
 	}
