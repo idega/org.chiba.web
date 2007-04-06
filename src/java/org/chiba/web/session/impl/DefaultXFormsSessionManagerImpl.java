@@ -10,7 +10,7 @@ import java.util.*;
  * Simple default implementation of a XFormsSessionManager.
  *
  * @author joern turner</a>
- * @version $Id: DefaultXFormsSessionManagerImpl.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: DefaultXFormsSessionManagerImpl.java,v 1.2 2007/04/06 00:02:46 eiki Exp $
  *          <p/>
  *          todo: handle maxSessions
  *          todo: move timeout to XFormsSession
@@ -71,6 +71,7 @@ public class DefaultXFormsSessionManagerImpl extends Thread implements XFormsSes
 
     private DefaultXFormsSessionManagerImpl(String instance) {
         this.xformsSessions = Collections.synchronizedMap(new HashMap());
+        this.setDaemon(true);
     }
 
     /**
