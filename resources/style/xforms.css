@@ -378,7 +378,7 @@ fieldset > fieldset > fieldset {
 }
 
 /* Extra stylings */
-#formHeading{
+/*#formHeading{
 	border: 1px #949494 solid;
 	background: #88827e url("/content/files/public/boxHeaderTiler.gif") left top repeat-x;
 	font-family: Arial, "Helvetica", "Arial", sans-serif;
@@ -391,7 +391,7 @@ fieldset > fieldset > fieldset {
 	height: 18px;
 	position: relative;
 	line-height: 13px;
-}
+}*/
 div.info {
 	height: 54px;
 	background: url(images/info_tiler.gif) repeat-x #ABBAC3;
