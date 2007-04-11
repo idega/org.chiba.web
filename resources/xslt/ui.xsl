@@ -6,6 +6,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
+    
 
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -41,14 +42,13 @@
             <xsl:with-param name="group-classes" select="$group-classes"/>
         </xsl:call-template>
     </xsl:template>
-
     <xsl:template name="group-body">
         <xsl:param name="group-id"/>
         <xsl:param name="group-classes"/>
         <xsl:param name="group-label" select="true()"/>
-
+		
         <fieldset id="{$group-id}" class="{$group-classes}">
-            <legend>
+            <div>
                 <xsl:choose>
                     <xsl:when test="$group-label and xforms:label">
                         <xsl:attribute name="id">
@@ -57,14 +57,24 @@
                         <xsl:attribute name="class">
                             <xsl:call-template name="assemble-label-classes"/>
                         </xsl:attribute>
-                        <xsl:apply-templates select="xforms:label"/>
+                       	<h1>
+                        	<xsl:apply-templates select="xforms:label"/>
+                        </h1>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="style">display:none;</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
-            </legend>
-
+                <div class="phases">
+                	<ul>
+                		<li class="current">1</li>
+                		<li>2</li>
+                		<li>3</li>
+                		<li>4</li>
+                		<li>5</li>
+                	</ul>
+                </div>
+            </div>
             <xsl:apply-templates select="*[not(self::xforms:label)]"/>
         </fieldset>
     </xsl:template>

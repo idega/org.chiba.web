@@ -98,11 +98,12 @@
         <div id="chiba-head">
             <!-- copy all meta tags except 'contenttype' -->
             <xsl:call-template name="getMeta" />
-
-            <h1 class="title">
-                <xsl:value-of select="$form-name"/>
-            </h1>
-
+			
+			<div class="info">
+            	<h1>
+                	<xsl:value-of select="$form-name"/>
+            	</h1>
+			</div>
             <!-- copy base if present -->
             <xsl:if test="xhtml:base">
                 <base>
@@ -502,7 +503,7 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
                     <xsl:attribute name="onblur">javascript:document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='none';</xsl:attribute>
                     <xsl:attribute name="href">javascript:void(0);</xsl:attribute>
                     <xsl:attribute name="style">text-decoration:none;</xsl:attribute>
-                    <img src="../resources/images/help_icon.gif" class="help-symbol" alt="?" border="0"/>
+                    <img src="images/help.png" class="help-symbol" alt="?" border="0"/>
                 </xsl:element>
                 <!--<span id="{../@id}-helptext" class="help-text" style="position:absolute;display:none;width:250px;border:thin solid gray 1px;background:lightgrey;padding:5px;">-->
                 <span id="{../@id}-helptext" class="helperText">

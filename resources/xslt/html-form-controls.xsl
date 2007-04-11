@@ -785,6 +785,13 @@
                             <xsl:value-of select="xforms:label"/>
                         </xsl:attribute>
                         <xsl:attribute name="class">value</xsl:attribute>
+                        <!--
+                        	<xsl:value-of select="$type"/>
+                        
+                        	<xsl:value-of select="concat($type,' value')"/>
+                        -->
+                       
+                        
                         <xsl:if test="chiba:data/@chiba:readonly='true'">
                             <xsl:attribute name="disabled">disabled</xsl:attribute>
                         </xsl:if>
