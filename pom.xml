@@ -14,6 +14,10 @@
   <version>2.0.0rc1</version>
   <inceptionYear>2006</inceptionYear>
   <description>Chiba Web</description>
+  <scm>
+    <connection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</connection>
+    <developerConnection>scm:cvs:ext:${user.name}@code.idega.com:/idega/cvs:${groupId}/${artifactId}/</developerConnection>
+  </scm>
   <developers>
     <developer>
       <id>gediminas</id>
