@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -96,15 +96,7 @@
  */
 package org.chiba.web.servlet;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.fileupload.FileUploadBase;
+import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.chiba.adapter.ChibaEvent;
 import org.chiba.adapter.DefaultChibaEventImpl;
@@ -112,6 +104,13 @@ import org.chiba.web.WebAdapter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.xml.xforms.config.Config;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Provides extra functionality that's not easily handled with AJAX. This helper servlet will only be triggered in
@@ -128,6 +127,12 @@ import org.chiba.xml.xforms.config.Config;
  * @version $Version: $
  */
 public class FluxHelperServlet extends AbstractChibaServlet {
+// --Commented out by Inspection START (3/28/07 11:52 AM):
+//    //init-params
+//    private static final Logger LOGGER = Logger.getLogger(FluxHelperServlet.class);
+// --Commented out by Inspection STOP (3/28/07 11:52 AM)
+
+
     /**
      * Returns a short description of the servlet.
      *
@@ -156,14 +161,14 @@ public class FluxHelperServlet extends AbstractChibaServlet {
         WebAdapter webAdapter = null;
 
         response.setContentType("text/html");
-        String key = request.getParameter("sessionKey");
-        
-        try {
-        	
-        	XFormsSessionManager manager = (XFormsSessionManager) session.getAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER);
-            XFormsSession xforms_session = manager.getXFormsSession(key);
 
-            webAdapter = xforms_session.getAdapter();
+        String key = request.getParameter("sessionKey");
+        try {
+
+            XFormsSessionManager manager = (XFormsSessionManager) session.getAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER);
+            XFormsSession xFormsSession = manager.getXFormsSession(key);
+
+            webAdapter = xFormsSession.getAdapter();
             if (webAdapter == null) {
                 throw new ServletException(Config.getInstance().getErrorMessage("session-invalid"));
             }
@@ -171,7 +176,7 @@ public class FluxHelperServlet extends AbstractChibaServlet {
             chibaEvent.initEvent("http-request", null, request);
             webAdapter.dispatch(chibaEvent);
 
-            boolean isUpload = FileUploadBase.isMultipartContent(new ServletRequestContext(request));
+            boolean isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
 
             if (isUpload) {
                 ServletOutputStream out = response.getOutputStream();
@@ -182,6 +187,7 @@ public class FluxHelperServlet extends AbstractChibaServlet {
         	shutdown(webAdapter, session, e, response, request, key);
         }
     }
+
 }
 
 // end of class

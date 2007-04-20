@@ -6,8 +6,8 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.3 $ -->
     
-
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
     <!-- 'switch' and offers some standard interpretations for the appearance attribute.                         -->
@@ -42,13 +42,14 @@
             <xsl:with-param name="group-classes" select="$group-classes"/>
         </xsl:call-template>
     </xsl:template>
+
     <xsl:template name="group-body">
         <xsl:param name="group-id"/>
         <xsl:param name="group-classes"/>
         <xsl:param name="group-label" select="true()"/>
-		
+
         <fieldset id="{$group-id}" class="{$group-classes}">
-            <div>
+            <legend>
                 <xsl:choose>
                     <xsl:when test="$group-label and xforms:label">
                         <xsl:attribute name="id">
@@ -57,24 +58,14 @@
                         <xsl:attribute name="class">
                             <xsl:call-template name="assemble-label-classes"/>
                         </xsl:attribute>
-                       	<h1>
-                        	<xsl:apply-templates select="xforms:label"/>
-                        </h1>
+                        <xsl:apply-templates select="xforms:label"/>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="style">display:none;</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
-                <div class="phases">
-                	<ul>
-                		<li class="current">1</li>
-                		<li>2</li>
-                		<li>3</li>
-                		<li>4</li>
-                		<li>5</li>
-                	</ul>
-                </div>
-            </div>
+            </legend>
+
             <xsl:apply-templates select="*[not(self::xforms:label)]"/>
         </fieldset>
     </xsl:template>
@@ -178,7 +169,7 @@
 
         <table id="{$repeat-id}" class="{$repeat-classes}">
             <!-- build table header -->
-            <xsl:for-each select="chiba:data/xforms:group[@appearance='repeated'][1]">
+            <xsl:for-each select="xforms:group[@appearance='repeated'][1]">
                 <tr class="repeat-header">
                     <xsl:if test="not($scripted ='true')">
                         <td class="repeat-selector"><xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text></td>
@@ -221,13 +212,20 @@
 
     <!-- header for compact repeat -->
     <xsl:template name="processCompactHeader">
-        <xsl:for-each select="*[not(self::chiba:*)]">
-            <td class="{concat('col-',position())}">
+        <xsl:for-each select="xforms:*">
+            <xsl:variable name="col-classes">
+                <xsl:choose>
+                    <xsl:when test="./chiba:data/@chiba:enabled='false'"><xsl:value-of select="concat('col-',position(),' ','disabled')"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="concat('col-',position())"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <td class="{$col-classes}">
                 <xsl:choose>
                     <xsl:when test="self::xforms:*[local-name(.)!='trigger' and local-name(.)!='submit'][xforms:label]">
                         <xsl:variable name="label-classes">
                             <xsl:call-template name="assemble-label-classes"/>
                         </xsl:variable>
+
                         <label id="{@id}-label" class="{$label-classes}">
                             <xsl:apply-templates select="xforms:label"/>
                         </label>
@@ -253,8 +251,15 @@
 
     <!-- children for compact repeat -->
     <xsl:template name="processCompactChildren">
-        <xsl:for-each select="*[not(self::chiba:*)]">
-            <td valign="top" class="{concat('col-',position())}">
+        <xsl:for-each select="xforms:*">
+            <xsl:variable name="col-classes">
+                <xsl:choose>
+                    <xsl:when test="./chiba:data/@chiba:enabled='false'"><xsl:value-of select="concat('col-',position(),' ','disabled')"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="concat('col-',position())"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+
+            <td valign="top" class="{$col-classes}">
                 <xsl:apply-templates select="." mode="compact-repeat"/>
            </td>
         </xsl:for-each>

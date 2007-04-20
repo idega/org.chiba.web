@@ -126,37 +126,17 @@ function _replaceClass (element, current, update) {
     return false;
 }
 
-function _clear(){
-    var debugAppend = document.getElementById("debugappend");
-    if (debugAppend && debugAppend.checked) {
-        return false;
-    }
-
-    var debugArea = document.getElementById("debugarea");
-    if(debugArea){
-        debugArea.value = "";
-    }
-
-    return true;
-}
-
 function getXFormsControlValue(xformsControl){
-        var widget = $(xformsControl.id + "-value");
+    var widget = $(xformsControl.id + "-value");
+    dojo.debug("getXFormsControlValue: xfromsControl: " + widget);
     if(!widget){
         return null;
     }
     var value = null;
     if (_hasClass(xformsControl,"input")){
-        if (widget.type.toLowerCase() == "hidden") {
-            // check for date control
-            if (document.getElementById(xformsControl.id + "-date-display")) {
-                value = $(xformsControl.id + "-date-display").value;
-            }
-
-            // check for dateTime control
-            if (document.getElementById(xformsControl.id + "-dateTime-display")) {
-                value = $(xformsControl.id + "-dateTime-display").value;
-            }
+        if(_hasClass(xformsControl,"date")){
+            var dateWidget = dojo.widget.byId(xformsControl.id + "-value");
+            value = dateWidget.getValue();
         } else if(widget.type.toLowerCase() == "checkbox") {
             if(widget.checked){
                 value = "true";
@@ -190,7 +170,7 @@ function getXFormsControlValue(xformsControl){
             value = Trim(result);
         }else{
             var elements = eval("document.chibaform.elements");
-            for (i = 0; i < elements.length; i++) {
+            for (var i = 0; i < elements.length; i++) {
                 //todo: hack for now - this will break when dataprefix is changed !
                 if (elements[i].name == "d_" + xformsControl.id && elements[i].type != "hidden" && elements[i].checked) {
                     result += " " + elements[i].value;
@@ -211,7 +191,7 @@ function getXFormsControlValue(xformsControl){
             }
         }else {
             var elements = eval("document.chibaform.elements");
-            for (i = 0; i < elements.length; i++) {
+            for (var i = 0; i < elements.length; i++) {
                 //todo: hack for now - this will break when dataprefix is changed !
                 if (elements[i].name == "d_" + xformsControl.id && elements[i].type != "hidden" && elements[i].checked) {
                     value = elements[i].value;
@@ -223,6 +203,7 @@ function getXFormsControlValue(xformsControl){
         value = widget.value;
     }else if(_hasClass(xformsControl,"trigger")){
     }else if(_hasClass(xformsControl,"upload")){
+
     }
     dojo.debug("widget=" + widget + ":value='" + value + "'");
     return value;

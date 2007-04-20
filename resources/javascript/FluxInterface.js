@@ -16,7 +16,14 @@ var confirmMsg = "There are changed data. Really exit?";
 
 
 /******************************************************************************
- PAGE UNLOAD
+ PAGE init
+ ******************************************************************************/
+function initXForms(){
+    dojo.event.connect("before",window,"onunload","close");
+}
+
+/******************************************************************************
+ SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
     if (!e) e = event;
@@ -25,7 +32,7 @@ window.onbeforeunload = function(e) {
 
 function unload(e) {
     if (isDirty && false) {
-        msg = confirmMsg;
+        var msg = confirmMsg;
         if (!e && window.event) {
             e = window.event;
         }
@@ -34,50 +41,68 @@ function unload(e) {
     }
 }
 
-window.onunload = function() {
-    dojo.debug("unloading page");
+function close(){
+    dojo.debug("close called");
     if (!skipShutdown) closeSession();
 }
 
+//window.onunload = function() {
+//    dojo.debug("unloading page");
+//    if (!skipShutdown) closeSession();
+//}
+
+// Call this whenever we use the session, so we know not to call updateUI needlessly
+var lastUpdateTime=0;
+function localActivity() {
+    lastUpdateTime=new Date().getTime();
+}
+
+// call processor to note user typing activity (not value change
+// because user hasn't exited field yet), which extends session lifetime.
+// Also note that navigating off is no longer OK since we've potentially
+// modified something.
+// noteActivity will call Flux.noteActivity
+// if nothing has happened in the last minute.
+function keepAlive() {
+    isDirty = true;
+    var x = (new Date().getTime());
+    if ((x - lastUpdateTime) > (60000)) {
+        localActivity();
+        if(DWREngine){
+            DWREngine.setErrorHandler(handleExceptions);
+            DWREngine.setOrdered(false);
+            var sessionKey = document.getElementById("chibaSessionKey").value;
+            Flux.keepAlive(sessionKey);
+        }
+    }
+    return false;
+}
+
 function closeSession() {
-    dojo.debug("closing XForms session");
     var sessionKey = document.getElementById("chibaSessionKey").value;
     DWREngine.setErrorHandler(ignoreExceptions);
-    Flux.close(sessionKey, null);
+    DWREngine.setAsync(false);    
+    Flux.close(sessionKey);
 }
+
+// this unfortunately does not prevent the 'DWREngine is not defined' messages when closing session
 function ignoreExceptions(msg){
-    alert("ignoring exception: " + msg);
 }
 
 /******************************************************************************
- END OF PAGE UNLOAD ROUTINES
+ END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 
 function useLoadingMessage() {
-
     DWREngine.setPreHook(function() {
-    
-    	var indicator = document.getElementById('indicator');
-    	
-    	if(indicator != null)
-	        indicator.className = 'enabled';
+        document.getElementById('indicator').className = 'enabled';
     });
 
     DWREngine.setPostHook(function() {
-	    var indicator = document.getElementById('indicator');
-    	
-    	if(indicator != null)
-	        indicator.className = 'disabled';
+        document.getElementById('indicator').className = 'disabled';
     });
 }
 
-//function pulse(){
-//    setTimeout("Flux.keepAlive(sessionRefreshed, " + chibaSessionKey + ")",pulseInterval);
-//}
-
-//function sessionRefreshed(){
-//    pulse();
-//}
 /*
 just a starter.
 */
@@ -101,7 +126,9 @@ function submitFunction(control) {
 
 // call processor to execute a trigger
 function chiba_activate(target) {
-    // lookup value element fafa
+    forceRepeatIndex(dojo.byId(target));
+
+    // lookup value element
     while (target && ! _hasClass(target, "value")) {
         target = target.parentNode;
     }
@@ -112,13 +139,13 @@ function chiba_activate(target) {
         id = id.substring(0, id.length - 6);
     }
 
-    _clear();
     dojo.debug("Flux.activate: " + id);
     useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
     DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.fireAction(id, sessionKey, updateUI);
+    return false;
 }
 
 // call processor to update a controls' value
@@ -164,7 +191,7 @@ function setXFormsValue(control) {
         // assemble value from selected checkboxes
             var elements = eval("document.chibaform.elements");
             var checkboxes = new Array();
-            for (i = 0; i < elements.length; i++) {
+            for (var i = 0; i < elements.length; i++) {
                 if (elements[i].name == name && elements[i].type != "hidden" && elements[i].checked) {
                     checkboxes.push(elements[i].value);
                 }
@@ -175,7 +202,7 @@ function setXFormsValue(control) {
         // assemble value from selected options
             var options = target.options;
             var multiple = new Array();
-            for (i = 0; i < options.length; i++) {
+            for (var i = 0; i < options.length; i++) {
                 if (options[i].selected) {
                     multiple.push(options[i].value);
                 }
@@ -186,7 +213,6 @@ function setXFormsValue(control) {
             break;
     }
 
-    _clear();
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
     useLoadingMessage();
 
@@ -200,28 +226,6 @@ function setXFormsValue(control) {
 /******************************************************************************
  CONTROL SPECIFIC FUNCTIONS
  ******************************************************************************/
-
-//function setBoolean(control){
-//    DWREngine.setErrorHandler(handleExceptions);
-//
-//    var id = control.id.substring(0, control.id.length - 6);
-//    dojo.debug("Flux.setBoolean control id: " + id);
-//
-//    var checked="";
-//    if(control.checked==true){
-//        checked=true;
-//    } else{
-//        checked=false;
-//    }
-//
-//    dojo.debug("Flux.setBoolean: id " + id + "=" + checked);
-//
-//    DWREngine.setOrdered(true);
-//    DWREngine.setErrorHandler(handleExceptions);
-//    var sessionKey = document.getElementById("chibaSessionKey").value;
-//    Flux.setXFormsValue(updateUI, id, checked,sessionKey);
-//
-//}
 
 function setRange(id, value) {
     dojo.debug("Flux.setRangeValue: " + id + "='" + value + "'");
@@ -260,42 +264,26 @@ function setRepeatIndex(e) {
         return;
     }
 
-    target.setAttribute("selected", "true");
+    chiba.setRepeatIndex(target);
+}
 
-    var repeatItems = target.parentNode.childNodes;
-    var currentPosition = 0;
-    var targetPosition = 0;
+/*
+Unconditionally forces the repeat index if a trigger in a repeat-item is clicked. Called from activate()
+*/
+function forceRepeatIndex(control) {
+    // get event target
+    var target = control;
 
-    // lookup target to compute logical position
-    for (var index = 0; index < repeatItems.length; index++) {
-        if (repeatItems[index].nodeType == 1 && _hasClass(repeatItems[index], "repeat-item")) {
-            currentPosition++;
-
-            if (repeatItems[index].getAttribute("selected") == "true") {
-                repeatItems[index].removeAttribute("selected");
-                targetPosition = currentPosition;
-
-                // optimistic update
-                _addClass(repeatItems[index], "repeat-index-pre");
-            }
-
-            _removeClass(repeatItems[index], "repeat-index")
-        }
-    }
-
-    // lookup repeat id
-    while (! _hasClass(target, "repeat")) {
+    // lookup repeat item
+    while (target && ! _hasClass(target, "repeat-item")) {
         target = target.parentNode;
     }
-    var repeatId = target.id;
 
-    _clear();
-    dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
-    useLoadingMessage();
-    DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(false);
-    var sessionKey = document.getElementById("chibaSessionKey").value;
-    Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, updateUI);
+    if(target == null){
+        return;
+    }
+
+    chiba.setRepeatIndex(target);
 }
 
 function _getEventTarget(event) {
@@ -312,10 +300,9 @@ function _getEventTarget(event) {
 
 // callback for updating any control
 function updateUI(data) {
-    //    dojo.debug("updateUI: " + data);
+    dojo.debug("updateUI: " + data);
 
     var eventLog = data.documentElement.childNodes;
-    //    dojo.debug("EventLog length: " + eventLog.length);
 
     for (var i = 0; i < eventLog.length; i++) {
         var type = eventLog[i].getAttribute("type");
@@ -342,7 +329,7 @@ function updateUI(data) {
 
 
 function _handleServerEvent(context, type, targetId, targetName, properties) {
-    //    dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
+    dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
     switch (type) {
         case "chiba-load-uri":
             isDirty = false;
@@ -368,7 +355,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
                 context.handleHelperChanged(properties["parentId"], targetName, properties["value"]);
             }
             else {
-                context.handleStateChanged(targetId, properties["valid"], properties["readonly"], properties["required"], properties["enabled"], properties["value"], properties["type"]);
+                context.handleStateChanged(targetId, targetName, properties["valid"], properties["readonly"], properties["required"], properties["enabled"], properties["value"],properties["type"]);
             }
             break;
         case "chiba-prototype-cloned":
@@ -440,128 +427,48 @@ function showHelp(helptext) {
     helpwnd.document.getElementsByTagName("body")[0].innerHTML = helptext;
 
 }
+/******************************************************************************
+ FUNCTIONS calling Chiba processor - should become an API one day
+ ******************************************************************************/
 
-// Calendar.
+var chiba  = function() {
+};
 
-/**
- * Initializes the calendar component according to the underlying datatype.
- */
-function calendarSetup(id, value, type) {
-    // initialize hidden calendar
-    // todo: jsCalendar has problems with time part
-    var dateTime = type == 'dateTime';
-    Calendar.setup({
-        date: value && value.length > 0 ? value : null, // use null for empty value
-        firstDay: 1, // use monday as first day of week
-        showsTime: dateTime, // configure time display
-        inputField: id + '-value', // hidden input field
-        displayArea: id + '-' + type + '-display', // formatted display area
-        button: id + '-' + type + '-button', // date control image button
-        ifFormat: dateTime ? '%Y-%m-%dT%H:%M:%S' : '%Y-%m-%d', // ISO date/dateTime format
-        daFormat: dateTime ? DATETIME_DISPLAY_FORMAT : DATE_DISPLAY_FORMAT, // configurable display format
-        onClose: calendarOnClose, // callback for updating the processor
-        onSelect: calendarOnSelect, // callback for updating the processor
-        electric: false // matches xf:incremental, should be a parameter
-    });
+chiba.setRepeatIndex = function(targetRepeatElement){
+    var target = targetRepeatElement;
+    target.setAttribute("selected", "true");
 
-    // jsCalendar updates the display area only on user interaction, not on
-    // init/setup nor on internal value updates.
-    calendarUpdate(id, value, type);
-}
+    var repeatItems = target.parentNode.childNodes;
+    var currentPosition = 0;
+    var targetPosition = 0;
 
-/**
- * Updates the calendar component, namely the display area.
- */
-function calendarUpdate(id, value, type) {
-    var element = document.getElementById(id + '-' + type + '-display');
-    if (element) {
-        var date = _parseISODate(value);
-        var format = type == 'dateTime' ? DATETIME_DISPLAY_FORMAT : DATE_DISPLAY_FORMAT;
+    // lookup target to compute logical position
+    for (var index = 0; index < repeatItems.length; index++) {
+        if (repeatItems[index].nodeType == 1 && _hasClass(repeatItems[index], "repeat-item")) {
+            currentPosition++;
 
-        if (element.innerHTML) {
-            // update <span/>, <div/> et al.
-            element.innerHTML = date ? date.print(format) : '&nbsp;';
+            if (repeatItems[index].getAttribute("selected") == "true") {
+                repeatItems[index].removeAttribute("selected");
+                targetPosition = currentPosition;
+
+                // optimistic update
+                _addClass(repeatItems[index], "repeat-index-pre");
+            }
+
+            _removeClass(repeatItems[index], "repeat-index")
         }
-        else {
-            // update <input/>
-            element.value = date ? date.print(format) : '';
-        }
-
-        return true;
     }
 
-    return false;
-}
-
-/**
- * Calendar callback for select events.
- *
- * Allows jsCalendar to use form controls as display area too.
- */
-function calendarOnSelect(calendar) {
-    // copied from calendar-setup.js
-    var p = calendar.params;
-    var update = (calendar.dateClicked || p.electric);
-    if (update && p.flat) {
-        if (typeof p.flatCallback == "function")
-            p.flatCallback(calendar);
-        else
-            alert("No flatCallback given -- doing nothing.");
-        return false;
+    // lookup repeat id
+    while (! _hasClass(target, "repeat")) {
+        target = target.parentNode;
     }
-    if (update && p.inputField) {
-        p.inputField.value = calendar.date.print(p.ifFormat);
-        if (typeof p.inputField.onchange == "function")
-            p.inputField.onchange();
-    }
-    if (update && p.displayArea)
-    // start patch by unl
-    // check for 'innerHTML' property, otherwise try 'value' property
-        if (p.displayArea.innerHTML) {
-            p.displayArea.innerHTML = calendar.date.print(p.daFormat);
-        }
-        else {
-            p.displayArea.value = calendar.date.print(p.daFormat);
-        }
-    // end patch by unl
-    if (update && p.singleClick && calendar.dateClicked)
-        calendar.callCloseHandler();
-    if (update && typeof p.onUpdate == "function")
-        p.onUpdate(calendar);
-}
+    var repeatId = target.id;
 
-/**
- * Calendar callback for close events.
- *
- * Hides the calendar and updates the processor.
- */
-function calendarOnClose(calendar) {
-    calendar.hide();
-
-    var id = calendar.params.inputField.id;
-    var value = calendar.params.inputField.value;
-
-    // cut off '-value'
-    id = id.substring(0, id.length - 6);
+    dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
+    useLoadingMessage();
+    DWREngine.setErrorHandler(handleExceptions);
+    DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    Flux.setXFormsValue(id, value, sessionKey, updateUI);
-}
-
-/**
- * Parses an ISO date/datetime string. Timezones not supported yet.
- */
-function _parseISODate(iso) {
-    if (!iso || iso.length == 0) {
-        return null;
-    }
-
-    var separator = iso.indexOf('T');
-    if (separator == -1) {
-        iso = iso + 'T00:00:00';
-    }
-    var parts = iso.split('T');
-    var date = parts[0].split('-');
-    var time = parts[1].split(':');
-
-    return new Date(date[0], date[1] - 1, date[2], time[0], time[1], time[2]);
+    Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, updateUI);
 }

@@ -6,7 +6,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2005 Chibacon -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 
     <xsl:include href="ui.xsl"/>
     <xsl:include href="html-form-controls.xsl"/>
@@ -32,7 +32,7 @@
 
     <xsl:param name="form-id" select="'chibaform'"/>
     <xsl:param name="form-name" select="//xhtml:title"/>
-    <xsl:param name="debug-enabled" select="'true'"/>
+    <xsl:param name="debug-enabled" select="'false'"/>
 
     <!-- ### specifies the parameter prefix for repeat selectors ### -->
     <xsl:param name="selector-prefix" select="'s_'"/>
@@ -46,15 +46,23 @@
 
     <!--- path to javascript files -->
     <xsl:param name="scriptPath" select="''"/>
+    
+    <!--- path to images files -->
+    <xsl:param name="imagesPath" select="''"/>
+
+    <!-- path to core CSS file -->
+    <xsl:param name="CSSPath" select="''"/>
 
     <xsl:param name="keepalive-pulse" select="'0'"/>
+
+    <xsl:param name="js-compressed" select="'false'"/>
 
     <!-- ############################################ VARIABLES ################################################ -->
     <!-- ### checks, whether this form uses uploads. Used to set form enctype attribute ### -->
     <xsl:variable name="uses-upload" select="boolean(//*/xforms:upload)"/>
 
     <!-- ### checks, whether this form makes use of date types and needs datecontrol support ### -->
-    <!-- this is only an interims solution until Schema type and base type handling has been clarified -->    
+    <!-- this is only an interims solution until Schema type and base type handling has been clarified -->
     <xsl:variable name="uses-dates">
         <xsl:choose>
             <xsl:when test="boolean(//chiba:data/chiba:type='date')">true()</xsl:when>
@@ -68,14 +76,10 @@
 	<!-- ### checks, whether this form makes use of <textarea xforms:mediatype='text/html'/> ### -->
 	<xsl:variable name="uses-html-textarea" select="boolean(//xforms:textarea[@xforms:mediatype='text/html'])"/>
 
-    <xsl:variable name="default-hint-appearance" select="'bubble'"/>
+    <!-- ### the CSS stylesheet to use ### -->
+    <xsl:variable name="default-css" select="concat($contextroot,$CSSPath,'xforms.css')"/>
 
-    <xsl:variable name="querystring-appender">
-        <xsl:choose>
-            <xsl:when test="contains($action-url, '?')">&amp;</xsl:when>
-            <xsl:otherwise>?</xsl:otherwise>
-        </xsl:choose>
-    </xsl:variable>
+    <xsl:variable name="default-hint-appearance" select="'bubble'"/>
 
     <xsl:output method="html" version="4.01" encoding="UTF-8" indent="yes"
                 doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -95,15 +99,16 @@
     </xsl:template>
 
     <xsl:template match="xhtml:head">
-        <div id="chiba-head">
+		<div id="chiba-head">
             <!-- copy all meta tags except 'contenttype' -->
             <xsl:call-template name="getMeta" />
-			
+
 			<div class="info">
             	<h1>
                 	<xsl:value-of select="$form-name"/>
-            	</h1>
+				</h1>
 			</div>
+
             <!-- copy base if present -->
             <xsl:if test="xhtml:base">
                 <base>
@@ -114,34 +119,115 @@
             </xsl:if>
 
 
-			<xsl:if test="$scripted='true'and $uses-html-textarea">
-				<!-- Insert here a custom CSS for textarea mediatype='text/html'-->
-			</xsl:if>
+            <!-- include Chiba default stylesheet -->
+            <!-- Include removed as xforms.css is included in the bundlestarter -->
+            <!--<link rel="stylesheet" type="text/css" href="{$default-css}"/>-->
 
             <!-- copy user-defined stylesheets and inline styles -->
             <xsl:call-template name="getLinkAndStyle"/>
 
+
             <!-- include needed javascript files -->
             <xsl:if test="$scripted='true'">
-                <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
-
                 <!-- dojo init -->
                 <script type="text/javascript">
                     var djConfig = {
-                    baseRelativePath: "<xsl:value-of select="concat($contextroot,'/idegaweb/bundles/com.idega.block.web2.0.bundle/resources/libs/dojo/version.3.1')"/>",
+                    debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
                     isDebug: <xsl:value-of select="$debug-enabled"/> };
                 </script>
-                
-                <!-- dojo lib -->
+                <xsl:text>
+</xsl:text>
+                <!-- for DWR AJAX -->
+                <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/idegaweb/bundles/com.idega.block.web2.0.bundle/resources/libs/dojo/version.3.1/dojo.js')" />");
+					include_once("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
                 </script>
+                <xsl:text>
+</xsl:text>
+                <!-- for DWR AJAX -->
+                <!-- changed path to dwr as /dwr instead of /Flux -->
+                <script type="text/javascript">
+					include_once("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
+                </script>
+                <xsl:text>
+</xsl:text>
+                <!-- for DWR AJAX -->
+                <!-- changed path to dwr as /dwr instead of /Flux -->
+                <script type="text/javascript">
+					include_once("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
+                </script>
+                <xsl:text>
+</xsl:text>
+                <xsl:choose>
+                    <!-- in debugging mode all script will be available uncompressed and in seperate files -->
+                    <xsl:when test="$js-compressed='false'">
+                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
+                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
+                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
+                        <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
+                        <!-- dojo lib -->
+                        <script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+						<script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'prototype.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+                        <!-- scriptaculous lib -->
+						<script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/scriptaculous.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+						<script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+
+                        <!-- for DWR AJAX -->
+                        <script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+                        <!-- XForms Client -->
+                        <script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+                        <!-- general xforms utils -->
+                        <script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+                        <!-- ############################# Debug section ################################ -->
+
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
+                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
+                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
+                        <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
+                        <!-- dojo lib -->
+                        <script type="text/javascript">
+							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
+                		</script>
+                        <xsl:text>
+</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
 
                 <script type="text/javascript">
-                    dojo.setModulePrefix("chiba","chiba");
+                    <!--dojo.setModulePrefix("chiba","chiba");-->
                     dojo.require("dojo.event.*");
 
-					var pulseInterval;
+                    var pulseInterval;
 
                     var calendarInstance = false;
                     var calendarActiveInstance = null;
@@ -162,64 +248,42 @@
                             }
                         }
                     }
-<!--
-todo: clarify if this makes sense - maybe allowing to set the session timeout makes more sense while allowing infinite session (-1) in conjunction with persistent sessions
-                    dojo.addOnLoad(function(){
-                           <xsl:if test="$keepalive-pulse != 0">
-							   pulseInterval= <xsl:value-of select="$keepalive-pulse"/>;
-                               pulse();
-                           </xsl:if>
-                        }
-                    );
--->
-                </script>
-
-                <!-- for DWR AJAX -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
-                </script>
-                <!-- for DWR AJAX -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
-                </script>
-                <!-- for DWR AJAX -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
-                </script>
-                <!-- for DWR AJAX -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
-                </script>
-                <!-- XForms Client -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />");
-                </script>
-                <!-- general xforms utils -->
-				<script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />");
-                </script>
-				<!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
-				<xsl:if test="$uses-html-textarea">
-					<script type="text/javascript">
+                    dojo.addOnLoad(initXForms);
+                </script><xsl:text>
+</xsl:text>
+                <!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
+                <xsl:if test="$uses-html-textarea">
+	                <script type="text/javascript">
 						include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />");
-	                </script>
+               		</script>
+                    <xsl:text>
+</xsl:text>
 					<script type="text/javascript">
 						include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />");
-	                </script>
-					<script type="text/javascript"><xsl:text>
+               		</script>
+                    <xsl:text>
+</xsl:text>
+                    <script type="text/javascript"><xsl:text>
 </xsl:text>_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);<xsl:text>
 </xsl:text>
-					</script>
-				</xsl:if>
-
+                    </script>
+                </xsl:if>
+                <!-- copy inline javascript -->
                 <xsl:for-each select="xhtml:script">
                     <script>
-                        <xsl:attribute name="type">
-                            <xsl:value-of select="@type"/>
-                        </xsl:attribute>
-                        <xsl:attribute name="src">
-                            <xsl:value-of select="@src"/>
-                        </xsl:attribute>
+                        <xsl:choose>
+                            <xsl:when test="@src">
+                                <xsl:attribute name="type">
+                                    <xsl:value-of select="@type"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="src">
+                                    <xsl:value-of select="@src"/>
+                                </xsl:attribute>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:apply-templates/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </script>
                     <xsl:text>
 </xsl:text>
@@ -286,9 +350,9 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
     </xsl:template>
 
     <xsl:template match="xhtml:html">
-	    <div>
+        <div>
             <xsl:apply-templates/>
-		</div>
+        </div>
     </xsl:template>
 
     <xsl:template match="xhtml:link">
@@ -299,7 +363,7 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
         <div id="chiba-body">
             <xsl:copy-of select="@*"/>
             <div id="loading">
-                <img src="../resources/images/indicator.gif" class="disabled" id="indicator" alt="loading" />
+                <img src="{concat($contextroot, $imagesPath, 'indicator.gif')}" class="disabled" id="indicator" alt="loading" />
             </div>
 
             <xsl:variable name="outermostNodeset"
@@ -310,7 +374,9 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
                 <xsl:when test="count($outermostNodeset) = 1">
                     <!-- match any body content and defer creation of form tag for XForms processing.
                      This option allows to mix HTML forms with XForms markup. -->
-                    <xsl:apply-templates mode="inline"/>
+					<!-- todo: issue to revisit: this obviously does not work in case there's only one xforms control in the document. In that case the necessary form tag is not written. -->
+					<!-- hack solution: add an output that you style invisible to the form to make it work again. -->
+					<xsl:apply-templates mode="inline"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <!-- in case there are multiple outermost xforms elements we are forced to create
@@ -320,14 +386,8 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
             </xsl:choose>
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
-                    dojo.require("dojo.widget.DebugConsole");
+                    dojo.require("dojo.debug.console");
                 </script>
-
-                <div dojoType="DebugConsole"
-                     style="position:absolute;right:10px;bottom:10px;width:600px;height:400px;"
-                     title="DEBUG"
-                     hasShadow="true"
-                     displayCloseAction="true"></div>
             </xsl:if>
             <div id="messagePane" style="display:none;">message</div>
         </div>
@@ -346,7 +406,7 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
                 <xsl:choose>
                     <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="concat($action-url,$querystring-appender,'sessionKey=',$sessionKey)"/>
+                        <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
@@ -354,23 +414,16 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
             <xsl:attribute name="enctype">application/x-www-form-urlencoded</xsl:attribute>
             <xsl:if test="$uses-upload">
                 <xsl:attribute name="enctype">multipart/form-data</xsl:attribute>
-                <xsl:if test="$scripted = 'true'">
-                    <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"></iframe>
-                </xsl:if>
             </xsl:if>
             <input type="hidden" id="chibaSessionKey" name="sessionKey" value="{$sessionKey}"/>
-            <!--
             <xsl:if test="$scripted != 'true'">
                 <input type="submit" value="refresh page" class="refresh-button"/>
             </xsl:if>
-            -->
 
             <xsl:apply-templates select="."/>
-            <!--
             <xsl:if test="$scripted != 'true'">
                 <input type="submit" value="refresh page" class="refresh-button"/>
             </xsl:if>
-            -->
         </xsl:element>
     </xsl:template>
 
@@ -385,7 +438,7 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
                 <xsl:choose>
                     <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="concat($action-url,$querystring-appender,'sessionKey=',$sessionKey)"/>
+                        <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
@@ -441,6 +494,9 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
         </xsl:variable>
 
         <div id="{$id}" class="{$control-classes}">
+			<xsl:if test="@style">
+				<xsl:attribute name="style"><xsl:value-of select="@style"/></xsl:attribute>
+			</xsl:if>
             <label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
             <xsl:call-template name="buildControl"/>
         </div>
@@ -457,7 +513,7 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
         </xsl:variable>
 
         <span id="{$id}" class="{$control-classes}">
-            <label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
+			<label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
             <xsl:call-template name="buildControl"/>
         </span>
     </xsl:template>
@@ -499,14 +555,15 @@ todo: clarify if this makes sense - maybe allowing to set the session timeout ma
         <!-- help in repeats not supported yet due to a cloning problem with help elements -->
         <xsl:if test="string-length(.) != 0 and not(ancestor::xforms:repeat)">
                 <xsl:element name="a">
-                    <xsl:attribute name="onclick">javascript:document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='block';</xsl:attribute>
-                    <xsl:attribute name="onblur">javascript:document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='none';</xsl:attribute>
-                    <xsl:attribute name="href">javascript:void(0);</xsl:attribute>
+                    <xsl:attribute name="onclick">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='block';return false;</xsl:attribute>
+                    <xsl:attribute name="onblur">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='none';</xsl:attribute>
+                    <xsl:attribute name="href">#</xsl:attribute>
                     <xsl:attribute name="style">text-decoration:none;</xsl:attribute>
-                    <img src="images/help.png" class="help-symbol" alt="?" border="0"/>
+                    <xsl:attribute name="class">help-icon</xsl:attribute>
+                    <img src="{concat($contextroot, $imagesPath, 'help_icon.gif')}" class="help-symbol" alt="?" border="0"/>
                 </xsl:element>
                 <!--<span id="{../@id}-helptext" class="help-text" style="position:absolute;display:none;width:250px;border:thin solid gray 1px;background:lightgrey;padding:5px;">-->
-                <span id="{../@id}-helptext" class="helperText">
+                <span id="{../@id}-helptext" class="help-text">
                     <xsl:apply-templates/>
                 </span>
         </xsl:if>

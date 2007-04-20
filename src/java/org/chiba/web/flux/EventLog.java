@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -112,11 +112,11 @@ import java.util.List;
  * document which represent those events.
  *
  * @author Joern Turner
- * @version $Id: EventLog.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: EventLog.java,v 1.2 2007/04/20 18:40:15 civilis Exp $
  */
 public class EventLog {
-    private static List HELPER_ELEMENTS = Arrays.asList(new String[]{XFormsConstants.LABEL, XFormsConstants.HELP, XFormsConstants.HINT, XFormsConstants.ALERT, XFormsConstants.VALUE});
-    private static List SELECTOR_ELEMENTS = Arrays.asList(new String[]{XFormsConstants.SELECT1, XFormsConstants.SELECT});
+    private static List HELPER_ELEMENTS = Arrays.asList(XFormsConstants.LABEL, XFormsConstants.HELP, XFormsConstants.HINT, XFormsConstants.ALERT, XFormsConstants.VALUE);
+    private static List SELECTOR_ELEMENTS = Arrays.asList(XFormsConstants.SELECT1, XFormsConstants.SELECT);
 
     private Document doc;
     private Element root;

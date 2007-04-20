@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -103,11 +103,10 @@ import org.chiba.web.WebAdapter;
  * encapsulates the objects needed by a Chiba form session.
  *
  * @author joern turner</a>
- * @version $Id: XFormsSession.java,v 1.1 2007/03/15 10:23:46 civilis Exp $
+ * @version $Id: XFormsSession.java,v 1.2 2007/04/20 18:40:19 civilis Exp $
  */
 public interface XFormsSession{
     static final String ADAPTER_PREFIX = "A";
-    static final String UIGENERATOR_PREFIX = "U";
 
     static final String UIGENERATOR = "chiba.UIGenerator";
     static final String REFERER = "chiba.referer" ;

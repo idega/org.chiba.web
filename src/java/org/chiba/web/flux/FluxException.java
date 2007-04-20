@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -101,7 +101,7 @@ package org.chiba.web.flux;
  * Used for signalling problems with Flux execution
  *
  * @author Joern Turner
- * @version $Id: FluxException.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: FluxException.java,v 1.2 2007/04/20 18:40:15 civilis Exp $
  */
 public class FluxException extends Exception{
 

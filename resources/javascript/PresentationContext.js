@@ -1,6 +1,6 @@
 // PresentationContext: UI State updating.
 // Author: unl
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 
 /**
  * Constructor.
@@ -33,11 +33,11 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         alert(message);
     }
     else {
-        var messagePane=dojo.byId("messagePane");
-        messagePane.innerHTML = message;
-        messagePane.setAttribute("style","display:block;");
-        messagePane.className = "messagePane";
-        Effect.Fade(messagePane.id,{duration:3.0});
+        dojo.require("dojo.widget.Toaster");
+        var params = { type:"Chiba",showDelay: 5000, positionDirection: "bl-up", messageTopic: message};
+
+        dojo.widget.createWidget("Toaster",params, dojo.byId("messagePane"));
+        dojo.event.topic.publish(message, message);
     }
 };
 
@@ -47,20 +47,14 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
 PresentationContext.prototype.handleReplaceAll = function() {
     dojo.debug("PresentationContext.handleReplaceAll: ?");
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    //window.open("/SubmissionResponse?sessionKey="+sessionKey, "_self");
-	// replace only div with xforms, not the whole page
-    var chibaBody = document.getElementById("chiba-body");
-    var chibaDiv = chibaBody.parentNode;
-    var iframe = document.createElement("iframe");
-    iframe.setAttribute("src", "/SubmissionResponse?sessionKey="+sessionKey);
-    chibaDiv.replaceChild(iframe, chibaBody);
+    window.open("SubmissionResponse?sessionKey="+sessionKey, "_self");
 };
 
 /**
  * Handles chiba-state-changed.
  */
-PresentationContext.prototype.handleStateChanged = function(targetId, valid, readonly, required, enabled, value,type) {
-    dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
+PresentationContext.prototype.handleStateChanged = function(targetId, targetName, valid, readonly, required, enabled, value,type) {
+    dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId +  "', targetName='" + targetName + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
 
     var target = document.getElementById(targetId);
     if (target == null) {
@@ -70,13 +64,15 @@ PresentationContext.prototype.handleStateChanged = function(targetId, valid, rea
 
     if (value != null) {
         PresentationContext._setControlValue(targetId, value);
+//        var tmpColor = dojo.byId(targetId + "-value").style.backgroundColor;
+//        new Effect.Highlight(dojo.byId(targetId + "-value"),{restorecolor:tmpColor});
     }
 
     if (valid != null) {
         PresentationContext._setValidProperty(target, eval(valid));
     }
     if (readonly != null) {
-        PresentationContext._setReadonlyProperty(target, eval(readonly));
+        PresentationContext._setReadonlyProperty(target, eval(readonly), target);
     }
     if (required != null) {
         PresentationContext._setRequiredProperty(target, eval(required));
@@ -85,31 +81,72 @@ PresentationContext.prototype.handleStateChanged = function(targetId, valid, rea
         PresentationContext._setEnabledProperty(target, eval(enabled));
     }
     if(type != null){
+        //cutting any prefixes if present cause it can't be known beforehand which prefix is actually used for the types
+        if(type.indexOf(":") != -1){
+            type = type.substring(type.indexOf(":") +1,type.length);
+        }
         dojo.debug("Type: " + type);
         var tmpControl = dojo.widget.getWidgetById(targetId + "-value");
         if (!tmpControl) {
             if (type == "boolean") {
                 if (value != null) {
-                    var booleanWidget = dojo.widget.createWidget("XFBoolean", {widgetId:targetId + "-value",checked:value}, dojo.byId(targetId + "-value"));
+
+                    var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
+                        {
+                            widgetId:targetId + "-value",
+                            checked:value,
+                            name:"d_"+targetId,
+                            title:dojo.byId(targetId + "-value").title
+                        },
+                        dojo.byId(targetId + "-value"));
                 } else {
-                    var booleanWidget = dojo.widget.createWidget("XFBoolean", {widgetId:targetId + "-value"}, dojo.byId(targetId + "-value"));
+
+                    var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
+                        {
+                             widgetId:targetId + "-value",
+                             name:"d_"+targetId,
+                             title:dojo.byId(targetId + "-value").title
+                        },
+                        dojo.byId(targetId + "-value"));
                 }
             }
+            // SIDOC/CNAF (sidoc-infra-204) : La mise en place d'un widget Dojo pour les controles output de type AnyURI
+            if(type == "anyURI" && targetName == "output"){
+                var linkWidget = dojo.widget.createWidget("XFLink" , {id:targetId+"-value", href:value}, dojo.byId(targetId + "-value"));
+                return;
+            }
             if(type == "anyURI" || type == "hexBinary" || type == "base64Binary"){
-                var uploadWidget = dojo.widget.createWidget("XFUpload" , {id:targetId+"-value",widgetId:targetId+"-value",css:type,name:"d_"+targetId }, dojo.byId(targetId + "-value"));
+                var uploadWidget = dojo.widget.createWidget("chiba:Upload" ,
+                {
+                    id:targetId+"-value",
+                    widgetId:targetId+"-value",
+                    css:type,name:"d_"+targetId,
+                    title:dojo.byId(targetId + "-value").title
+                },
+                dojo.byId(targetId + "-value"));
             }
 
-//            if(type =="date" || type =="dateTime") {
-            if(type =="date") {
-                var dateWidget = dojo.widget.createWidget("XFDropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, type:type}, dojo.byId(targetId + "-value"));
+            //            if(type =="date" || type =="dateTime") {
+            if (type == "date") {
+                var dateWidget = dojo.widget.createWidget("chiba:DropdownDatePicker",
+                {
+                    id:targetId + "-value",
+                    widgetId:targetId + "-value",
+                    name:"d_" + targetId,
+                    value:value,
+                    datatype:type
+                },
+                        dojo.byId(targetId + "-value"));
             }
             if(type =="time") {
-                var timeWidget = dojo.widget.createWidget("XFDropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, type:type}, dojo.byId(targetId + "-value"));
+                var timeWidget = dojo.widget.createWidget("chiba:DropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, datatype:type}, dojo.byId(targetId + "-value"));
+
             }
             if(type =="dateTime") {
-                var timeWidget = dojo.widget.createWidget("XFDropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, type:type}, dojo.byId(targetId + "-value"));
+                var timeWidget = dojo.widget.createWidget("chiba:DropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, datatype:type}, dojo.byId(targetId + "-value"));
+            }
+            _addClass(dojo.byId(targetId), type);
         }
-    }
     }
 };
 
@@ -225,7 +262,7 @@ PresentationContext._setValidProperty = function(target, valid) {
     }
 };
 
-PresentationContext._setReadonlyProperty = function(target, readonly) {
+PresentationContext._setReadonlyProperty = function(target, readonly, type) {
 //    dojo.debug("PresentationContext._setReadonlyProperty: " + target + "='" + readonly + "'");
 
     if (readonly) {
@@ -234,19 +271,13 @@ PresentationContext._setReadonlyProperty = function(target, readonly) {
     else {
         _replaceClass(target, "readonly", "readwrite");
     }
-
     var targetId = target.getAttribute("id");
-    if (document.getElementById(targetId + "-date-display")) {
-        // special treatment for calendar
-        PresentationContext._updateCalendar(targetId, "date", readonly);
-        return;
+    if (type=="date" || type=="dateTime" || type == "time"  || _hasClass(dojo.byId(target),"date")) {
+        var tmpWidget = dojo.widget.byId(targetId + "-value");
+        if(tmpWidget) {
+            tmpWidget.updateReadonly(readonly);
+        }
     }
-    if (document.getElementById(targetId + "-dateTime-display")) {
-        // special treatment for calendar
-        PresentationContext._updateCalendar(targetId, "dateTime", readonly);
-        return;
-    }
-
     var value = document.getElementById(targetId + "-value");
     if (value) {
         if (value.nodeName.toLowerCase() == "input" && value.type.toLowerCase() == "hidden") {
@@ -259,7 +290,7 @@ PresentationContext._setReadonlyProperty = function(target, readonly) {
             // special treatment for anchors
             if (readonly) {
                 if (value.detachEvent) {
-                    value.detachEvent("onclick", chiba_activate);
+                    value.detachEvent("onclick", activate);
                     value.onclick = null;
                 }
                 else {
@@ -268,10 +299,10 @@ PresentationContext._setReadonlyProperty = function(target, readonly) {
             }
             else {
                 if (value.attachEvent) {
-                    value.attachEvent("onclick", chiba_activate);
+                    value.attachEvent("onclick", activate);
                 }
                 else {
-                    value.setAttribute("onclick", "chiba_activate(this);")
+                    value.setAttribute("onclick", "activate(this);")
                 }
             }
             return;
@@ -322,7 +353,9 @@ PresentationContext._setEnabledProperty = function(target, enabled) {
 };
 
 PresentationContext._setControlValue = function(targetId, value) {
-//    dojo.debug("PresentationContext.setControlValue: " + targetId + "='" + value + "'");
+	// SIDOC/CNAF : sidoc-infra-log
+    dojo.debug("PresentationContext.setControlValue: targetID = '" + targetId + "'");
+    dojo.debug("PresentationContext.setControlValue: value= '" + value + "'");
 
     var control = document.getElementById(targetId + "-value");
     if (control == null) {
@@ -330,11 +363,18 @@ PresentationContext._setControlValue = function(targetId, value) {
         return;
     }
 
+	// SIDOC/CNAF : sidoc-infra-log
+    dojo.debug("PresentationContext.setControlValue: control = '" + control + "'");
+    dojo.debug("PresentationContext.setControlValue: Node's name = '" + control.nodeName.toLowerCase() + "'");
+
     var listValue = " " + value + " ";
     switch (control.nodeName.toLowerCase()) {
         case "a":
             // <xf:output appearance="anchor"/>
             control.href = value;
+            // SIDOC/CNAF : sidoc-infra-204, put the control value
+            _setElementText(control, value);
+            //dojo.debug("PresentationContext.setControlValue: href = '" + control.href + "'");
             break;
         case "img":
             // <xf:output appearance="image"/>
@@ -342,19 +382,6 @@ PresentationContext._setControlValue = function(targetId, value) {
             break;
         case "input":
             if (control.type.toLowerCase() == "hidden") {
-                // check for date control
-                if (document.getElementById(targetId + "-date-display") || document.getElementById(targetId + "-date-button")) {
-                    control.value = value;
-                    calendarUpdate(targetId, value, "date");
-                    break;
-                }
-
-                // check for dateTime control
-                if (document.getElementById(targetId + "-dateTime-display") || document.getElementById(targetId + "-dateTime-button")) {
-                    control.value = value;
-                    calendarUpdate(targetId, value, "dateTime");
-                    break;
-                }
 
                 // special treatment for radiobuttons/checkboxes
                 var elements = eval("document.chibaform.elements");
@@ -431,7 +458,7 @@ PresentationContext._setControlValue = function(targetId, value) {
             // <xf:textarea mediatype="text/html"/>
 			if (_hasClass(control, "mediatype-text-html")) {
 				 _styledTextareaSetInnerHTML(control, value);
-				 break;
+		    		 break;
             }
 
             // Classical textarea
@@ -691,8 +718,10 @@ PresentationContext._insertRepeatItem = function(targetId, originalId, position)
 	// the textarea elements used to support the JScript Editor
 	var textareaControls = prototypeClone.getElementsByTagName("textarea");
 	for(var i = 0; i < textareaControls.length; i++) {
-		initalizeStyledTextarea(textareaControls[i]);
-	}
+        if(_hasClass(textareaControls[i], "mediatype-text-html")){
+            initalizeStyledTextarea(textareaControls[i]);
+        }
+    }
 };
 
 /**
@@ -760,7 +789,7 @@ PresentationContext._insertSelectorItem = function(targetId, originalId, positio
  * @param value the delete position.
  */
 PresentationContext._deleteRepeatItem = function(targetId, originalId, position) {
-//    dojo.debug("PresentationContext._deleteRepeatItem: [" + targetId + "/" + originalId + "]='" + position + "'");
+    dojo.debug("PresentationContext._deleteRepeatItem: [" + targetId + "/" + originalId + "]='" + position + "'");
 
     var currentPosition = 0;
     var targetPosition = parseInt(position);
@@ -915,20 +944,6 @@ PresentationContext._updateSelectors = function(control, readonly) {
                 label.removeAttribute("disabled");
             }
         }
-    }
-};
-
-PresentationContext._updateCalendar = function(id, type, readonly) {
-    var display = document.getElementById(id + "-" + type + "-display");
-    display.disabled = readonly;
-    display.readonly = !readonly;
-
-    var button = document.getElementById(id + "-" + type + "-button");
-    if (readonly) {
-        _replaceClass(button, "enabled", "disabled");
-    }
-    else {
-        _replaceClass(button, "disabled", "enabled");
     }
 };
 

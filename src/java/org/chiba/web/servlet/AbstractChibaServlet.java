@@ -1,4 +1,4 @@
-// Copyright 2006 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -96,45 +96,50 @@
  */
 package org.chiba.web.servlet;
 
-import java.io.IOException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import org.chiba.web.WebAdapter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.xml.events.ChibaEventNames;
 import org.chiba.xml.events.XMLEvent;
+import org.chiba.xml.xforms.connector.http.AbstractHTTPConnector;
 import org.chiba.xml.xforms.exception.XFormsException;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * Base servlet with common methods for several servlets, to avoid extending ChibaServlet.
  * 
  * @author Joern Turner
- * @version $Id: AbstractChibaServlet.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: AbstractChibaServlet.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
  */
 public abstract class AbstractChibaServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractChibaServlet.class);
-	public static final String CHIBA_SUBMISSION_RESPONSE = "chiba.submission.response";
-	protected static final String HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
+    protected static final String HTML_CONTENT_TYPE = "text/html;charset=UTF-8";
 
-	/**
+    /**
 	 * 
 	 */
 	public AbstractChibaServlet() {
 		super();
 	}
 
-	protected void handleExit(XMLEvent exitEvent, XFormsSession xforms_session, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
+	protected void handleExit(XMLEvent exitEvent, XFormsSession xFormsSession, HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
 	    if (ChibaEventNames.REPLACE_ALL.equals(exitEvent.getType())) {
-	    	response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/SubmissionResponse?sessionKey=" + xforms_session.getKey()));
+	        response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/SubmissionResponse?sessionKey=" + xFormsSession.getKey()));
 	    } else if (ChibaEventNames.LOAD_URI.equals(exitEvent.getType())) {
 	        if (exitEvent.getContextInfo("show") != null) {
 	            String loadURI = (String) exitEvent.getContextInfo("uri");
-//	          	kill XFormsSession
-	            xforms_session.getManager().deleteXFormsSession(xforms_session.getKey());
+	
+	            //kill XFormsSession
+	            xFormsSession.getManager().deleteXFormsSession(xFormsSession.getKey());
+	            if(LOGGER.isDebugEnabled()){
+                    LOGGER.debug("loading: " + loadURI);
+                }
 	            response.sendRedirect(response.encodeRedirectURL(loadURI));
 	        }
 	    }
@@ -150,15 +155,22 @@ public abstract class AbstractChibaServlet extends HttpServlet {
 	            xfe.printStackTrace();
 	        }
 	    }
-	    
-//	  	store exception
+	
+	    // store exception
 	    //todo: move exceptions to XFormsSession
 	    session.setAttribute("chiba.exception", e);
 	    //remove xformssession from httpsession
 	    session.removeAttribute(key);
-	    
+	
 	    // redirect to error page (after encoding session id if required)
 	    response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/" +
 	            request.getSession().getServletContext().getInitParameter("error.page")));
 	}
+
+    protected void storeAcceptLanguage(HttpServletRequest request, WebAdapter adapter) {
+        String acceptLanguage = request.getHeader("accept-language");
+        if ((acceptLanguage != null) && (acceptLanguage.length() > 0)){
+            adapter.setContextParam(AbstractHTTPConnector.ACCEPT_LANGUAGE, acceptLanguage);
+        }
+    }
 }

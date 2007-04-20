@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  * Artistic License
@@ -118,8 +118,8 @@
 package org.chiba.web.servlet;
 
 import org.apache.log4j.Logger;
-import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
+import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.impl.DefaultXFormsSessionManagerImpl;
 
 import javax.servlet.http.HttpServlet;
@@ -138,7 +138,7 @@ import java.util.Map;
  * Returns a submission response exactly once.
  *
  * @author Ulrich Nicolas Liss&eacute;
- * @version $Id: SubmissionResponseServlet.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: SubmissionResponseServlet.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
  */
 public class SubmissionResponseServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(SubmissionResponseServlet.class);
@@ -156,7 +156,6 @@ public class SubmissionResponseServlet extends HttpServlet {
         XFormsSessionManager sessionManager = DefaultXFormsSessionManagerImpl.getInstance();
         XFormsSession xFormsSession = sessionManager.getXFormsSession(key);
 
-
         if (session != null) {
             if(LOGGER.isDebugEnabled()){
                 Enumeration keys = session.getAttributeNames();
@@ -170,7 +169,7 @@ public class SubmissionResponseServlet extends HttpServlet {
             }
 
             // lookup attribute containing submission response map
-            Map submissionResponse = (Map) xFormsSession.getProperty(AbstractChibaServlet.CHIBA_SUBMISSION_RESPONSE);
+            Map submissionResponse = (Map) xFormsSession.getProperty(ChibaServlet.CHIBA_SUBMISSION_RESPONSE);
             if (submissionResponse != null) {
 
                 if(LOGGER.isDebugEnabled()){
@@ -220,8 +219,8 @@ public class SubmissionResponseServlet extends HttpServlet {
                 // close streams
                 bodyStream.close();
                 outputStream.close();
-                
-//              kill XFormsSession
+
+                //kill XFormsSession
                 sessionManager.deleteXFormsSession(xFormsSession.getKey());
 
                 return;

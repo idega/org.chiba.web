@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -117,7 +117,7 @@ import java.io.IOException;
  * they'll still work.
  *
  * @author Joern Turner
- * @version $Id: PlainHtmlServlet.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: PlainHtmlServlet.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
  */
 public class PlainHtmlServlet extends AbstractChibaServlet {
     private static final Logger LOGGER = Logger.getLogger(PlainHtmlServlet.class);
@@ -168,7 +168,7 @@ public class PlainHtmlServlet extends AbstractChibaServlet {
                 LOGGER.debug("referer: " + referer);
             }
 
-        	webAdapter = (WebAdapter) session.getAttribute(WebAdapter.WEB_ADAPTER);
+            webAdapter = xFormsSession.getAdapter();
             if (webAdapter == null) {
                 throw new ServletException(Config.getInstance().getErrorMessage("session-invalid"));
             }
@@ -179,7 +179,7 @@ public class PlainHtmlServlet extends AbstractChibaServlet {
             XMLEvent exitEvent = webAdapter.checkForExitEvent();
 
             if (exitEvent != null) {
-            	handleExit(exitEvent, xFormsSession, session, request,response);
+                handleExit(exitEvent, xFormsSession, session, request,response);
             } else {
                 response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + "/view?sessionKey=" + xFormsSession.getKey() + "&referer=" + referer));
             }

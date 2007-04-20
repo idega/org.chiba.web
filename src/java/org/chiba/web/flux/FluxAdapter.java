@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -96,13 +96,10 @@
  */
 package org.chiba.web.flux;
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 import org.chiba.adapter.ChibaEvent;
 import org.chiba.web.WebAdapter;
-import org.chiba.web.servlet.AbstractChibaServlet;
+import org.chiba.web.servlet.ChibaServlet;
 import org.chiba.xml.events.ChibaEventNames;
 import org.chiba.xml.events.DOMEventNames;
 import org.chiba.xml.events.XFormsEventNames;
@@ -111,6 +108,10 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Adapter for processing DWR calls and building appropriate responses. This
  * class is not exposed through DWR. Instead a Facadeclass 'FluxFacade' will be
@@ -118,8 +119,9 @@ import org.w3c.dom.events.Event;
  * be hidden for security.
  *
  * @author Joern Turner
- * @version $Id: FluxAdapter.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: FluxAdapter.java,v 1.2 2007/04/20 18:40:15 civilis Exp $
  */
+//public class FluxAdapter extends AbstractChibaAdapter implements EventListener {
 public class FluxAdapter extends WebAdapter {
     private static final Logger LOGGER = Logger.getLogger(FluxAdapter.class);
     private EventLog eventLog;
@@ -160,7 +162,7 @@ public class FluxAdapter extends WebAdapter {
         this.root.addEventListener(XFormsEventNames.SUBMIT_ERROR, this, true);
         this.root.addEventListener(ChibaEventNames.SCRIPT_ACTION, this, true);
     }
-
+                                                    
     /**
      * Dispatch a ChibaEvent to trigger some XForms processing such as updating
      * of values or execution of triggers.
@@ -189,7 +191,7 @@ public class FluxAdapter extends WebAdapter {
             this.chibaBean.updateControlValue(targetId, (String) event.getContextInfo());
         } else if (event.getEventName().equalsIgnoreCase("http-request")) {
             HttpServletRequest request = (HttpServletRequest) event.getContextInfo();
-            getHttpRequestHandler().handleRequest(request);
+            getHttpRequestHandler().handleUpload(request);
         } else {
             throw new XFormsException("Unknown or illegal event type");
         }
@@ -212,8 +214,7 @@ public class FluxAdapter extends WebAdapter {
                     Map submissionResponse = new HashMap();
                     submissionResponse.put("header", xmlEvent.getContextInfo("header"));
                     submissionResponse.put("body", xmlEvent.getContextInfo("body"));
-                    
-                    xforms_session.setProperty(AbstractChibaServlet.CHIBA_SUBMISSION_RESPONSE, submissionResponse);
+                    this.xformsSession.setProperty(ChibaServlet.CHIBA_SUBMISSION_RESPONSE,submissionResponse);
 
                     // get event properties
                     Element target = (Element) event.getTarget();
@@ -235,7 +236,7 @@ public class FluxAdapter extends WebAdapter {
                     if ("replace".equals(show)) {
                         this.exitEvent = xmlEvent;
                         shutdown();
-                        xforms_session.getManager().deleteXFormsSession(xforms_session.getKey());
+                        this.xformsSession.getManager().deleteXFormsSession(this.xformsSession.getKey());
                     }
 
                     return;
@@ -258,16 +259,18 @@ public class FluxAdapter extends WebAdapter {
      *
      */
     public void shutdown() throws XFormsException {
-        // deregister for notification events
-        this.root.removeEventListener(ChibaEventNames.STATE_CHANGED, this, true);
-        this.root.removeEventListener(ChibaEventNames.PROTOTYPE_CLONED, this, true);
-        this.root.removeEventListener(ChibaEventNames.ID_GENERATED, this, true);
-        this.root.removeEventListener(ChibaEventNames.ITEM_INSERTED, this, true);
-        this.root.removeEventListener(ChibaEventNames.ITEM_DELETED, this, true);
-        this.root.removeEventListener(ChibaEventNames.INDEX_CHANGED, this, true);
-        this.root.removeEventListener(ChibaEventNames.SWITCH_TOGGLED, this, true);
-        this.root.removeEventListener(XFormsEventNames.SUBMIT_ERROR, this, true);
-        this.root.removeEventListener(ChibaEventNames.SCRIPT_ACTION, this, true);
+        if(this.root != null){
+            // deregister for notification events
+            this.root.removeEventListener(ChibaEventNames.STATE_CHANGED, this, true);
+            this.root.removeEventListener(ChibaEventNames.PROTOTYPE_CLONED, this, true);
+            this.root.removeEventListener(ChibaEventNames.ID_GENERATED, this, true);
+            this.root.removeEventListener(ChibaEventNames.ITEM_INSERTED, this, true);
+            this.root.removeEventListener(ChibaEventNames.ITEM_DELETED, this, true);
+            this.root.removeEventListener(ChibaEventNames.INDEX_CHANGED, this, true);
+            this.root.removeEventListener(ChibaEventNames.SWITCH_TOGGLED, this, true);
+            this.root.removeEventListener(XFormsEventNames.SUBMIT_ERROR, this, true);
+            this.root.removeEventListener(ChibaEventNames.SCRIPT_ACTION, this, true);
+        }
 
         super.shutdown();
     }

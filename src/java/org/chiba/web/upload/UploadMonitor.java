@@ -1,3 +1,4 @@
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -103,7 +104,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  *
  * Class by Pierre-Alexandre Losson -- http://www.telio.be/blog
- * @author Original : plosson on 05-janv.-2006 10:46:33 - Last modified  by $Author: civilis $ on $Date: 2007/03/15 10:23:42 $
+ * @author Original : plosson on 05-janv.-2006 10:46:33 - Last modified  by $Author: civilis $ on $Date: 2007/04/20 18:40:20 $
  * @version $id: $
  */
 public class UploadMonitor

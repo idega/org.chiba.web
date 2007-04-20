@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -97,6 +97,23 @@
 // Copyright 2005 Chibacon Liss�/Turner GbR
 package org.chiba.web.servlet;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.fileupload.servlet.ServletRequestContext;
+import org.apache.log4j.Logger;
+import org.chiba.web.session.XFormsSession;
+import org.chiba.web.upload.MonitoredDiskFileItemFactory;
+import org.chiba.web.upload.UploadInfo;
+import org.chiba.web.upload.UploadListener;
+import org.chiba.xml.events.DOMEventNames;
+import org.chiba.xml.xforms.ChibaBean;
+import org.chiba.xml.xforms.config.Config;
+import org.chiba.xml.xforms.exception.XFormsException;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
@@ -104,27 +121,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadBase;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.fileupload.servlet.ServletRequestContext;
-import org.apache.log4j.Logger;
-import org.chiba.web.upload.MonitoredDiskFileItemFactory;
-import org.chiba.web.upload.UploadListener;
-import org.chiba.xml.events.DOMEventNames;
-import org.chiba.xml.xforms.ChibaBean;
-import org.chiba.xml.xforms.config.Config;
-import org.chiba.xml.xforms.exception.XFormsException;
-
 /**
  * Default implementation for handling HTTP requests.
  *
  * @author Ulrich Nicolas Liss&eacute;
- * @version $Id: HttpRequestHandler.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: HttpRequestHandler.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
  */
 public class HttpRequestHandler {
     private static final Logger LOGGER = Logger.getLogger(HttpRequestHandler.class);
@@ -134,11 +135,13 @@ public class HttpRequestHandler {
     public static final String TRIGGER_PREFIX_PROPERTY = "chiba.web.triggerPrefix";
     public static final String SELECTOR_PREFIX_PROPERTY = "chiba.web.selectorPrefix";
     public static final String REMOVE_UPLOAD_PREFIX_PROPERTY = "chiba.web.removeUploadPrefix";
+    public static final String DAYTIMEDURATION_PREFIX_PROPERTY = "chiba.web.dayTimeDurationPrefix";
     public static final String DATETIME_PREFIX_PROPERTY = "chiba.web.dateTimePrefix";
     public static final String DATA_PREFIX_DEFAULT = "d_";
     public static final String TRIGGER_PREFIX_DEFAULT = "t_";
     public static final String SELECTOR_PREFIX_DEFAULT = "s_";
     public static final String REMOVE_UPLOAD_PREFIX_DEFAULT = "ru_";
+    public static final String DAYTIMEDURATION_PREFIX_DEFAULT = "dtd_";
     public static final String DATETIME_PREFIX_DEFAULT = "dt_";
     
     // todo: remove
@@ -146,12 +149,15 @@ public class HttpRequestHandler {
 
     private ChibaBean chibaBean;
     private String uploadRoot;
+    private String sessionKey;
     private String dataPrefix;
     private String selectorPrefix;
     private String triggerPrefix;
+    private String dayTimeDurationPrefix;
     private String dateTimePrefix;
-    private String sessionKey;
 
+    //temporary storage for composite controls
+    private HashMap dayTimeDurationValues = new HashMap();
     private HashMap dateTimeValues = new HashMap();
     
     
@@ -161,6 +167,10 @@ public class HttpRequestHandler {
 
     public void setUploadRoot(String uploadRoot) {
         this.uploadRoot = uploadRoot;
+    }
+
+    public void setSessionKey(String sessionKey) {
+        this.sessionKey = sessionKey;                                                                                               
     }
 
     /**
@@ -196,7 +206,7 @@ public class HttpRequestHandler {
 
         // todo: implement action block behaviour ?
         if (parameters[0] != null) {
-            processUploadParameters(parameters[0]);
+            processUploadParameters(parameters[0], request);
         }
         if (parameters[1] != null) {
             processControlParameters(parameters[1]);
@@ -208,6 +218,24 @@ public class HttpRequestHandler {
             processTriggerParameters(parameters[3]);
         }
     }
+
+    public void handleUpload(HttpServletRequest request) throws XFormsException {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("handle request: " + request.getRequestURI());
+        }
+
+        Map[] parameters;
+        try {
+            parameters = parseRequest(request);
+        }
+        catch (Exception e) {
+            throw new XFormsException("could not parse request", e);
+        }
+        if (parameters[0] != null) {
+            processUploadParameters(parameters[0], request);
+        }
+    }
+
 
     /**
      * Parses a HTTP request. Returns an array containing maps for upload
@@ -224,8 +252,8 @@ public class HttpRequestHandler {
     protected Map[] parseRequest(HttpServletRequest request) throws FileUploadException, UnsupportedEncodingException {
         Map[] parameters = new Map[4];
 
-        if (FileUploadBase.isMultipartContent(new ServletRequestContext(request))) {
-            UploadListener uploadListener = new UploadListener(request, sessionKey);
+        if (FileUpload.isMultipartContent(new ServletRequestContext(request))) {
+            UploadListener uploadListener = new UploadListener(request, this.sessionKey);
             DiskFileItemFactory factory = new MonitoredDiskFileItemFactory(uploadListener);
             factory.setRepository(new File(this.uploadRoot));
             ServletFileUpload upload = new ServletFileUpload(factory);
@@ -274,7 +302,7 @@ public class HttpRequestHandler {
      * @param parameters the parameters map.
      */
     protected void parseURLEncodedParameter(String name, String[] values, Map[] parameters) {
-        if (name.startsWith(getDataPrefix()) || name.startsWith(getDateTimePrefix())) {
+        if (name.startsWith(getDataPrefix()) || name.startsWith(getDayTimeDurationPrefix()) || name.startsWith(getDateTimePrefix())) {
             StringBuffer buffer = new StringBuffer(values[0]);
             for (int index = 1; index < values.length; index++) {
                 buffer.append(" ").append(values[index]);
@@ -302,7 +330,7 @@ public class HttpRequestHandler {
      */
     protected void parseMultiPartParameter(FileItem item, String encoding, Map[] parameters) throws UnsupportedEncodingException {
         String name = item.getFieldName();
-        if (name.startsWith(getDataPrefix()) || name.startsWith(getDateTimePrefix())) {
+        if (name.startsWith(getDataPrefix()) || name.startsWith(getDayTimeDurationPrefix()) || name.startsWith(getDateTimePrefix())) {
             if (item.isFormField()) {
                 parameters[1] = parseControlParameter(name, item.getString(encoding), parameters[1]);
             }
@@ -335,7 +363,48 @@ public class HttpRequestHandler {
 
         String id = null;
         
-        if(name.startsWith(getDateTimePrefix()))
+        if(name.startsWith(getDayTimeDurationPrefix()))
+        {
+        	//xdt:dayTimeDuration
+        	id = name.substring(getDayTimeDurationPrefix().length());
+        	String part = id.substring(0, id.indexOf('_'));
+        	id = id.substring(part.length()+1);
+        	
+        	DayTimeDurationValue dtdValue = (DayTimeDurationValue)dayTimeDurationValues.get(id);
+        	
+        	if(dtdValue == null)
+        		dtdValue = new DayTimeDurationValue();
+        	
+        	if(part.equals("days"))
+        	{
+        		dtdValue.setDays(value);
+        	}
+        	else if(part.equals("hours"))
+        	{
+        		dtdValue.setHours(value);
+        	}
+        	else if(part.equals("minutes"))
+        	{
+        		dtdValue.setMinutes(value);
+        	}
+        	else if(part.equals("seconds"))
+        	{
+        		dtdValue.setSeconds(value);
+        	}
+        	
+        	if(dtdValue.isComplete())
+        	{
+        		value = dtdValue.toString();
+        		dayTimeDurationValues.remove(id);
+        	}
+        	else
+        	{
+        		dayTimeDurationValues.put(id, dtdValue);
+        		return controls;
+        	}
+        }
+        
+        else if(name.startsWith(getDateTimePrefix()))
         {
         	//xs:date or xs:dateTime bound control
         	id = name.substring(getDateTimePrefix().length());
@@ -444,7 +513,7 @@ public class HttpRequestHandler {
         return trigger;
     }
 
-    protected void processUploadParameters(Map uploads) throws XFormsException {
+    protected void processUploadParameters(Map uploads, HttpServletRequest request) throws XFormsException {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("updating " + uploads.keySet().size() + " uploads(s)");
         }
@@ -478,6 +547,9 @@ public class HttpRequestHandler {
                     }
 
                     this.chibaBean.updateControlValue(id, item.getContentType(), item.getName(), data);
+                    
+                    // After the value has been set and the RRR took place, create new UploadInfo with status set to 'done'
+                    request.getSession().setAttribute(XFormsSession.ADAPTER_PREFIX + sessionKey+"-uploadInfo", new UploadInfo(1, 0, 0, 0,"done"));
                 }
                 else {
                     if (LOGGER.isDebugEnabled()) {
@@ -618,6 +690,19 @@ public class HttpRequestHandler {
         return this.selectorPrefix;
     }
 
+    protected final String getDayTimeDurationPrefix() {
+        if (this.dayTimeDurationPrefix == null) {
+            try {
+                this.dayTimeDurationPrefix = Config.getInstance().getProperty(DAYTIMEDURATION_PREFIX_PROPERTY, DAYTIMEDURATION_PREFIX_DEFAULT);
+            }
+            catch (Exception e) {
+                this.dayTimeDurationPrefix = DAYTIMEDURATION_PREFIX_DEFAULT;
+            }
+        }
+
+        return this.dayTimeDurationPrefix;
+    }
+    
     protected final String getDateTimePrefix() {
         if (this.dateTimePrefix == null) {
             try {
@@ -631,7 +716,111 @@ public class HttpRequestHandler {
         return this.dateTimePrefix;
     }
     
-    protected class DateTimeValue
+    private class DayTimeDurationValue
+    {
+    	/**
+    	 * xdt:dayTimeDuration looks like P1DT2H30M00S
+    	 * 
+    	 * P = indicates a period
+    	 * D = prefixed by the number of days
+    	 * T = indicates the time portion
+    	 * H = prefixed by the number of hours
+    	 * M = prefixed by the number of minutes
+    	 * S = prefixed by the number of seconds
+    	 */
+    	
+    	private String days = null;
+    	private String hours = null;
+    	private String minutes = null;
+    	private String seconds = null;
+    	
+    	public void setDays(String days)
+    	{
+    		if(days.length() == 1)
+    		{
+    			this.days = '0' + days;
+    		}
+    		if(days.length() == 0 || days.length() == 2)
+    		{
+    			this.days = days;
+    		}
+    	}
+    	
+    	public void setHours(String hours)
+    	{
+    		if(hours.length() == 1)
+    		{
+    			this.hours = '0' + hours;
+    		}
+    		if(hours.length() == 0 || hours.length() == 2)
+    		{
+    			this.hours = hours;
+    		}
+    	}
+    	
+    	public void setMinutes(String minutes)
+    	{
+    		if(minutes.length() == 1)
+    		{
+    			this.minutes = '0' + minutes;
+    		}
+    		if(minutes.length() == 0 || minutes.length() == 2)
+    		{
+    			this.minutes = minutes;
+    		}
+    	}
+    	
+    	public void setSeconds(String seconds)
+    	{
+    		if(seconds.length() == 1)
+    		{
+    			this.seconds = '0' + seconds;
+    		}
+    		if(seconds.length() == 0 || seconds.length() == 2)
+    		{
+    			this.seconds = seconds;
+    		}
+    	}
+    	
+    	public boolean isComplete()
+    	{
+    		return(days != null && hours != null && minutes != null && seconds != null);
+    	}
+    	
+    	public String toString()
+    	{
+    		if(!isComplete())
+    			return new String();
+    		
+    		
+    		//must be a days component
+    		String dayTimeDuration = new String("P");
+    		
+    		//is there a days component
+    		if(days.length() > 0)
+    			dayTimeDuration += days + 'D';
+    		
+    		//is there a time component
+    		if(hours.length() > 0 || minutes.length() > 0 || seconds.length() > 0)
+    			dayTimeDuration += 'T';
+    		
+    		//is there a hours component
+    		if(hours.length() > 0)
+    			dayTimeDuration += hours + 'H';
+    		
+    		//is there a minutes component
+    		if(minutes.length() > 0)
+    			dayTimeDuration += minutes + 'M';
+    		
+    		//is there a seconds component
+    		if(seconds.length() > 0)
+    			dayTimeDuration += seconds + 'S';
+        
+    		return dayTimeDuration;
+    	}
+    }
+    
+    private class DateTimeValue
     {
     	/**
     	 * xs:dateTime looks like 2006-09-19T10:56:00.00+1:00 or YYYY-MM-DDTHH:mm:ss.ms+tz
@@ -746,14 +935,8 @@ public class HttpRequestHandler {
     	
     	private boolean isCompleteDateTime()
     	{
-    		if(isCompleteDate())
-    		{
-    			return(hour.length() == 2 && minute.length() == 2 && second.length() == 2 && millisecond.length() == 3 && timezone.length() == 6);
-    			
-    		}
-    		
-    		return false;
-    	}
+            return isCompleteDate() && (hour.length() == 2 && minute.length() == 2 && second.length() == 2 && millisecond.length() == 3 && timezone.length() == 6);
+        }
     	
     	public boolean isComplete()
     	{
@@ -780,10 +963,6 @@ public class HttpRequestHandler {
     		
     		return new String();
     	}
-    }
-    
-    public void setSessionKey(String sessionKey) {
-        this.sessionKey = sessionKey;
     }
 }
 

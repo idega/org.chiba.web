@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:xforms="http://www.w3.org/2002/xforms"
-    xmlns:chiba="http://chiba.sourceforge.net/xforms"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    exclude-result-prefixes="chiba xforms xlink xsl">
-    <!-- Copyright 2005 Chibacon -->
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xforms="http://www.w3.org/2002/xforms"
+                xmlns:chiba="http://chiba.sourceforge.net/xforms"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                exclude-result-prefixes="chiba xforms xlink xsl">
+    <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 
     <xsl:variable name="data-prefix" select="'d_'"/>
     <xsl:variable name="trigger-prefix" select="'t_'"/>
@@ -17,7 +17,6 @@
     <!-- This stylesheet contains a collection of templates which map XForms controls to HTML controls. -->
     <xsl:output method="html" version="4.01" indent="yes"/>
 
-
     <!-- ######################################################################################################## -->
     <!-- This stylesheet serves as a 'library' for HTML form controls. It contains only named templates and may   -->
     <!-- be re-used in different layout-stylesheets to create the naked controls.                                 -->
@@ -26,9 +25,7 @@
     <!-- build input control -->
     <xsl:template name="input">
 
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id" />
-        <xsl:variable name="pos" select="position()" />
-        <xsl:variable name="id" select="@id" />
+        <xsl:variable name="id" select="@id"/>
         <xsl:variable name="incremental" select="@xforms:incremental | @incremental"/>
         <xsl:variable name="name" select="concat($data-prefix,$id)"/>
 
@@ -42,15 +39,35 @@
             <!-- input bound to 'date' or 'dateTime' type -->
             <!--<xsl:when test="chiba:data[@chiba:type='date' or @chiba:type='dateTime']">-->
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
-                <script type="text/javascript">
-                    dojo.require("dojo.widget.DropdownDatePicker");
-                    dojo.require("dojo.widget.Button");
-                    dojo.require("chiba.DropdownDatePicker");
-
+               <script type="text/javascript">
+                    dojo.require("chiba.widget.DropdownDatePicker");
                 </script>
-                <input id="{concat($id,'-value')}" type="text" name="{$name}" value="" readonly="" class="value">
+				<xsl:variable name="controlType">
+
+					<xsl:choose>
+						<xsl:when test="$type='dateTime' and (@xforms:appearance='chiba:time' or @appearance='chiba:time')">chiba:DropdownDatePicker</xsl:when>
+						<xsl:otherwise>chiba:DropdownDatePicker</xsl:otherwise>
+					</xsl:choose>
+				</xsl:variable>
+				<input id="{concat($id,'-value')}" type="text" name="{$name}" value="" readonly="" class="value">
+                    <xsl:if test="chiba:data/@chiba:readonly='true'">
+                        <xsl:attribute name="disabled">disabled</xsl:attribute>
+                    </xsl:if>
+
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="dojoType">XFDropdownDatePicker</xsl:attribute>
+                        <!--<xsl:attribute name="dojoType">chiba:DropdownDatePicker</xsl:attribute>-->
+                        <xsl:attribute name="dojoType">
+                            <xsl:value-of select="$controlType"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="datatype">
+                            <xsl:value-of select="$type"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="xfreadonly">
+                            <xsl:value-of select="chiba:data/@chiba:readonly"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="xfincremental">
+                            <xsl:value-of select="$incremental"/>
+                        </xsl:attribute>
                         <xsl:attribute name="value">
                             <xsl:value-of select="chiba:data/text()"/>
                         </xsl:attribute>
@@ -58,63 +75,57 @@
                     <xsl:apply-templates select="xforms:hint"/>
                 </input>
             </xsl:when>
-<!--            <xsl:when test="$type='dateTime' and $scripted='true'">
-                <script type="text/javascript">
-                    dojo.require("dojo.widget.DropdownDatePicker");
-                    dojo.require("dojo.widget.Button");
-                    dojo.require("chiba.DropdownDateTimePicker");
-                </script>
-                <input id="{concat($id,'-value')}" type="text" name="{$name}" value="" readonly="" class="value">
-                    <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="dojoType">XFDropdownDateTimePicker</xsl:attribute>
-                        <xsl:attribute name="value"><xsl:value-of select="chiba:data/text()"/></xsl:attribute>
-                    </xsl:if>
-                    <xsl:apply-templates select="xforms:hint"/>
-                </input>
-
-            </xsl:when>
-            <xsl:when test="$type='time' and $scripted='true'">
-                <script type="text/javascript">
-                    dojo.require("chiba.Time");
-                </script>
-                <input id="{concat($id,'-value')}" type="text" name="{$name}" value="" readonly="" class="value">
-                    <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="dojoType">XFTime</xsl:attribute>
-                        <xsl:attribute name="value"><xsl:value-of select="chiba:data/text()"/></xsl:attribute>
-                    </xsl:if>
-                    <xsl:apply-templates select="xforms:hint"/>
-                </input>
-
-            </xsl:when>-->
             <xsl:when test="$type='boolean'">
-                <xsl:if test="$scripted='true'">
-                    <script type="text/javascript">
-                        dojo.require("chiba.Boolean");
-                    </script>
-                </xsl:if>
-                <input id="{$id}-value" type="checkbox"  name="{$name}" class="value">
-                    <xsl:if test="chiba:data/@chiba:readonly='true'">
-                        <xsl:attribute name="disabled">disabled</xsl:attribute>
-                    </xsl:if>
-                    <xsl:choose>
-                        <xsl:when test="chiba:data='true'">
-                            <xsl:attribute name="checked">true</xsl:attribute>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:attribute name="value">true</xsl:attribute>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                    <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="dojoType">XFBoolean</xsl:attribute>
-                        <xsl:attribute name="xfreadonly"><xsl:value-of select="chiba:data/@chiba:readonly"/></xsl:attribute>
-                        <xsl:attribute name="xfincremental"><xsl:value-of select="$incremental"/></xsl:attribute>
-                    </xsl:if>
-                    <xsl:apply-templates select="xforms:hint"/>
-                </input>
-                <!-- create hidden parameter for deselection -->
-                <xsl:if test="chiba:data='true' and $scripted='true'">
-                    <input type="hidden" name="{$name}" value="false"/>
-                </xsl:if>
+                <xsl:choose>
+                    <xsl:when test="$scripted='true'">
+                        <script type="text/javascript">
+                            dojo.require("chiba.widget.Boolean");
+                        </script>
+                        <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
+                            <xsl:if test="chiba:data/@chiba:readonly='true'">
+                                <xsl:attribute name="disabled">disabled</xsl:attribute>
+                            </xsl:if>
+                            <xsl:choose>
+                                <xsl:when test="chiba:data/text()='true'">
+                                    <xsl:attribute name="checked">true</xsl:attribute>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="value">false</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="$scripted='true'">
+                                <xsl:attribute name="dojoType">chiba:Boolean</xsl:attribute>
+                                <xsl:attribute name="xfreadonly">
+                                    <xsl:value-of select="chiba:data/@chiba:readonly"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="xfincremental">
+                                    <xsl:value-of select="$incremental"/>
+                                </xsl:attribute>
+                            </xsl:if>
+							<xsl:apply-templates select="xforms:hint"/>
+                        </input>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
+                            <xsl:if test="chiba:data/@chiba:readonly='true'">
+                                <xsl:attribute name="disabled">disabled</xsl:attribute>
+                            </xsl:if>
+                            <xsl:choose>
+                                <xsl:when test="chiba:data/text()='true'">
+                                    <xsl:attribute name="checked">true</xsl:attribute>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:attribute name="value">true</xsl:attribute>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:apply-templates select="xforms:hint"/>
+                        </input>
+                        <!-- create hidden parameter for deselection -->
+                        <xsl:if test="chiba:data='true' and $scripted='true'">
+                            <input type="hidden" name="{$name}" value="false"/>
+                        </xsl:if>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:element name="input">
@@ -138,6 +149,7 @@
                                 <xsl:attribute name="onkeyup">setXFormsValue(this);</xsl:attribute>
                             </xsl:when>
                             <xsl:otherwise>
+                                <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
                                 <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
                             </xsl:otherwise>
                         </xsl:choose>
@@ -161,51 +173,11 @@
         </xsl:choose>
     </xsl:template>
 
-    <!-- build image trigger / submit [deprecated]-->
-<!--
-    <xsl:template name="image-trigger">
-        <xsl:element name="input">
-            <xsl:variable name="id" select="@id"/>
-            <xsl:variable name="repeat-id" select="ancestor::*[name(.)='xforms:repeat'][1]/@id"/>
-            <xsl:attribute name="id">
-                <xsl:value-of select="concat($id,'-value')"/>
-            </xsl:attribute>
-            <xsl:attribute name="name">
-                <xsl:value-of select="concat($trigger-prefix,$id)"/>
-            </xsl:attribute>
-            <xsl:attribute name="type">image</xsl:attribute>
-            <xsl:attribute name="value">
-                <xsl:value-of select="xforms:label"/>
-            </xsl:attribute>
-            <xsl:attribute name="src">
-                <xsl:value-of select="xforms:label/@xlink:href"/>
-            </xsl:attribute>
-            <xsl:attribute name="class">value</xsl:attribute>
-            <xsl:if test="chiba:data/@chiba:readonly='true'">
-                <xsl:attribute name="disabled">disabled</xsl:attribute>
-            </xsl:if>
-            <xsl:if test="$scripted='true'">
-                <xsl:attribute name="onclick">chiba_activate(this);</xsl:attribute>
-            </xsl:if>
-            <xsl:apply-templates select="xforms:hint"/>
-        </xsl:element>
-
-    </xsl:template>
--->
-
     <!-- build output -->
     <xsl:template name="output">
 
         <xsl:variable name="id" select="@id"/>
-        <xsl:variable name="css" select="@class"/>
         <xsl:choose>
-<!--
-            <xsl:when test="@xforms:appearance='minimal'">
-                <span id="{concat($id,'-value')}">
-                    <xsl:value-of select="chiba:data/text()"/>
-                </span>
-            </xsl:when>
--->
             <xsl:when test="contains(@xforms:mediatype,'image/') or contains(@mediatype,'image/')">
                 <xsl:element name="img">
                     <xsl:attribute name="id">
@@ -214,7 +186,9 @@
                     <xsl:attribute name="src">
                         <xsl:value-of select="chiba:data/text()"/>
                     </xsl:attribute>
-                    <xsl:attribute name="alt"><xsl:value-of select="xforms:label"/></xsl:attribute>
+                    <xsl:attribute name="alt">
+                        <xsl:value-of select="xforms:label"/>
+                    </xsl:attribute>
                     <xsl:apply-templates select="xforms:hint"/>
                 </xsl:element>
             </xsl:when>
@@ -224,7 +198,15 @@
                 </span>
             </xsl:when>
             <xsl:when test="chiba:data[@chiba:type='anyURI'] and (not(@xforms:mediatype or @mediatype))">
+                <!-- SIDOC/CNAF : sidoc-infra-204, implementation de l'approche Dojo -->
+                <xsl:if test="$scripted='true'">
+                    <script type="text/javascript">
+                        dojo.require("chiba.widget.Link");
+                    </script>
+                </xsl:if>
                 <xsl:element name="a">
+                    <!-- SIDOC/CNAF : sidoc-infra-204, implementation de l'approche Dojo -->
+                    <xsl:attribute name="dojoType">XFLink</xsl:attribute>
                     <xsl:attribute name="id">
                         <xsl:value-of select="concat($id,'-value')"/>
                     </xsl:attribute>
@@ -251,10 +233,7 @@
          todo: support incremental ?
     -->
     <xsl:template name="range">
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
-        <xsl:variable name="name" select="concat($data-prefix,$id)"/>
         <xsl:variable name="start" select="@xforms:start | @start"/>
         <xsl:variable name="end" select="@xforms:end | @end"/>
         <xsl:variable name="step" select="@xforms:step | @step"/>
@@ -264,7 +243,6 @@
                 <xsl:otherwise>false</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:variable name="incremental" select="@xforms:incremental | @incremental"/>
         <xsl:variable name="value" select="chiba:data/text()"/>
 
         <div>
@@ -289,11 +267,6 @@
                         <xsl:attribute name="id">
                             <xsl:value-of select="concat($id,'-value')"/>
                         </xsl:attribute>
-<!--
-                        <xsl:attribute name="name">
-                            <xsl:value-of select="$name"/>
-                        </xsl:attribute>
--->
                         <xsl:attribute name="size">1</xsl:attribute>
                         <xsl:attribute name="class">value</xsl:attribute>
                         <xsl:if test="chiba:data/@chiba:readonly='true'">
@@ -330,17 +303,16 @@
             </xsl:variable>
 
             <xsl:element name="td">
-                <!-- mark the currently active value with name -->
-                <!-- todo: change this - this breaks html conformity! -->
-<!--
-                <xsl:if test="$value = $current">
-                    <xsl:attribute name="name"><xsl:value-of select="concat($rangeId,'-value')"/></xsl:attribute>
-                </xsl:if>
--->
-                <xsl:attribute name="id"><xsl:value-of select="concat($rangeId,$current)"/></xsl:attribute>
-                <xsl:attribute name="class"><xsl:value-of select="$classes"/></xsl:attribute>
+                <xsl:attribute name="id">
+                    <xsl:value-of select="concat($rangeId,$current)"/>
+                </xsl:attribute>
+                <xsl:attribute name="class">
+                    <xsl:value-of select="$classes"/>
+                </xsl:attribute>
                 <!-- todo: change to use 'this' instead of 'rangeId' -->
-                <a href="javascript:setRange('{$rangeId}',{$current});"><img alt="" src="../resources/images/trans.gif" height="25" width="6" title="{$current}"/></a>
+                <a href="javascript:setRange('{$rangeId}',{$current});">
+                    <img alt="" src="{concat($contextroot, $imagesPath, 'trans.gif')}" height="25" width="6" title="{$current}"/>
+                </a>
             </xsl:element>
 
         </xsl:if>
@@ -366,13 +338,6 @@
         <xsl:param name="end"/>
 
         <xsl:if test="$current &lt;= $end">
-            <xsl:variable name="classes">
-                <xsl:choose>
-                    <xsl:when test="$value = $current">step rangevalue</xsl:when>
-                    <xsl:otherwise>step</xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
-
             <option id="{$rangeId}-value" value="{$current}" title="{xforms:hint}" class="selector-item">
                 <xsl:if test="$value = $current">
                     <xsl:attribute name="selected">selected</xsl:attribute>
@@ -396,9 +361,6 @@
     <!-- build secret control -->
     <xsl:template name="secret">
         <xsl:param name="maxlength"/>
-
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="incremental" select="@xforms:incremental | @incremental"/>
 
@@ -428,6 +390,7 @@
                         <xsl:attribute name="onkeyup">setXFormsValue(this);</xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
+                        <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
                         <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -439,8 +402,6 @@
 
 
     <xsl:template name="select1">
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="name" select="concat($data-prefix,$id)"/>
         <xsl:variable name="parent" select="."/>
@@ -544,9 +505,6 @@
 
 
     <xsl:template name="select">
-
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="name" select="concat($data-prefix,$id)"/>
         <xsl:variable name="parent" select="."/>
@@ -622,7 +580,7 @@
                     <xsl:attribute name="name">
                         <xsl:value-of select="$name"/>
                     </xsl:attribute>
-                   <xsl:attribute name="multiple">multiple</xsl:attribute>
+                    <xsl:attribute name="multiple">multiple</xsl:attribute>
                     <xsl:attribute name="size">3</xsl:attribute>
                     <xsl:if test="chiba:data/@chiba:readonly='true'">
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
@@ -654,17 +612,14 @@
 
     <!-- build textarea control -->
     <xsl:template name="textarea">
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="incremental" select="@xforms:incremental | @incremental"/>
 
-		<xsl:variable name="html-mediatype-class">
-			<xsl:choose>
-				<xsl:when test="@xforms:mediatype='text/html' and $scripted='true'"><xsl:text> </xsl:text>mediatype-text-html</xsl:when>
-				<xsl:otherwise/>
-			</xsl:choose>
-		</xsl:variable>
+        <xsl:variable name="html-mediatype-class">
+            <xsl:choose>
+                <xsl:when test="@xforms:mediatype='text/html' and $scripted='true'"><xsl:text> </xsl:text>mediatype-text-html</xsl:when><xsl:otherwise/>
+            </xsl:choose>
+        </xsl:variable>
 
 
         <xsl:element name="textarea">
@@ -679,13 +634,16 @@
             </xsl:if>
             <xsl:attribute name="rows">5</xsl:attribute>
             <xsl:attribute name="cols">30</xsl:attribute>
-            <xsl:attribute name="class"><xsl:value-of select="concat('value',$html-mediatype-class)"/></xsl:attribute>
+            <xsl:attribute name="class">
+                <xsl:value-of select="concat('value',$html-mediatype-class)"/>
+            </xsl:attribute>
             <xsl:if test="$scripted='true'">
                 <xsl:choose>
                     <xsl:when test="$incremental='true'">
                         <xsl:attribute name="onkeyup">setXFormsValue(this);</xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
+                        <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
                         <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -699,8 +657,6 @@
     <!-- todo: align with trigger template -->
     <xsl:template name="submit">
         <xsl:param name="classes"/>
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
 
         <span id="{$id}" class="{$classes}">
@@ -738,13 +694,7 @@
     <!-- build trigger -->
     <xsl:template name="trigger">
         <xsl:param name="classes"/>
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
-
-        <xsl:variable name="type">
-            <xsl:call-template name="getType"/>
-        </xsl:variable>
 
         <xsl:choose>
             <!-- minimal appearance only supported in scripted mode -->
@@ -752,10 +702,12 @@
                 <span id="{$id}" class="{$classes}">
                     <xsl:element name="a">
                         <xsl:attribute name="class">value</xsl:attribute>
-                        <xsl:attribute name="id"><xsl:value-of select="concat($id,'-value')"/></xsl:attribute>
-                        <xsl:attribute name="href">javascript:void(0);</xsl:attribute>
+                        <xsl:attribute name="id">
+                            <xsl:value-of select="concat($id,'-value')"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="href">#</xsl:attribute>
                         <xsl:if test="not(chiba:data/@chiba:readonly='true')">
-                            <xsl:attribute name="onclick">javascript:chiba_activate(this);</xsl:attribute>
+                            <xsl:attribute name="onclick">return chiba_activate(this);</xsl:attribute>
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
                         <xsl:apply-templates select="xforms:label"/>
@@ -785,13 +737,6 @@
                             <xsl:value-of select="xforms:label"/>
                         </xsl:attribute>
                         <xsl:attribute name="class">value</xsl:attribute>
-                        <!--
-                        	<xsl:value-of select="$type"/>
-                        
-                        	<xsl:value-of select="concat($type,' value')"/>
-                        -->
-                       
-                        
                         <xsl:if test="chiba:data/@chiba:readonly='true'">
                             <xsl:attribute name="disabled">disabled</xsl:attribute>
                         </xsl:if>
@@ -800,8 +745,7 @@
                                 <xsl:value-of select="@xforms:accesskey | @accesskey"/>
                             </xsl:attribute>
                             <xsl:attribute name="title">
-                                <xsl:value-of select="normalize-space(xforms:hint)"/> - KEY: [ALT]+
-                                <xsl:value-of select="@xforms:accesskey | @accesskey"/>
+                                <xsl:value-of select="normalize-space(xforms:hint)"/>- KEY: [ALT]+ <xsl:value-of select="@xforms:accesskey | @accesskey"/>
                             </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
@@ -809,17 +753,19 @@
 
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
-<!--
-                        <xsl:if test="contains(@xforms:src,'.gif') or contains(@xforms:src,'.jpg') or contains(@xforms:src,'.png')">
-                            <img alt="{xforms:label}" src="{@xforms:src}" id="{@id}-label"/>
-                        </xsl:if>
--->
+                        <!--
+                                                <xsl:if test="contains(@xforms:src,'.gif') or contains(@xforms:src,'.jpg') or contains(@xforms:src,'.png')">
+                                                    <img alt="{xforms:label}" src="{@xforms:src}" id="{@id}-label"/>
+                                                </xsl:if>
+                        -->
                     </xsl:element>
-                    <xsl:if test="$repeat-id">
+<!--
+                    <xsl:if test="$repeat-id and $scripted = 'true'">
                         <script type="text/javascript">
                             dojo.event.connect("before",dojo.byId("<xsl:value-of select="concat($id,'-value')"/>"),"onclick","setRepeatIndex");
                         </script>
                     </xsl:if>
+-->
 
                 </span>
             </xsl:otherwise>
@@ -830,12 +776,7 @@
     <!-- build upload control -->
     <xsl:template name="upload">
         <!-- the stylesheet using this template has to take care, that form enctype is set to 'multipart/form-data' -->
-        <xsl:variable name="repeat-id" select="ancestor::*[local-name(.)='repeat'][1]/@id"/>
-        <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="id" select="@id"/>
-
-        <!-- todo: support incremental -->
-        <xsl:variable name="incremental" select="@xforms:incremental | @incremental"/>
 
         <xsl:element name="input">
             <xsl:attribute name="id">
@@ -850,26 +791,34 @@
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
             <xsl:attribute name="class">value</xsl:attribute>
-            <!-- Content types accepted, from mediatype xforms:upload attribute
+			<!-- Content types accepted, from mediatype xforms:upload attribute
             to accept input attribute -->
-<!--
-            <xsl:attribute name="accept">
-                <xsl:value-of select="translate(normalize-space(@xforms:mediatype),' ',',')"/>
-            </xsl:attribute>
--->
+            <!--
+                        <xsl:attribute name="accept">
+                            <xsl:value-of select="translate(normalize-space(@xforms:mediatype),' ',',')"/>
+                        </xsl:attribute>
+            -->
             <xsl:if test="$scripted='true'">
                 <!--<xsl:attribute name="onchange">submitFile(this);</xsl:attribute>-->
-                <xsl:attribute name="dojoType">XFUpload</xsl:attribute>
-                <xsl:attribute name="xfreadonly"><xsl:value-of select="chiba:data/@chiba:readonly"/></xsl:attribute>
+                <xsl:attribute name="dojoType">chiba:Upload</xsl:attribute>
+                <xsl:attribute name="xfreadonly">
+                    <xsl:value-of select="chiba:data/@chiba:readonly"/>
+                </xsl:attribute>
             </xsl:if>
-            <!--<xsl:apply-templates select="xforms:hint"/>-->
+            <xsl:apply-templates select="xforms:hint"/>
         </xsl:element>
 
         <xsl:if test="$scripted='true'">
             <script type="text/javascript">
-                dojo.require("chiba.Upload");
+                dojo.require("chiba.widget.Upload");
             </script>
-            <div class="progressbar" style="display:none;" id="{$id}-progress"><div class="border"><div id="{$id}-progress-bg" class="background"></div></div></div>
+
+            <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"></iframe>
+            <div class="progressbar" style="display:none;" id="{$id}-progress">
+                <div class="border">
+                    <div id="{$id}-progress-bg" class="background"></div>
+                </div>
+            </div>
         </xsl:if>
         <xsl:if test="xforms:filename">
             <input type="hidden" id="{xforms:filename/@id}" value="{xforms:filename/chiba:data}"/>
@@ -898,7 +847,8 @@
             </option>
 
             <!-- handle items, items in choices, and items in itemsets, but neither of these in chiba:data  -->
-            <xsl:for-each select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
+            <xsl:for-each
+                    select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
                 <option id="{@id}-value" value="{xforms:value}" title="{xforms:hint}" class="selector-item">
                     <xsl:if test="@selected='true'">
                         <xsl:attribute name="selected">selected</xsl:attribute>
@@ -924,14 +874,14 @@
     </xsl:template>
 
     <xsl:template name="build-checkboxes">
-        <xsl:param name="id"/>
         <xsl:param name="name"/>
         <xsl:param name="parent"/>
 
         <!-- todo: refactor to handle xforms:choice / xforms:itemset by matching -->
         <span id="{xforms:itemset/@id}">
             <!-- handle items, items in choices, and items in itemsets, but neither of these in chiba:data  -->
-            <xsl:for-each select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
+            <xsl:for-each
+                    select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
                 <span id="{@id}" class="selector-item">
                     <input id="{@id}-value" class="value" type="checkbox" name="{$name}" value="{xforms:value}">
                         <xsl:choose>
@@ -970,16 +920,6 @@
         <xsl:param name="name"/>
         <xsl:param name="parent"/>
 
-        <xsl:variable name="title">
-            <xsl:choose>
-                <xsl:when test="xforms:hint">
-                    <xsl:value-of select="xforms:hint"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="$parent/xforms:hint"/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
         <span id="{$itemset-id}-prototype" class="selector-prototype">
             <input id="{$item-id}-value" class="value" type="checkbox" name="{$name}" value="{xforms:value}">
                 <xsl:attribute name="title">
@@ -1014,14 +954,14 @@
 
     <!-- overwrite/change this template, if you don't like the way labels are rendered for checkboxes -->
     <xsl:template name="build-radiobuttons">
-        <xsl:param name="id"/>
         <xsl:param name="name"/>
         <xsl:param name="parent"/>
 
         <!-- todo: refactor to handle xforms:choice / xforms:itemset by matching -->
         <span id="{xforms:itemset/@id}">
             <!-- handle items, items in choices, and items in itemsets, but neither of these in chiba:data  -->
-            <xsl:for-each select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
+            <xsl:for-each
+                    select="$parent/xforms:item|$parent/xforms:choices/xforms:item|$parent/xforms:itemset/xforms:item">
                 <span id="{@id}" class="selector-item">
                     <input id="{@id}-value" class="value" type="radio" name="{$name}" value="{xforms:value}">
                         <xsl:choose>

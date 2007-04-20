@@ -1,4 +1,4 @@
-// Copyright 2005 Chibacon
+// Copyright 2001-2007 ChibaXForms GmbH
 /*
  *
  *    Artistic License
@@ -105,9 +105,7 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 
-import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -116,7 +114,7 @@ import java.util.Map;
  * to the XForms processor.
  *
  * @author joern turner
- * @version $Id: ServletAdapter.java,v 1.1 2007/03/15 10:23:42 civilis Exp $
+ * @version $Id: ServletAdapter.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
  */
 public class ServletAdapter extends WebAdapter implements EventListener {
 
@@ -180,8 +178,7 @@ public class ServletAdapter extends WebAdapter implements EventListener {
                     Map submissionResponse = new HashMap();
                     submissionResponse.put("header", xmlEvent.getContextInfo("header"));
                     submissionResponse.put("body", xmlEvent.getContextInfo("body"));
-
-                    xforms_session.setProperty(AbstractChibaServlet.CHIBA_SUBMISSION_RESPONSE, submissionResponse);
+                    this.xformsSession.setProperty(ChibaServlet.CHIBA_SUBMISSION_RESPONSE, submissionResponse);
 
                     this.exitEvent = xmlEvent;
                     shutdown();
