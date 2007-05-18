@@ -557,7 +557,7 @@ div.label h1 {
 	padding: 7px 0 0 14px;
 }
 
-.case.selected-case{
+/* .case.selected-case{
 	overflow-y: auto 			!important;
 	top: 25px;
 	bottom: 0px 				!important;
@@ -566,7 +566,7 @@ div.label h1 {
 	right: 0px;
 }
 fieldset.group{
-	/*overflow: auto 			!important;*/
+	overflow: auto 			!important;
 	top: 45px;
 	bottom: 23px 			!important;
 	position: absolute;
@@ -574,13 +574,13 @@ fieldset.group{
 	right: 0px;
 }
 fieldset.group fieldset.group{
-	/*overflow: auto 			!important;*/
+	overflow: auto 			!important;
 	top: 0px;
 	bottom: auto 			!important;
 	position: relative 		!important;
 	left: 0;
 	right: 0px;
-}
+} */
 span.selector-item{
 	clear: both 			!important;
 	//float: left;
