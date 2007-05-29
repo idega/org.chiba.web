@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.2 2007/03/20 12:15:09 civilis Exp $
+ * $Id: IWBundleStarter.java,v 1.3 2007/05/29 17:11:03 civilis Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -24,6 +24,7 @@ import org.chiba.xml.xslt.impl.CachingTransformerService;
 import org.chiba.xml.xslt.impl.ResourceResolver;
 
 import com.idega.chiba.web.xml.xslt.impl.ChibaBundleResourceResolver;
+import com.idega.chiba.web.xml.xslt.impl.HttpResourceResolver;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
@@ -33,10 +34,10 @@ import com.idega.idegaweb.include.GlobalIncludeManager;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2007/03/20 12:15:09 $ by $Author: civilis $
+ * Last modified: $Date: 2007/05/29 17:11:03 $ by $Author: civilis $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -57,7 +58,9 @@ public class IWBundleStarter implements IWBundleStartable {
 
 		// create transformer service
 		ResourceResolver resolver = new ChibaBundleResourceResolver(application);
-		TransformerService transformerService = new CachingTransformerService(resolver);
+		CachingTransformerService transformerService = new CachingTransformerService(resolver);
+		transformerService.addResourceResolver(new HttpResourceResolver());
+		
 		application.setAttribute(TRANSFORMER_SERVICE, transformerService);
 
     	// cache default stylesheet
