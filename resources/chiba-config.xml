@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: chiba-config.xml,v 1.3 2007/05/29 17:11:31 civilis Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.4 2007/09/17 13:32:43 civilis Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
     <!-- PLEASE COMMENT YOUR ENTRIES -->
@@ -87,6 +87,7 @@
         <submission-handler scheme="mailto" class="org.chiba.connectors.smtp.SMTPSubmissionHandler"/>
         <submission-handler scheme="xmlrpc" class="org.chiba.connectors.xmlrpc.XMLRPCSubmissionHandler"/>
         <submission-handler scheme="webdav" class="com.idega.chiba.web.xml.xforms.connector.webdav.WebdavSubmissionHandler"/>
+        <submission-handler scheme="ws" class="com.idega.chiba.web.xml.xforms.connector.webservice.WebServiceSubmissionHandler"/>
         <!--        <submission-handler scheme="jms" class="org.chiba.connectors.jms.JMSSubmissionHandler"/>-->
         <!--
             These connector types are deprecated. Their usage is strongly discouraged,
@@ -99,6 +100,8 @@
     <register-serializer>
       <instance-serializer scheme="webdav" method="put" class="org.chiba.xml.xforms.connector.serializer.XMLSerializer" />
       <instance-serializer scheme="webdav" method="post" class="org.chiba.xml.xforms.connector.serializer.XMLSerializer" />
+      <instance-serializer scheme="ws" method="put" class="org.chiba.xml.xforms.connector.serializer.XMLSerializer" />
+      <instance-serializer scheme="ws" method="post" class="org.chiba.xml.xforms.connector.serializer.XMLSerializer" />
       <instance-serializer scheme="webdav" method="get" class="org.chiba.xml.xforms.connector.serializer.UrlEncodedSerializer" />
     </register-serializer>
     
