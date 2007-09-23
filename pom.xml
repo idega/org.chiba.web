@@ -79,5 +79,11 @@
       <version>${com.idega.block.platform-com.idega.cxf-version}</version>
       <type>jar</type>
     </dependency>
+    <dependency>
+      <groupId>com.idega.block.addon</groupId>
+      <artifactId>org.jboss.jbpm</artifactId>
+      <version>${com.idega.block.addon-org.jboss.jbpm-version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>

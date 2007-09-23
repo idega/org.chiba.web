@@ -5,8 +5,14 @@
 	<bean id="process_xforms_submissionHandler" class="com.idega.jbpm.exe.impl.DefaultSubmissionHandler" scope="singleton">
 		<property name="converter" ref="process_xforms_converter" />
 	</bean>
-	<bean id="process_xforms_converter" class="com.idega.formbuilder.business.process.XFormsConverter" scope="singleton">
+	<bean id="process_xforms_converter" class="com.idega.chiba.process.converters.XFormsConverter" scope="singleton">
 		<property name="convertersFactory" ref="process_xforms_dataConvertersFactory" />
 	</bean>
-	<bean id="process_xforms_dataConvertersFactory" class="com.idega.formbuilder.business.process.converter.DataConvertersFactory" scope="singleton" />
+	<bean id="process_xforms_dataConvertersFactory" class="com.idega.chiba.process.converters.DataConvertersFactory" scope="singleton" />
+	
+	<bean id="process_xforms_viewToTask" class="com.idega.chiba.process.XFormsToTask" scope="singleton">
+		<property name="identifier" value="process.xforms.viewToTask" />
+		<property name="jbpmConfiguration" ref="defaultJbpmConfiguration" />
+		<property name="sessionFactory" ref="idega_jbpmDSHibernateSessionFactory" />
+	</bean>
 </beans>
