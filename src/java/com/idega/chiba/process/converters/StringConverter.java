@@ -9,16 +9,16 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/09/23 06:58:25 $ by $Author: civilis $
+ * Last modified: $Date: 2007/09/27 16:25:42 $ by $Author: civilis $
  */
 public class StringConverter implements DataConverter {
 
 	public Object convert(Element o) {
 
-//		TODO: if element contains nodes, serialize them to string and return. for now assume that everything is passed correctly with one text node
-		return o.getTextContent();
+		String txt = o.getTextContent();
+		return "".equals(txt) ? null : txt;
 	}
 	public Element revert(Object o, Element e) {
 	

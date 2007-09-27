@@ -30,7 +30,7 @@ import com.idega.slide.business.IWSlideService;
  * <p/>
  * 
  * @author Gediminas Paulauskas
- * @version $Id: WebdavSubmissionHandler.java,v 1.1 2007/03/15 10:23:46 civilis Exp $
+ * @version $Id: WebdavSubmissionHandler.java,v 1.2 2007/09/27 16:26:01 civilis Exp $
  */
 public class WebdavSubmissionHandler extends AbstractConnector implements SubmissionHandler {
     
@@ -55,6 +55,9 @@ public class WebdavSubmissionHandler extends AbstractConnector implements Submis
             if (!submission.getReplace().equals("none") && !submission.getReplace().equals("all")) {
                 throw new XFormsException("submission mode '" + submission.getReplace() + "' not supported");
             }
+            
+            System.out.println("submit: ");
+            DOMUtil.prettyPrintDOM(instance);
 
             try {
                 String form_id = getFormIdFromSubmissionInstance(instance);

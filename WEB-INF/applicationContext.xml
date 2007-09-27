@@ -2,8 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
 
 <beans>
-	<bean id="process_xforms_submissionHandler" class="com.idega.jbpm.exe.impl.DefaultSubmissionHandler" scope="singleton">
+	<bean id="process_xforms_variablesHandler" class="com.idega.jbpm.exe.impl.DefaultVariablesHandler" scope="singleton">
 		<property name="converter" ref="process_xforms_converter" />
+		<property name="processManager" ref="jbpmProcessManager" />
 	</bean>
 	<bean id="process_xforms_converter" class="com.idega.chiba.process.converters.XFormsConverter" scope="singleton">
 		<property name="convertersFactory" ref="process_xforms_dataConvertersFactory" />

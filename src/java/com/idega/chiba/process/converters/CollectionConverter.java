@@ -1,35 +1,34 @@
 package com.idega.chiba.process.converters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.chiba.xml.dom.DOMUtil;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/09/23 06:58:25 $ by $Author: civilis $
+ * Last modified: $Date: 2007/09/27 16:25:42 $ by $Author: civilis $
  */
 public class CollectionConverter implements DataConverter {
 
-	private final String listItemElementName = "item";
-	
 	public Object convert(Element o) {
 
-		@SuppressWarnings("unchecked")
-		List<Element> childElements = DOMUtil.getChildElements(o);
+		String txt = o.getTextContent();
+		if(txt != null)
+			txt = txt.trim();
 		
 		List<String> values = new ArrayList<String>();
 		
-		if(childElements == null || childElements.isEmpty())
+		if(txt == null || txt.equals(""))
 			return values;
 		
-		for (Element element : childElements)
-			values.add(element.getTextContent());
+		String[] splitted = txt.split(" ");
+		values.addAll(Arrays.asList(splitted));
 		
 		return values;
 	}
@@ -56,15 +55,18 @@ public class CollectionConverter implements DataConverter {
 		@SuppressWarnings("unchecked")
 		List<String> values = (List<String>)o;
 		
+		StringBuilder sb = new StringBuilder();
+		
 		for (String value : values) {
 
-			if(value == null)
+			if(value == null || value.trim().equals(""))
 				continue;
 			
-			Element listItem = e.getOwnerDocument().createElement(listItemElementName);
-			listItem.appendChild(e.getOwnerDocument().createTextNode(value));
-			e.appendChild(listItem);
+			sb.append(value);
+			sb.append(" ");
 		}
+		
+		e.appendChild(e.getOwnerDocument().createTextNode(sb.toString().trim()));
 		
 		return e;
 	}
