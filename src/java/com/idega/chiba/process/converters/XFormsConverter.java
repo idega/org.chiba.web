@@ -19,9 +19,9 @@ import com.idega.jbpm.exe.Converter;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2007/09/27 16:25:42 $ by $Author: civilis $
+ * Last modified: $Date: 2007/10/01 16:31:00 $ by $Author: civilis $
  */
 public class XFormsConverter implements Converter {
 
@@ -82,6 +82,9 @@ public class XFormsConverter implements Converter {
 
 	public Object revert(Map<String, Object> variables, Object submissionData) {
 		
+		if(variables == null || variables.isEmpty())
+			return submissionData;
+		
 		Node sdNode = (Node)submissionData;
 		try {
 			NodeList result;
@@ -98,8 +101,12 @@ public class XFormsConverter implements Converter {
 				Element element = (Element)result.item(i);
 				String mapping = element.getAttribute(MAPPING_ATT);
 				
-				if(variables.containsKey(mapping))
-					getConvertersFactory().createConverter(getDataType(mapping)).revert(variables.get(mapping), element);
+				if(variables.containsKey(mapping)) {
+					
+					Object o = variables.get(mapping);
+					if(o != null)
+						getConvertersFactory().createConverter(getDataType(mapping)).revert(o, element);
+				}
 			}
 			
 			return sdNode;

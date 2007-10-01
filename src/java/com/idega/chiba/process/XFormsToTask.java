@@ -3,7 +3,6 @@ package com.idega.chiba.process;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jbpm.JbpmConfiguration;
-import org.jbpm.JbpmContext;
 import org.jbpm.taskmgmt.def.Task;
 
 import com.idega.jbpm.data.ViewTaskBind;
@@ -12,9 +11,9 @@ import com.idega.jbpm.def.ViewToTask;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/09/23 06:58:24 $ by $Author: civilis $
+ * Last modified: $Date: 2007/10/01 16:31:00 $ by $Author: civilis $
  */
 public class XFormsToTask implements ViewToTask {
 	
@@ -28,27 +27,34 @@ public class XFormsToTask implements ViewToTask {
 //		also catch when duplicate view type and task id pair is tried to be entered, and override
 //		views could be versioned
 		
-		JbpmContext ctx = cfg.createJbpmContext();
-		
 		Session session = null;
 		try {
-			ViewTaskBind bind = new ViewTaskBind();
-			bind.setTaskId(task.getId());
-			bind.setViewIdentifier(view.getViewId());
-			bind.setViewType(view.getViewType());
-			
 			session = getSessionFactory().openSession();
+			ViewTaskBind vtb = ViewTaskBind.getViewTaskBind(session, task.getId(), XFormsView.VIEW_TYPE);
 			
-			session.save(bind);
+			boolean newVtb = false;
+			
+			if(vtb == null) {
+				vtb = new ViewTaskBind();
+				newVtb = true;
+			}
+			
+			vtb.setTaskId(task.getId());
+			vtb.setViewIdentifier(view.getViewId());
+			vtb.setViewType(view.getViewType());
+
+			if(newVtb)
+				session.save(vtb);
+			else
+				session.flush();
 			
 		} finally {
-			
-			ctx.close();
 			
 			if(session != null)
 				session.close();
 		}
 	}
+	
 	public View getView(long taskId) {
 		
 		Session session = getSessionFactory().openSession();
@@ -70,6 +76,7 @@ public class XFormsToTask implements ViewToTask {
 				session.close();
 		}
 	}
+	
 	public String getIdentifier() {
 	
 		return IDENTIFIER;
