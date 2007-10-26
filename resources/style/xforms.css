@@ -526,6 +526,7 @@ fieldset.group textarea {
 	font-size: 18px;
 	font-weight: bold;
 	height: 35px;
+	border: 0;
 }
 .trigger > input:hover {
 	color: #571900;
