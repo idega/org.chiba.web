@@ -477,18 +477,19 @@ label.label{
 }
 div.select1 > span, div.select > span {
 	position: relative;
-	left: 175px;
+margin-left: 175px;
+display: block;
 	top: -12px;
 }
 div.select1 > span > span.selector-item, div.select > span > span.selector-item {
 	display: block;
 }
 span.selector-item > input.value {
-	margin-top: 4px;
+	margin-top: 0px;
 }
 span.selector-item > span.label {
 	position: relative;
-	top: -7px;
+	top: -5px;
 }
 /*div.select1 > span > span.selector-item {
 	display: inline;
