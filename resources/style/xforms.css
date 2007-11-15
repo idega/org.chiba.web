@@ -407,7 +407,7 @@ div.info h1 {
 	font-size: 22px;
 }
 
-div.fbcomp_header_text{
+div.fbc_header_text{
 	border-top: 1px #a4a4a4 solid;
 	border-bottom: 1px #a4a4a4 solid;
 	background: url(images/sub_header_tiler.gif) repeat-x #d6d6d6;
@@ -510,7 +510,7 @@ fieldset.group textarea {
 	width: 352px 			!important;
 	height: 80px			!important;
 }
-.fbcomp_simple_text {
+.fbc_simple_text {
 	clear: both;
 	margin-top: 16px;
 	margin-bottom: 0;
@@ -534,7 +534,7 @@ fieldset.group textarea {
 	background-image: url(images/button_next_hover.png);
 	filter: none;	
 }
-div.fbcomp_button_area {
+div.fbc_button_area {
 	padding-right: 17px;
 	padding-left: 17px;
 	padding-top: 16px;
