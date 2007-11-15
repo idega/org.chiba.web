@@ -4,6 +4,8 @@ import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
 
+import com.idega.util.CoreConstants;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
@@ -42,7 +44,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             FacesContext ctx = FacesContext.getCurrentInstance();
             
             if(ctx == null)
-            	return createResponseDocument("", "foobar").getDocumentElement();
+            	return createResponseDocument(CoreConstants.EMPTY, "foobar").getDocumentElement();
             
             Object value = 
             	ctx.getApplication().createValueBinding(
@@ -52,11 +54,11 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             		.toString()
             	).getValue(ctx);
             
-	        return createResponseDocument(value == null ? "" : value instanceof String ? (String)value : value.toString(), xpath).getDocumentElement();
+	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value.toString(), xpath).getDocumentElement();
         } catch (Exception e) {
         	
         	try {
-        		return createResponseDocument("", "foobar").getDocumentElement();
+        		return createResponseDocument(CoreConstants.EMPTY, "foobar").getDocumentElement();
 			} catch (Exception e2) {
 				throw new XFormsException(e2);
 			}
@@ -76,7 +78,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
         	.append(response_part4)
         	.toString();
         
-        InputStream stream = new ByteArrayInputStream(response_xml.getBytes("UTF-8"));
+        InputStream stream = new ByteArrayInputStream(response_xml.getBytes(CoreConstants.ENCODING_UTF8));
         Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
         stream.close();
         return doc;
