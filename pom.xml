@@ -51,5 +51,17 @@
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.dwr</artifactId>
     </dependency>
+    <dependency>
+      <groupId>xstream</groupId>
+      <artifactId>xstream</artifactId>
+      <version>${xstream-xstream-version}</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>xpp3</groupId>
+      <artifactId>xpp3</artifactId>
+      <version>${xpp3-xpp3-version}</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 </project>
