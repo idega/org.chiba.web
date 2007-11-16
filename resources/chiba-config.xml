@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id: chiba-config.xml,v 1.7 2007/10/23 21:55:16 civilis Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.8 2007/11/16 13:52:34 civilis Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
     <!-- PLEASE COMMENT YOUR ENTRIES -->
@@ -80,6 +80,7 @@
         <uri-resolver scheme="context" class="com.idega.chiba.web.xml.xforms.connector.context.KeyContextResolver"/>
         <!--<uri-resolver scheme="contextobject" class="org.chiba.xml.xforms.connector.context.ContextObjectResolver"/>-->
         <uri-resolver scheme="webdav" class="com.idega.chiba.web.xml.xforms.connector.webdav.WebdavURIResolver"/>
+        <uri-resolver scheme="expXml" class="com.idega.chiba.web.xml.xforms.connector.context.ContextXmlResolver"/>
 
         <submission-handler scheme="context" class="org.chiba.xml.xforms.connector.context.ContextSubmissionHandler"/>
         <submission-handler scheme="file" class="org.chiba.xml.xforms.connector.file.FileSubmissionHandler"/>
@@ -89,6 +90,7 @@
         <submission-handler scheme="webdav" class="com.idega.chiba.web.xml.xforms.connector.webdav.WebdavSubmissionHandler"/>
         <submission-handler scheme="process" class="com.idega.block.form.process.ProcessSubmissionHandler" />
         <submission-handler scheme="simpleCaseProcess" class="is.idega.idegaweb.egov.cases.jbpm.SimpleCasesProcessSubmissionHandler" />
+        
         <!--        <submission-handler scheme="jms" class="org.chiba.connectors.jms.JMSSubmissionHandler"/>-->
         <!--
             These connector types are deprecated. Their usage is strongly discouraged,
