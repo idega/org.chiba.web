@@ -5,19 +5,19 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
 
 import com.idega.util.CoreConstants;
+import com.idega.util.xml.XmlUtil;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 
 import javax.faces.context.FacesContext;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version 1.0
- * 
+ * @version $Revision: 1.4 $
+ *
+ * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -79,7 +79,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
         	.toString();
         
         InputStream stream = new ByteArrayInputStream(response_xml.getBytes(CoreConstants.ENCODING_UTF8));
-        Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream);
+        Document doc = XmlUtil.getDocumentBuilder().parse(stream);
         stream.close();
         return doc;
 	}

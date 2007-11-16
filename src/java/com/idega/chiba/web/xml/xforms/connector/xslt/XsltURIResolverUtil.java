@@ -25,8 +25,10 @@ import org.xml.sax.SAXException;
 import com.idega.idegaweb.IWMainApplication;
 
 /**
- * @author Vytautas Čivilis
- * @version $Id: XsltURIResolverUtil.java,v 1.1 2007/05/29 17:07:37 civilis Exp $
+ * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
+ * @version $Revision: 1.2 $
+ *
+ * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
  */
 public class XsltURIResolverUtil {
 
