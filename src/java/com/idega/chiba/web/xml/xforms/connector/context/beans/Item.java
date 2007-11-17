@@ -2,9 +2,9 @@ package com.idega.chiba.web.xml.xforms.connector.context.beans;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2007/11/17 11:19:08 $ by $Author: civilis $
  */
 public class Item {
 	 
@@ -13,9 +13,9 @@ public class Item {
 	
 	public Item() {	}
 	
-	public Item(String label, String value) {
-		setItemLabel(label);
+	public Item(String value, String label) {
 		setItemValue(value);
+		setItemLabel(label);
 	}
 	
 	public String getItemLabel() {
