@@ -23,6 +23,9 @@
 
     <!-- ############################################ PARAMS ################################################### -->
     <xsl:param name="contextroot" select="''"/>
+    <xsl:param name="uriToPrototypeLib" select="''"/>
+    <xsl:param name="uriToScriptaculousLib" select="''"/>
+    <xsl:param name="uriToMootoolsLib" select="''"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -140,21 +143,21 @@
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
+					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
+					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					include_once("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
+					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>
@@ -165,44 +168,54 @@
                         <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
                         <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
                         <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
+                        
+                        <!-- mootools lib -->
+                        <script type="text/javascript">
+                            IWCORE.includeScript("<xsl:value-of select="$uriToMootoolsLib" />");
+                        </script>
+                        <xsl:text>
+</xsl:text>
                         <!-- dojo lib -->
                         <script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
                 		</script>
                         <xsl:text>
 </xsl:text>
-						<script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'prototype.js')" />");
-                		</script>
+                        <script type="text/javascript">
+                            IWCORE.includeScriptBatch(["<xsl:value-of select="$uriToPrototypeLib" />", "<xsl:value-of select="$uriToScriptaculousLib" />"]);
+                            <!--  IWCORE.includeScript("<xsl:value-of select="$uriToPrototypeLib" />");-->
+                        </script>
                         <xsl:text>
 </xsl:text>
                         <!-- scriptaculous lib -->
-						<script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/scriptaculous.js')" />");
-                		</script>
+                        <!--  
+                        <script type="text/javascript">
+                            IWCORE.includeScript("<xsl:value-of select="$uriToScriptaculousLib" />");
+                        </script>
                         <xsl:text>
 </xsl:text>
-						<script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />");
+-->
+						<!--<script type="text/javascript">
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />");
                 		</script>
                         <xsl:text>
-</xsl:text>
+</xsl:text>-->
 
                         <!-- for DWR AJAX -->
                         <script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
                 		</script>
                         <xsl:text>
 </xsl:text>
                         <!-- XForms Client -->
                         <script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />");
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />");
                 		</script>
                         <xsl:text>
 </xsl:text>
                         <!-- general xforms utils -->
                         <script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />");
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />");
                 		</script>
                         <xsl:text>
 </xsl:text>
@@ -216,7 +229,7 @@
                         <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
                         <!-- dojo lib -->
                         <script type="text/javascript">
-							include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
+							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
                 		</script>
                         <xsl:text>
 </xsl:text>
@@ -225,41 +238,18 @@
 
                 <script type="text/javascript">
                     <!--dojo.setModulePrefix("chiba","chiba");-->
-                    dojo.require("dojo.event.*");
-
-                    var pulseInterval;
-
-                    var calendarInstance = false;
-                    var calendarActiveInstance = null;
-                    var clicked = false;
-                    var closedByOnIconClick = false;
-                    this.onclick = function(evt) {
-                        if(closedByOnIconClick == true) {
-                            closedByOnIconClick = false;
-                        } else {
-                            if(calendarInstance==true) {
-                                if(clicked == true) {
-                                    calendarInstance=false;
-                                    clicked = false;
-                                    calendarActiveInstance.hideContainer();
-                                } else {
-                                    clicked = true;
-                                }
-                            }
-                        }
-                    }
-                    dojo.addOnLoad(initXForms);
+                    IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />");
                 </script><xsl:text>
 </xsl:text>
                 <!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
                 <xsl:if test="$uses-html-textarea">
 	                <script type="text/javascript">
-						include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />");
+						IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />");
                		</script>
                     <xsl:text>
 </xsl:text>
 					<script type="text/javascript">
-						include_once("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />");
+						IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />");
                		</script>
                     <xsl:text>
 </xsl:text>
