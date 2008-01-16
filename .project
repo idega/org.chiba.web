@@ -3,6 +3,8 @@
 	<name>org.chiba.web</name>
 	<comment>Jakarta Slide WebDAV Server</comment>
 	<projects>
+		<project>com.idega.formbuilder</project>
+		<project>org.jboss.jbpm</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
