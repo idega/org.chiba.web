@@ -55,9 +55,9 @@
       <artifactId>chiba</artifactId>
     </dependency>
     <dependency>
-      <groupId>xstream</groupId>
+      <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
-      <version>${xstream-xstream-version}</version>
+      <version>${com.thoughtworks.xstream-xstream-version}</version>
       <type>jar</type>
     </dependency>
     <dependency>
