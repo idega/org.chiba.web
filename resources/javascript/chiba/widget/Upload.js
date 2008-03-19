@@ -53,13 +53,7 @@ dojo.widget.defineWidget(
                 this.inputNode.disabled = true;
             }
             else {
-                var action = confirm("Really upload ?");
-                if (action) {
                     this._submitFile(this.inputNode);
-                }
-                else {
-                    this.inputNode.value = "";
-                }
             }
         },
         updateProgress: function (value) {
@@ -120,12 +114,13 @@ dojo.widget.defineWidget(
             Effect.BlindDown(this.xformsId + "-progress");
 
             var path = this.inputNode.value;
+            
             var filename = path.substring(path.lastIndexOf("/") + 1);
 			console.log('Here: ' + filename);
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
-            progressUpdate = setInterval("Flux.fetchProgress(updateUI,'" + this.xformsId + "','" + filename + "','" + sessionKey + "')", 1000);
+            progressUpdate = setInterval("Flux.fetchProgress('" + this.xformsId + "','" + filename + "','" + sessionKey + "', updateUI)", 1000);
             console.log('Here 2: ' + progressUpdate);
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();

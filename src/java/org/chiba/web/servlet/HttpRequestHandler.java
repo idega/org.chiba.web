@@ -113,19 +113,25 @@ import org.chiba.xml.xforms.ChibaBean;
 import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.exception.XFormsException;
 
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.servlet.filter.IWBundleResourceFilter;
+
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Default implementation for handling HTTP requests.
  *
  * @author Ulrich Nicolas Liss&eacute;
- * @version $Id: HttpRequestHandler.java,v 1.2 2007/04/20 18:39:49 civilis Exp $
+ * @version $Id: HttpRequestHandler.java,v 1.3 2008/03/19 11:40:19 arunas Exp $
  */
 public class HttpRequestHandler {
     private static final Logger LOGGER = Logger.getLogger(HttpRequestHandler.class);
@@ -143,35 +149,41 @@ public class HttpRequestHandler {
     public static final String REMOVE_UPLOAD_PREFIX_DEFAULT = "ru_";
     public static final String DAYTIMEDURATION_PREFIX_DEFAULT = "dtd_";
     public static final String DATETIME_PREFIX_DEFAULT = "dt_";
+//    test directory we have to change
+ //   public static final String UPLOAD_FILE = "webapp/files/";
     
     // todo: remove
     private String removeUploadPrefix;
 
-    private ChibaBean chibaBean;
-    private String uploadRoot;
+    protected ChibaBean chibaBean;
+    private String uploadRoot;//IWMainApplication.getIWMainApplication(FacesContext.getCurrentInstance()).getApplicationRealPath()+"/idegaweb/org.chiba.web.bundle/uploads/";;
     private String sessionKey;
     private String dataPrefix;
     private String selectorPrefix;
     private String triggerPrefix;
     private String dayTimeDurationPrefix;
     private String dateTimePrefix;
+    
 
     //temporary storage for composite controls
     private HashMap dayTimeDurationValues = new HashMap();
     private HashMap dateTimeValues = new HashMap();
-    
+    //protected 
+   
+     
     
     public HttpRequestHandler(ChibaBean chibaBean) {
         this.chibaBean = chibaBean;
     }
 
     public void setUploadRoot(String uploadRoot) {
-        this.uploadRoot = uploadRoot;
+	this.uploadRoot = uploadRoot;
     }
 
     public void setSessionKey(String sessionKey) {
         this.sessionKey = sessionKey;                                                                                               
     }
+    
 
     /**
      * Handles a HTTP request.
@@ -318,6 +330,7 @@ public class HttpRequestHandler {
         }
     }
 
+    
     /**
      * Parses a <code>multipart/form-data</code>-encoded request parameter and
      * stores it in the parameter map.
@@ -350,7 +363,6 @@ public class HttpRequestHandler {
         if (uploads == null) {
             uploads = new HashMap();
         }
-
         String id = name.substring(getDataPrefix().length());
         uploads.put(id, item);
         return uploads;
@@ -520,6 +532,7 @@ public class HttpRequestHandler {
 
         try {
             // update repeat indices
+        	
             Iterator iterator = uploads.keySet().iterator();
             String id;
             FileItem item;
@@ -527,25 +540,22 @@ public class HttpRequestHandler {
             while (iterator.hasNext()) {
                 id = (String) iterator.next();
                 item = (FileItem) uploads.get(id);
-
+                
                 if (item.getSize() > 0) {
                     if (this.chibaBean.hasControlType(id, "anyURI")) {
-                        String localPath = new StringBuffer()
-                                .append(System.currentTimeMillis())
-                                .append('/')
-                                .append(item.getName())
-                                .toString();
-                        File localFile = new File(this.uploadRoot, localPath);
+                    	
+                    	String localPath = new StringBuffer().append('/').append(id).toString();
+                    	File localFile = new File(uploadRoot+this.sessionKey, localPath);
+                    
                         localFile.getParentFile().mkdirs();
                         item.write(localFile);
-
                         // todo: externalize file handling and uri generation
                         data = localFile.toURI().toString().getBytes("UTF-8");
                     }
                     else {
                         data = item.get();
                     }
-
+                    
                     this.chibaBean.updateControlValue(id, item.getContentType(), item.getName(), data);
                     
                     // After the value has been set and the RRR took place, create new UploadInfo with status set to 'done'
@@ -560,6 +570,7 @@ public class HttpRequestHandler {
 
                 item.delete();
             }
+           
         }
         catch (Exception e) {
             throw new XFormsException(e);
@@ -964,6 +975,7 @@ public class HttpRequestHandler {
     		return new String();
     	}
     }
+
 }
 
 // end of class

@@ -118,6 +118,8 @@
 
 package org.chiba.web;
 
+import javax.xml.transform.TransformerException;
+
 import org.apache.log4j.Logger;
 import org.chiba.adapter.AbstractChibaAdapter;
 import org.chiba.adapter.ChibaEvent;
@@ -134,15 +136,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
-
-import javax.xml.transform.TransformerException;
-
 /**
  * Superclass for Adapters used in web applications. Does minimal event listening on the processor and provides
  * a common base to build webadapers.
  *
  * @author Joern Turner
- * @version $Id: WebAdapter.java,v 1.2 2007/04/20 18:40:16 civilis Exp $
+ * @version $Id: WebAdapter.java,v 1.3 2008/03/19 11:40:19 arunas Exp $
  * @see org.chiba.web.flux.FluxAdapter
  * @see org.chiba.web.servlet.ServletAdapter
  *
