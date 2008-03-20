@@ -30,7 +30,7 @@ import com.idega.slide.business.IWSlideService;
  * <p/>
  * 
  * @author Gediminas Paulauskas
- * @version $Id: WebdavSubmissionHandler.java,v 1.3 2008/03/19 11:40:19 arunas Exp $
+ * @version $Id: WebdavSubmissionHandler.java,v 1.4 2008/03/20 13:01:36 arunas Exp $
  */
 public class WebdavSubmissionHandler extends AbstractConnector implements SubmissionHandler {
     
@@ -59,10 +59,10 @@ public class WebdavSubmissionHandler extends AbstractConnector implements Submis
             System.out.println("submit: ");
             
             DOMUtil.prettyPrintDOM(instance);
-        
-            FileUploads fileUpload = new FileUploads();
-            fileUpload.getFiles("File_upload_fbc_6", instance);
-            fileUpload.cleanup(instance);
+         
+//            FileUploads fileUpload = new FileUploads();   
+//            fileUpload.getFiles("Add_One_fbc_5", instance);
+//            fileUpload.cleanup(instance);
                    
             try {
                 String form_id = getFormIdFromSubmissionInstance(instance);

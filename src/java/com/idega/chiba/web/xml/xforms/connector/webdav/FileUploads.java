@@ -19,9 +19,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/03/19 11:40:19 $ by $Author: arunas $
+ * Last modified: $Date: 2008/03/20 13:01:36 $ by $Author: arunas $
  */
  
 public class FileUploads extends FileUploadManager {
@@ -31,7 +31,7 @@ public class FileUploads extends FileUploadManager {
     private static final String FILENAME = "filename";
     private static final String VARIABLE_ELEMENT = "./descendant::node()[name(.) = $elementName]";
     private static final String ELEMENT_NAME = "elementName";
-    private static final String ENTRY = ".//entry[@filename]";
+    private static final String VARIABLE = ".//entry[@filename]";
 
     public void cleanup(Node instance) {
 
@@ -48,28 +48,28 @@ public class FileUploads extends FileUploadManager {
 
 	List<FileItem> fileList = new ArrayList<FileItem>();
 
-	Element node = getFirstElement(identifier, instance);
+	Element node = getUploadsElement(identifier, instance);
 
 	XPathUtil util = new XPathUtil(ENTRIES);
-	NodeList entry = util.getNodeset(node);
+	NodeList entries = util.getNodeset(node);
 
-	for (int i = 0; i < entry.getLength(); i++) {
+	for (int i = 0; i < entries.getLength(); i++) {
 
-	    Element entryElment = (Element) entry.item(i);
+	    Element entryElment = (Element) entries.item(i);
 
 	    List<String> valuesFromString = StringUtil.getValuesFromString(entryElment.getTextContent(), CoreConstants.SLASH);
 	    int listSize = valuesFromString.size();
 	    String path = UPLOADS_PATH + valuesFromString.get(listSize - 2) + CoreConstants.SLASH + valuesFromString.get(listSize - 1);
 
 	    File file = new File(path);
-	    FileItem filedata = new FileItem(entryElment.getAttribute(FILENAME), file);
-	    fileList.add(filedata);
+	    FileItem fileItems = new FileItem(entryElment.getAttribute(FILENAME), file);
+	    fileList.add(fileItems);
 	}
-	// impl by abstr
+	
 	return fileList;
     }
 
-    protected Element getFirstElement(String identifier, Node instance) {
+    protected Element getUploadsElement(String identifier, Node instance) {
 
 	XPathUtil util = new XPathUtil(VARIABLE_ELEMENT);
 	util.setVariable(ELEMENT_NAME, identifier);
@@ -79,7 +79,7 @@ public class FileUploads extends FileUploadManager {
 
     protected HashSet<String> getFilesFolders(Node instance) {
 
-	XPathUtil util = new XPathUtil(ENTRY);
+	XPathUtil util = new XPathUtil(VARIABLE);
 	Element entry = (Element) util.getNode(instance);
 
 	HashSet<String> filesFolders = new HashSet<String>();
