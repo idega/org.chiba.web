@@ -6,7 +6,6 @@
 */
 
 dojo.provide("chiba.widget.Boolean");
-
 dojo.require("dojo.widget.*");
 dojo.require("dojo.event");
 dojo.require("dojo.html.*");
@@ -38,22 +37,11 @@ dojo.widget.defineWidget(
             //this is a bad hack - the initial prototype of a repeat simply contains a input type="text"
             //with a value which must be mapped to the checkbox checked state
 
-/*
-            if(sourceNode.value=="false"){
-                this.checked=false;
-                this.domNode.checked=this.checked;
-
-            else{
-                this.domNode.checked = this.checked;
-            }
-
-            }*/
-
             if(sourceNode.value=="false"){
                 this.checked=false;
                 this.domNode.removeAttribute("checked");
-
             }
+
             else{
                 this.domNode.setAttribute("checked", this.checked);
             }
@@ -61,28 +49,30 @@ dojo.widget.defineWidget(
             if(this.xfreadonly == "true"){
                 this.domNode.disabled = true;
             }
+
             if(this.xfincremental == "true"){
                 dojo.event.connect(this.domNode, "onclick", this, "_updateControl");
+
             }else{
                 dojo.event.connect(this.domNode, "onblur", this, "_updateControl");
             }
+
         },
+        
         postCreate: function(){
-          this.domNode.checked = this.checked;  
+          this.domNode.checked = this.checked;
         },
         _updateControl: function(){
            if(this.xfreadonly != "true"){
-                this.checked = !this.checked;
-
-               if(this.checked=="false"){
-                   this.domNode.removeAttribute("checked");
-               }
-               else{
+               if(!this.domNode.checked == true){
+                    this.checked = false;
+                    this.domNode.removeAttribute("checked");
+               }else {
+                   this.checked = true;
                    this.domNode.setAttribute("checked", this.checked);
                }
+               dojo.debug("Boolean._updateControl > checked: " + this.checked );
 
-                dojo.debug("Boolean._updateControl > checked: " + this.checked );
-               
                 DWREngine.setOrdered(true);
                 DWREngine.setErrorHandler(handleExceptions);
                 var sessionKey = document.getElementById("chibaSessionKey").value;

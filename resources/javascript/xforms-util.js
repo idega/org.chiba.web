@@ -126,6 +126,11 @@ function _replaceClass (element, current, update) {
     return false;
 }
 
+function getClassComponent(className, position){
+    var components = className.split(" ");
+    return components[position];
+}
+
 function getXFormsControlValue(xformsControl){
     var widget = $(xformsControl.id + "-value");
     dojo.debug("getXFormsControlValue: xfromsControl: " + widget);

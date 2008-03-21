@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xforms="http://www.w3.org/2002/xforms"
@@ -81,6 +81,7 @@
 
     <!-- ### the CSS stylesheet to use ### -->
     <xsl:variable name="default-css" select="concat($contextroot,$CSSPath,'xforms.css')"/>
+    <xsl:variable name="chiba-css"  select="concat($contextroot,$CSSPath,'chiba-theme.css')"/>
 
     <xsl:variable name="default-hint-appearance" select="'bubble'"/>
 
@@ -125,6 +126,7 @@
             <!-- include Chiba default stylesheet -->
             <!-- Include removed as xforms.css is included in the bundlestarter -->
             <!--<link rel="stylesheet" type="text/css" href="{$default-css}"/>-->
+            <!--<link rel="stylesheet" type="text/css" href="{$chiba-css}"/>-->
 
             <!-- copy user-defined stylesheets and inline styles -->
             <xsl:call-template name="getLinkAndStyle"/>
@@ -160,16 +162,12 @@
 					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
                 </script>
                 <xsl:text>
-</xsl:text>
-                <xsl:choose>
-                    <!-- in debugging mode all script will be available uncompressed and in seperate files -->
-                    <xsl:when test="$js-compressed='false'">
-                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
-                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
-                        <!-- ****************** This block is for uncompressed usage of Chiba **************** -->
-                        <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
-                        
-                        <!-- mootools lib -->
+</xsl:text>               
+
+
+                <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
+                
+                <!-- mootools lib -->
                         <script type="text/javascript">
                             IWCORE.includeScript("<xsl:value-of select="$uriToMootoolsLib" />");
                         </script>
@@ -201,6 +199,14 @@
                         <xsl:text>
 </xsl:text>-->
 
+                <!--<script type="text/javascript" src="{concat($contextroot,$scriptPath,'prototype.js')}">&#160;</script>
+                <xsl:text>
+</xsl:text>-->
+                <!-- scriptaculous lib -->
+                <!--<script type="text/javascript" src="{concat($contextroot,$scriptPath,'scriptaculous/src/scriptaculous.js')}">&#160;</script>
+                <xsl:text>
+</xsl:text>-->
+
                         <!-- for DWR AJAX -->
                         <script type="text/javascript">
 							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
@@ -219,28 +225,14 @@
                 		</script>
                         <xsl:text>
 </xsl:text>
-                        <!-- ############################# Debug section ################################ -->
-
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
-                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
-                        <!-- ************ This block is for compressed usage of Chiba - still experimental !******* -->
-                        <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
-                        <!-- dojo lib -->
-                        <script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
-                		</script>
-                        <xsl:text>
-</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
+                <!-- ############################# Debug section ################################ -->
 
                 <script type="text/javascript">
                     <!--dojo.setModulePrefix("chiba","chiba");-->
                     IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />");
                 </script><xsl:text>
 </xsl:text>
+
                 <!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
                 <xsl:if test="$uses-html-textarea">
 	                <script type="text/javascript">
@@ -394,12 +386,14 @@
             </xsl:attribute>
             <xsl:attribute name="action">
                 <xsl:choose>
-                    <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
+                	<xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
+                    <!--<xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>-->
                     <xsl:otherwise>
                         <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
+            <xsl:attribute name="onSubmit">return submitFunction();</xsl:attribute>
             <xsl:attribute name="method">POST</xsl:attribute>
             <xsl:attribute name="enctype">application/x-www-form-urlencoded</xsl:attribute>
             <xsl:if test="$uses-upload">
@@ -426,12 +420,14 @@
             </xsl:attribute>
             <xsl:attribute name="action">
                 <xsl:choose>
-                    <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
+                    <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>                    
+                    <!--<xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>-->
                     <xsl:otherwise>
                         <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
+            <xsl:attribute name="onSubmit">return submitFunction();</xsl:attribute>
             <xsl:attribute name="method">POST</xsl:attribute>
             <xsl:attribute name="enctype">application/x-www-form-urlencoded</xsl:attribute>
             <xsl:if test="$uses-upload">
@@ -457,7 +453,21 @@
 
     <xsl:template match="xhtml:span">
         <span>
-            <xsl:copy-of select="@*"/>
+            <xsl:if test="@class">
+                <xsl:attribute name="class">
+                    <xsl:value-of select="@class"/>
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@id">
+                <xsl:attribute name="id">
+                    <xsl:value-of select="@id"/>
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@style">
+                <xsl:attribute name="style">
+                    <xsl:value-of select="@style"/>
+                </xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates/>
         </span>
     </xsl:template>

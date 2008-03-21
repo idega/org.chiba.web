@@ -24,11 +24,12 @@ import org.xml.sax.SAXException;
 
 import com.idega.idegaweb.IWMainApplication;
 
+
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2008/03/21 15:57:11 $ by $Author: anton $
  */
 public class XsltURIResolverUtil {
 

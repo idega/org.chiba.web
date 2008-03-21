@@ -120,7 +120,7 @@ dojo.widget.defineWidget(
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
-            progressUpdate = setInterval("Flux.fetchProgress('" + this.xformsId + "','" + filename + "','" + sessionKey + "', updateUI)", 1000);
+            progressUpdate = setInterval("Flux.fetchProgress('" + this.xformsId + "','" + filename + "','" + sessionKey + ", updateUI')", 1000);
             console.log('Here 2: ' + progressUpdate);
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
@@ -129,5 +129,3 @@ dojo.widget.defineWidget(
         }
     }
 );
-
-

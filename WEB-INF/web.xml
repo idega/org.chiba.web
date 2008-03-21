@@ -1,23 +1,146 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
-	version="2.4">
-    
+<web-app  xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+
+    <context-param>
+		<param-name>chiba.configfile</param-name>
+		<param-value>idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml</param-value>
+	</context-param>
+
+<!--
+	This is an example mapping for ChibaServlet that can be used in applications that like to
+	use a Servlet to process XForms. This was the standard approach up to version 2.1 which introduced
+	the XFormsFilter.
     <servlet>
-        <servlet-name>FluxHelper</servlet-name>
-        <servlet-class>org.chiba.web.servlet.FluxHelperServlet</servlet-class>
+        <servlet-name>XFormsServlet</servlet-name>
+        <servlet-class>org.chiba.web.servlet.ChibaServlet</servlet-class>
+
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+-->
+
+	<!--  XForms Filter 
+	<filter>
+		<filter-name>XFormsFilter</filter-name>                                                                                                                           	
+		<filter-class>com.idega.chiba.web.xml.xslt.impl.XFormsFilter</filter-class>
+        <init-param>
+            <param-name>scripted</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>-->
+
+	<!--  XForms filter mapping
+		maps the XFormsFilter to a specified Servlet or url-pattern. This example uses a
+		url-pattern that matches all document under the forms directory. Other examples would be:
+		- <url-pattern>*.xhtml</url-pattern> to match all xhtml files
+		- <servlet-name>XFormsRequest</servlet-name> to match all requests to Servlet XFormsRequest
+	
+	<filter-mapping>
+		<filter-name>XFormsFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	-->
+
+<!--
+    alternative mapping if binding the Filter to a servlet.
+	<filter-mapping>
+		<filter-name>XFormsFilter</filter-name>
+		<servlet-name>XFormsRequest</servlet-name>
+	</filter-mapping>
+-->
+<!--  
+    <servlet>
+        <servlet-name>Flux</servlet-name>
+        <servlet-class>uk.ltd.getahead.dwr.DWRServlet</servlet-class>
+
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        -->
+
+<!--
+		This entry may be uncommented to use relative paths in the served html-forms. Remember change the
+		chiba.forms.uri.relative parameter of XFormsServlet as well.
+        <init-param>
+            <param-name>overridePath</param-name>
+            <param-value>Flux</param-value>
+        </init-param>
+-->
+<!--  
     </servlet>
+    -->
+
+<!--
+    This is an example servlet that can be used in conjunction with XFormsFilter by
+    attaching the filter to this Servlet. This only parses the requested form document
+    and passes the DOM along as a request attribute that will be picked up by the XFormsFilter.
+	<servlet>
+		<servlet-name>XFormsRequest</servlet-name>
+		<servlet-class>org.chiba.web.servlet.XFormsRequestServlet</servlet-class>
+	</servlet>
+-->
+
+	<servlet>
+        <servlet-name>FluxHelper</servlet-name>
+        <servlet-class>org.chiba.web.flux.FluxHelperServlet</servlet-class>
+    </servlet>
+
+<!--  
+    <servlet>
+        <servlet-name>PlainHtml</servlet-name>
+        <servlet-class>org.chiba.web.servlet.PlainHtmlServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ViewServlet</servlet-name>
+        <servlet-class>org.chiba.web.servlet.ViewServlet</servlet-class>
+    </servlet>
+-->
 
     <servlet>
         <servlet-name>SubmissionResponse</servlet-name>
         <servlet-class>org.chiba.web.servlet.SubmissionResponseServlet</servlet-class>
     </servlet>
 
+<!--  
+	<servlet-mapping>
+        <servlet-name>Flux</servlet-name>
+        <url-pattern>/Flux/*</url-pattern>
+    </servlet-mapping>
+    -->
+
     <servlet-mapping>
         <servlet-name>FluxHelper</servlet-name>
         <url-pattern>/FluxHelper/*</url-pattern>
     </servlet-mapping>
+
+<!--
+	Umcomment the respective entries when using ChibaServlet or XFormsRequestServlet.
+	
+    <servlet-mapping>
+        <servlet-name>XFormsServlet</servlet-name>
+        <url-pattern>/XFormsServlet</url-pattern>
+    </servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>XFormsRequest</servlet-name>
+		<url-pattern>/xfrequest</url-pattern>
+	</servlet-mapping>
+-->
+<!--  
+	<servlet-mapping>
+        <servlet-name>PlainHtml</servlet-name>
+        <url-pattern>/PlainHtml/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>ViewServlet</servlet-name>
+        <url-pattern>/view</url-pattern>
+    </servlet-mapping>
+    -->
 
     <servlet-mapping>
         <servlet-name>SubmissionResponse</servlet-name>

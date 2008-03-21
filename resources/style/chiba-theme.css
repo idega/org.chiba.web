@@ -1,0 +1,298 @@
+/* ***************************************************************************** */
+/* ************** CSS STYLESHEET FOR STYLING XFORMS INSIDE OF HTML ************* */
+/* this stylesheet uses table layout which may not be supported on all browsers. */
+/* ***************************************************************************** */
+form{
+    margin-top:23px;
+}
+#chiba-logo{
+    display:block;
+    position:relative;
+    text-align:right;
+}
+#copyright{
+    margin-top:3px;
+    position:relative;
+    text-align:right;
+    font-size:0.8em;
+}
+#loading{
+    top:2px;
+    right:5px;
+    padding:3px;
+}
+
+.messagePane{
+    border:solid;
+    border-width:1px;
+    background:lightyellow;
+    left:20px;
+    top:20px;
+    padding:10px;
+    
+}
+
+#legend{padding:3px;}
+
+a.link{color:#444444;}
+a.visited{color:#444444;}
+a.active{color:#444444;}
+
+*{font-family:sans-serif;
+  font-size:10pt;
+}
+
+
+/* #################### GROUP STYLES #################### */
+/* xf:groups will be rendered as fieldsets and therefore
+are styleable via this matcher or more specifically by their
+appearance class 'minimal-group|compact-group|full-group'. */
+* > fieldset {
+    border: thin solid rgb( 188, 216, 132 );
+    background: #F0F4EA;
+    margin-bottom:5px;
+}
+/* IE */
+fieldset{ margin-bottom:5px; }
+
+.group div{ margin-top:3px;}
+
+.group label{ width:10em;}
+
+.minimal-group{ padding-top:5px;
+}
+.minimal-group div{ margin-right:3px;}
+
+.compact-group div{ margin-top:3px;}
+
+.compact-group div .value{ margin-right:3px;}
+
+.full-group div{ margin-top:3px;}
+
+.full-group label{ width:10em;}
+
+
+/*********** used to render group labels ***********/
+fieldset > legend {
+    padding: 3px;
+    border: thin solid rgb( 188, 216, 132 );
+    background: #F0F4EA;
+    color: rgb( 85, 96, 63 );
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+/* IE */
+fieldset legend{
+    padding: 3px;
+    border: thin solid rgb( 188, 216, 132 );
+    color: rgb( 85, 96, 63 );
+    margin-top:5px;
+    margin-bottom:5px;
+}
+
+/*********** use to render group labels ***********/
+.legend{
+    border:thin groove;
+    color:#888888;
+    text-align:center;
+    }
+
+/*********** nested group ***********/
+fieldset > fieldset {
+    margin:5px;
+    background: rgb( 234, 241, 220 );
+    padding-top:0px;
+}
+
+/* IE */
+fieldset fieldset{
+    margin:5px;
+}
+
+/*********** nested nested group ***********/
+fieldset > fieldset > fieldset {
+    margin:5px;
+    display:block;
+    background: #F0F4EA;
+}
+
+
+
+/* #################### GENERAL XFORMS MIP AND COMMON-CHILD STYLES #################### */
+.alert {
+    border:thin solid #A42322;
+    background-color:#DAE9BB;
+    color:#A42322;
+    padding:2px;
+    height:14px;
+    margin-left:2px;
+    font-weight:bold;}
+
+.invalid > .alert{
+    border:thin solid #A42322;
+    background-color:#DAE9BB;
+    color:#A42322;
+    padding:2px;
+    height:14px;
+    margin-left:2px;
+    font-weight:bold;}
+
+.invalid .value {
+    color:white;
+    font-style:italic;
+    background:#A42322;
+}
+
+/*********** styles character used for signaling 'required' (normally '*') ***********/
+.required-symbol{
+    color:#A42322;
+    font-size:larger;
+}
+
+
+.repeat .label .required-symbol{
+    color:red;
+    display:inline;
+}
+
+.optional .required-symbol{
+    display:none;
+}
+
+/*.enabled {
+}*/
+
+
+.label{
+    color:rgb(85, 96, 63);
+}
+
+.help-text{
+    width:300px;
+    border:thin solid gray;
+    background:azure;
+    padding:10px;
+}
+.help-symbol{
+    margin-left:3px;
+}
+
+/* #################### Repeat styles #################### */
+
+
+.repeat-index {
+    background: #BCD884;
+}
+
+.repeat-index-pre {
+    background: #DAE9BB;
+}
+
+/* #################### SWITCH STYLES #################### */
+
+.full-switch {
+    border-spacing: 0px;
+}
+
+.full-switch-body {
+    background: #F0F4EA;
+    border: 1px solid black;
+    border-top: none;
+}
+
+.full-switch .active-tab {
+    background: #F0F4EA;
+    border: 1px solid rgb(85, 96, 63);
+    border-right: none;
+    border-bottom: #F0F4EA;
+    padding: 3px 5px 3px 5px;
+    width: 10%;
+}
+
+.full-switch .active-tab input {
+    background: #F0F4EA;
+    border: none;
+}
+
+.full-switch .inactive-tab {
+    background: rgb(188, 216, 132);
+    border: 1px solid rgb(85, 96, 63);
+    border-right: none;
+    padding: 3px 5px 3px 5px;
+    width: 10%;
+}
+
+.full-switch .inactive-tab input {
+    background: rgb( 188, 216, 132 );
+    border: none;
+}
+
+.full-switch .filler-tab {
+    border: 1px solid rgb( 85, 96, 63 );
+    border-top: none;
+    border-right: none;
+    width: 90%;
+}
+
+
+/* #################### CONTROL STYLES #################### */
+
+.textarea > .value{
+    width:380px;
+    height:100px;
+    }
+
+.refresh-button{
+    background:rgb(188, 216, 132);
+    border:thin solid gray;
+    padding:2px;
+    margin-left:10px;
+}
+
+
+
+/*********** Range specific styles ***********/
+.rangelabel td{
+    background:transparent;
+    text-align:center;
+    font-size:8pt;
+}
+
+.rangesteps{
+    height:25px;
+    width:6px;
+}
+.rangesteps td {
+    background: rgb( 188, 216, 132 );
+}
+
+.rangesteps td a:hover img {
+    background: rgb( 218, 233, 187 );
+    width:6px;
+    height:25px;
+}
+.rangevalue * {
+    background:#564;
+}
+.rangesteps .rangevalue a:hover *{
+    background:#564;
+}
+/* IE */
+.rangesteps .rangevalue *{
+    background:#564;
+}
+
+.progressbar .border{
+    background: url(../images/progress-remainder.gif) repeat-x;
+    margin-top:1px;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    width: 100%;
+    height: 18px;
+}
+.progressbar .background {
+  background: url(../images/progress-bar.gif) repeat-x;
+  height: 18px;
+  width: 0%;
+}

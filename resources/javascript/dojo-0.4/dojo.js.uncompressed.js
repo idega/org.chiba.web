@@ -10,7 +10,7 @@ if(typeof dojo == "undefined"){
 * TODOC: should the copyright be changed to Dojo Foundation?
 * @license Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
 *
-* $Id: dojo.js.uncompressed.js,v 1.1 2007/04/20 18:40:08 civilis Exp $
+* $Id: dojo.js.uncompressed.js,v 1.2 2008/03/21 15:57:21 anton Exp $
 */
 
 // TODOC: HOW TO DOC THE BELOW?
@@ -103,7 +103,7 @@ dojo.locale  = djConfig.locale;
 dojo.version = {
 	// summary: version number of this instance of dojo.
 	major: 0, minor: 4, patch: 0, flag: "",
-	revision: Number("$Rev: 6258 $".match(/[0-9]+/)[0]),
+	revision: Number("$Rev: 2488 $".match(/[0-9]+/)[0]),
 	toString: function(){
 		with(dojo.version){
 			return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String

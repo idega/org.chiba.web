@@ -4,13 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import javax.xml.transform.Source;
+
+import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xslt.impl.Resource;
 
 /**
  * A http resource.
  *
  * @author Vytautas Čivilis
- * @version $Id: HttpResource.java,v 1.1 2007/05/29 17:10:21 civilis Exp $
+ * @version $Id: HttpResource.java,v 1.2 2008/03/21 15:56:48 anton Exp $
  */
 public class HttpResource implements Resource {
     private URL url;
@@ -35,7 +38,16 @@ public class HttpResource implements Resource {
      * Returns the input stream of this resource.
      * @return the input stream of this resource.
      */
-    public InputStream getInputStream() throws IOException {
-        return url.openStream();
+    public InputStream getInputStream() {
+        try {
+			return url.openStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
     }
+
+	public Source getSource() throws XFormsException {
+		return null;
+	}
 }

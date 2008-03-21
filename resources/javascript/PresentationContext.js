@@ -13,6 +13,7 @@ PresentationContext = function() {
 PresentationContext.CHIBA_PSEUDO_ITEM = "chiba-pseudo-item";
 PresentationContext.PROTOTYPE_CLONES = new Array();
 PresentationContext.GENERATED_IDS = new Array();
+PresentationContext.COUNTER = 0;
 
 // Event handler
 
@@ -33,10 +34,19 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         alert(message);
     }
     else {
+        var ni = dojo.byId('messagePane');
+        if(PresentationContext.COUNTER > 0){ dojo.dom.removeChildren(ni); }
+        var newdiv = document.createElement('div');
+        PresentationContext.COUNTER++;
+        var divIdName = "messagePane-" + PresentationContext.COUNTER;
+        newdiv.setAttribute('id',divIdName);
+        newdiv.setAttribute('style',"display:none");
+        newdiv.innerHTML = 'message';
+        ni.appendChild(newdiv);
         dojo.require("dojo.widget.Toaster");
         var params = { type:"Chiba",showDelay: 5000, positionDirection: "bl-up", messageTopic: message};
 
-        dojo.widget.createWidget("Toaster",params, dojo.byId("messagePane"));
+        dojo.widget.createWidget("Toaster",params, dojo.byId(divIdName));
         dojo.event.topic.publish(message, message);
     }
 };
@@ -44,111 +54,243 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
 /**
  * Handles chiba-replace-all.
  */
-PresentationContext.prototype.handleReplaceAll = function() {
+PresentationContext.prototype.handleReplaceAll = function(webcontext) {
     dojo.debug("PresentationContext.handleReplaceAll: ?");
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    window.open("SubmissionResponse?sessionKey="+sessionKey, "_self");
+    window.open(webcontext + "/SubmissionResponse?sessionKey="+sessionKey, "_self");
 };
 
 /**
  * Handles chiba-state-changed.
  */
-PresentationContext.prototype.handleStateChanged = function(targetId, targetName, valid, readonly, required, enabled, value,type) {
-    dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId +  "', targetName='" + targetName + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
+PresentationContext.prototype.handleStateChanged = function(targetId, targetName, valid, readonly, required, enabled, value, type) {
+  dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId + "', targetName='" + targetName + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
 
-    var target = document.getElementById(targetId);
-    if (target == null) {
-        alert("target '" + targetId + "' not found");
-        return;
-    }
+  var target = document.getElementById(targetId);
+  if (target == null) {
+    alert("target '" + targetId + "' not found");
+    return;
+  }
 
-    if (value != null) {
-        PresentationContext._setControlValue(targetId, value);
-//        var tmpColor = dojo.byId(targetId + "-value").style.backgroundColor;
-//        new Effect.Highlight(dojo.byId(targetId + "-value"),{restorecolor:tmpColor});
-    }
+  if (value != null) {
+    PresentationContext._setControlValue(targetId, value);
+    //        var tmpColor = dojo.byId(targetId + "-value").style.backgroundColor;
+    //        new Effect.Highlight(dojo.byId(targetId + "-value"),{restorecolor:tmpColor});
+  }
 
-    if (valid != null) {
-        PresentationContext._setValidProperty(target, eval(valid));
-    }
-    if (readonly != null) {
-        PresentationContext._setReadonlyProperty(target, eval(readonly), target);
-    }
-    if (required != null) {
-        PresentationContext._setRequiredProperty(target, eval(required));
-    }
-    if (enabled != null) {
-        PresentationContext._setEnabledProperty(target, eval(enabled));
-    }
-    if(type != null){
-        //cutting any prefixes if present cause it can't be known beforehand which prefix is actually used for the types
-        if(type.indexOf(":") != -1){
-            type = type.substring(type.indexOf(":") +1,type.length);
+  if (valid != null) {
+    PresentationContext._setValidProperty(target, eval(valid));
+  }
+  if (readonly != null) {
+    PresentationContext._setReadonlyProperty(target, eval(readonly), target);
+  }
+  if (required != null) {
+    PresentationContext._setRequiredProperty(target, eval(required));
+  }
+  if (enabled != null) {
+    PresentationContext._setEnabledProperty(target, eval(enabled));
+  }
+  //    if(type != null){
+  //cutting any prefixes if present cause it can't be known beforehand which prefix is actually used for the types
+  if (type != null && type.indexOf(":") != -1) {
+    type = type.substring(type.indexOf(":") + 1, type.length);
+  }
+  var tmpControl = dojo.widget.getWidgetById(targetId + "-value");
+
+  //    if(type ==null && getClassComponent(target.className, 1) != "string"){
+  //        type="string";
+  //    }
+  if(targetName == "output" && type == undefined){
+      type = "string";
+  }
+  if (!tmpControl) {
+    dojo.debug("PresentationContext.prototype.handleStateChanged: Create new " + type + " widget");
+      switch (type) {
+          case "boolean":
+              dojo.require("chiba.widget.Boolean");
+              if (value != null) {
+                  if (value == "false") {
+                      value = "";
+                  }
+                  var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
+                  {
+                      widgetId:targetId + "-value",
+                      checked:value,
+                      name:"d_" + targetId,
+                      title:dojo.byId(targetId).title
+                  },
+                          dojo.byId(targetId + "-value"));
+              } else {
+                  var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
+                  {
+                      widgetId:targetId + "-value",
+                      name:"d_" + targetId,
+                      title:dojo.byId(targetId).title
+                  },
+                          dojo.byId(targetId + "-value"));
+              }
+              break;
+
+          case "anyURI":
+              if (targetName == 'output') {
+                  dojo.require("chiba.widget.Link");
+
+                  var linkWidget = dojo.widget.createWidget("Link",
+                  {
+                      id:targetId + "-value",
+                      href:value
+                  },
+                          dojo.byId(targetId + "-value"));
+                  break;
+              }
+          case "hexBinary":
+          case "base64Binary":
+              if (targetName == 'output') break;
+
+              dojo.require("chiba.widget.Upload");
+
+              var uploadWidget = dojo.widget.createWidget("chiba:Upload",
+              {
+                  id:targetId + "-value",
+                  widgetId:targetId + "-value",
+                  css:type,
+                  name:"d_" + targetId,
+                  title:dojo.byId(targetId + "-value").title
+              },
+                      dojo.byId(targetId + "-value"));
+              break;
+
+          case "date":
+          case "time":
+          case "dateTime":
+              dojo.require("chiba.widget.DropdownDatePicker");
+
+              var dateWidget = dojo.widget.createWidget("chiba:DropdownDatePicker",
+              {
+                  id:targetId + "-value",
+                  widgetId:targetId + "-value",
+                  name:"d_" + targetId,
+                  value:value,
+                  datatype:"date"
+              },
+                      dojo.byId(targetId + "-value"));
+
+              break;
+
+          default:
+          //other types...
+              dojo.debug("PresentationContext.prototype.handleStateChanged: Unknown type for control:'", type, "'", this, dojo.byId(targetId));
+              break;
+
+
+      }
+
+  } else if (getClassComponent(target.className, 1) != type) {
+    dojo.debug("PresentationContext.prototype.handleStateChanged: Destroy existing widget and create new " + type + " widget");
+    tmpControl.destroy();
+    switch (type) {
+      case "boolean":
+        dojo.require("chiba.widget.Boolean");
+        if (value != null) {
+          if (value == "false") {
+            value = "";
+          }
+          dojo.debug("PresentationContext.js: value=" + value);
+          var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
+          {
+            widgetId:targetId + "-value",
+            checked:value,
+            name:"d_" + targetId,
+            title:dojo.byId(targetId).title
+          },
+              dojo.byId(targetId), "last");
+        } else {
+          dojo.debug("PresentationContext: value=null");
+          var booleanWidget = dojo.widget.createAnewWidget("chiba:Boolean",
+          {
+            widgetId:targetId + "-value",
+            name:"d_" + targetId,
+            title:dojo.byId(targetId).title
+          },
+              dojo.byId(targetId), "last");
         }
-        dojo.debug("Type: " + type);
-        var tmpControl = dojo.widget.getWidgetById(targetId + "-value");
-        if (!tmpControl) {
-            if (type == "boolean") {
-                if (value != null) {
+        break;
 
-                    var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
-                        {
-                            widgetId:targetId + "-value",
-                            checked:value,
-                            name:"d_"+targetId,
-                            title:dojo.byId(targetId + "-value").title
-                        },
-                        dojo.byId(targetId + "-value"));
-                } else {
+      case "anyURI":
+        if (targetName == 'output') {
+          dojo.require("chiba.widget.Link");
 
-                    var booleanWidget = dojo.widget.createWidget("chiba:Boolean",
-                        {
-                             widgetId:targetId + "-value",
-                             name:"d_"+targetId,
-                             title:dojo.byId(targetId + "-value").title
-                        },
-                        dojo.byId(targetId + "-value"));
-                }
-            }
-            // SIDOC/CNAF (sidoc-infra-204) : La mise en place d'un widget Dojo pour les controles output de type AnyURI
-            if(type == "anyURI" && targetName == "output"){
-                var linkWidget = dojo.widget.createWidget("XFLink" , {id:targetId+"-value", href:value}, dojo.byId(targetId + "-value"));
-                return;
-            }
-            if(type == "anyURI" || type == "hexBinary" || type == "base64Binary"){
-                var uploadWidget = dojo.widget.createWidget("chiba:Upload" ,
-                {
-                    id:targetId+"-value",
-                    widgetId:targetId+"-value",
-                    css:type,name:"d_"+targetId,
-                    title:dojo.byId(targetId + "-value").title
-                },
-                dojo.byId(targetId + "-value"));
-            }
+          var linkWidget = dojo.widget.createWidget("Link",
+          {
+            id:targetId + "-value",
+            href:value
+          },
+              dojo.byId(targetId), "last");
 
-            //            if(type =="date" || type =="dateTime") {
-            if (type == "date") {
-                var dateWidget = dojo.widget.createWidget("chiba:DropdownDatePicker",
-                {
-                    id:targetId + "-value",
-                    widgetId:targetId + "-value",
-                    name:"d_" + targetId,
-                    value:value,
-                    datatype:type
-                },
-                        dojo.byId(targetId + "-value"));
-            }
-            if(type =="time") {
-                var timeWidget = dojo.widget.createWidget("chiba:DropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, datatype:type}, dojo.byId(targetId + "-value"));
-
-            }
-            if(type =="dateTime") {
-                var timeWidget = dojo.widget.createWidget("chiba:DropdownDatePicker", {id:targetId+"-value", widgetId:targetId+"-value", name:"d_"+targetId, value:value, datatype:type}, dojo.byId(targetId + "-value"));
-            }
-            _addClass(dojo.byId(targetId), type);
+          break;
         }
+      case "hexBinary":
+      case "base64Binary":
+        dojo.require("chiba.widget.Upload");
+
+        var uploadWidget = dojo.widget.createWidget("chiba:Upload",
+        {
+          id:targetId + "-value",
+          widgetId:targetId + "-value",
+          css:type,
+          name:"d_" + targetId,
+          title:dojo.byId(targetId + "-value").title
+        },
+            dojo.byId(targetId),
+            "last");
+        break;
+
+      case "date":
+      case "time":
+      case "dateTime":
+        dojo.require("chiba.widget.DropdownDatePicker");
+
+        var dateWidget = dojo.widget.createWidget("chiba:DropdownDatePicker",
+        {
+          id:targetId + "-value",
+          widgetId:targetId + "-value",
+          name:"d_" + targetId,
+          value:value,
+          datatype:"date"
+        },
+            dojo.byId(targetId), "last");
+        break;
+
+      case "string":
+        dojo.require("chiba.widget.Inputfield");
+        var inputfieldWidget = dojo.widget.createWidget("chiba:Inputfield",
+        {
+          widgetId:targetId + "-value",
+          name:"d_" + targetId,
+          value:value,
+          title:"title"
+        },
+            dojo.byId(targetId), "last");
+        break;
+      default:
+      //other types...
+        dojo.debug("Unknown type for control");
+        break;
     }
+  } else if(type == "boolean"){
+      tmpControl.checked = value;
+      tmpControl.xfreadonly = readonly;
+  }
+
+  //dojo.debug(dojo.byId(targetId).className);
+  //dojo.debug(getClassComponent(dojo.byId(targetId).className, 1));
+
+  if(type){
+      _replaceClass(target, getClassComponent(target.className, 1), type);
+  }
 };
+
+
 
 /**
  * Handles chiba-state-changed for helper elements.
@@ -156,7 +298,37 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
 PresentationContext.prototype.handleHelperChanged = function(parentId, type, value) {
     dojo.debug("PresentationContext.handleHelperChanged: parentId='" + parentId + "',  type='" + type + "',  value='" + value + "'");
     switch (type) {
+        // Hack to update the label of repeats with appearance = compact;
         case "label":
+            var td = document.getElementById(parentId);
+            if (td != null && td.nodeName.toLowerCase() == "div") {
+                td = td.parentNode;
+            }
+            if (td != null && td.nodeName.toLowerCase() == "td") {
+                var tr = td.parentNode;
+                if (tr != null && tr.nodeName.toLowerCase() == "tr") {
+                    var tbody = tr.parentNode;
+                    if (tbody != null && tbody.nodeName.toLowerCase() == "tbody") {
+                        var table = tbody.parentNode;
+                        if (table != null && table.nodeName.toLowerCase() == "table") {
+                            if (_hasClass(table, "compact-repeat")) {
+                                var trhead =tbody.childNodes;
+                                for(var i=0; i < trhead.length; i++) {
+                                    if(_hasClass(trhead[i], "repeat-header")) {
+                                        var th = trhead[i].cells;
+                                        for(var x = 0; x < th.length; x++) {
+                                            if(th[x].className ==  td.className) {
+                                                var elem = th[x];
+                                                elem.firstChild.firstChild.nodeValue = value;
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }                  }
             PresentationContext._setControlLabel(parentId, value);
             return;
         case "help":
@@ -173,6 +345,7 @@ PresentationContext.prototype.handleHelperChanged = function(parentId, type, val
             return;
     }
 };
+
 
 /**
  * Handles chiba-prototype-cloned.
@@ -220,6 +393,10 @@ PresentationContext.prototype.handleItemDeleted = function(targetId, type, origi
         PresentationContext._deleteRepeatItem(targetId, originalId, position);
     }
 };
+
+PresentationContext.prototype.handleFocus= function(targetId){
+    dojo.byId(targetId + "-value").focus();
+}
 
 /**
  * Handles chiba-index-changed.
@@ -317,6 +494,188 @@ PresentationContext._setReadonlyProperty = function(target, readonly, type) {
     }
 };
 
+
+//--------------------------------------------------
+// HELPER METHODS - hidden datastructure for options
+//--------------------------------------------------
+
+/**
+ * Called on start up to fill in the first values.
+ * @param string original_id
+ * @param string clone_id
+ */
+initializeClone = function(original_id, clone_id){
+    //first make sure the begin situation is cloned
+    _updateSizeOfClone(original_id, clone_id);
+    _updateValueOfClone(original_id, clone_id);
+    _updateSelectionOfClone(original_id, clone_id);
+};
+
+/**
+ * Updates the size of a cloned select control.
+ *
+ * @param string original_id
+ * @param string clone_id
+ * @param changedIndex (optional)
+ */
+_updateSizeOfClone = function(original_id, clone_id, changedIndex){
+    var original = document.getElementById(original_id);
+    var clone = document.getElementById(clone_id);
+
+    var cloneSize = clone.childNodes.length;
+    var originalSize = original.options.length;
+    if (changedIndex && changedIndex != -1){
+        if (cloneSize < originalSize){
+            //option added
+            var option = new Option("", "");
+
+            try{
+                clone.add(option, clone.options[changedIndex]); // standards compliant
+            }
+            catch(ex){
+                clone.add(option, changedIndex); // IE only
+            }
+        }
+        else{
+            //remove one
+            clone.removeChild(clone.options[changedIndex]);
+        }
+    }
+    else{
+        while (cloneSize != originalSize){
+            if (cloneSize < originalSize){
+                //add one
+                var option = new Option("", "");
+                clone.appendChild(option);
+            }
+            else{
+                //remove one
+                clone.removeChild(clone.options[0]);
+            }
+            cloneSize = clone.childNodes.length;
+        }
+    }
+};
+
+/**
+ * Updates the value of a cloned select control.
+ *
+ * @param string original_id
+ * @param string clone_id
+ * @param changedIndex (optional)
+ */
+_updateValueOfClone = function(original_id, clone_id, changedIndex){
+    var original = document.getElementById(original_id);
+    var clone = document.getElementById(clone_id);
+
+    if (changedIndex && changedIndex != -1) {
+        var originalOption = original.options[changedIndex];
+        var clonedOption = clone.options[changedIndex];
+        clonedOption.setAttribute("class", originalOption.getAttribute("class"));
+        clonedOption.setAttribute("style", originalOption.getAttribute("style"));
+        clonedOption.value = originalOption.value;
+        clonedOption.selected = originalOption.selected;
+        if (document.createTextNode) {
+            //for IE
+            var text = document.createTextNode(originalOption.text);
+            if (clonedOption.childNodes[0]) {
+                clonedOption.replaceChild(text, clonedOption.childNodes[0]);
+            }
+            else {
+                clonedOption.appendChild(text);
+            }
+        }
+        else{
+            clonedOption.text = originalOption.text;
+        }
+    }
+    else {
+	    var originalSize = original.options.length;
+        for (var i = 0; i < originalSize; i++){
+            var originalOption = original.options[i];
+            var clonedOption = clone.options[i];
+            clonedOption.setAttribute("class", originalOption.getAttribute("class"));
+            clonedOption.setAttribute("style", originalOption.getAttribute("style"));
+            clonedOption.value = originalOption.value;
+            clonedOption.selected = originalOption.selected;
+            if (document.createTextNode){
+                //for IE
+                var text = document.createTextNode(originalOption.text);
+                if (clonedOption.childNodes[0]){
+                    clonedOption.replaceChild(text, clonedOption.childNodes[0]);
+                }
+                else{
+                    clonedOption.appendChild(text);
+                }
+            }
+            else{
+                clonedOption.text = originalOption.text;
+            }
+        }
+    }
+};
+
+/**
+ * Updates the selection of a cloned select control.
+ *
+ * @param string original_id
+ * @param string clone_id
+ * @param changedIndex (optional)
+ */
+_updateSelectionOfClone = function(original_id, clone_id){
+    var original = document.getElementById(original_id);
+    var clone = document.getElementById(clone_id);
+
+    for (var i = 0; i < original.options.length; i++){
+        clone.options[i].selected = original.options[i].selected;
+    }
+};
+
+/**
+ * Called when the clone.onchange() occurs, so we can update the original one.
+ * @param string original_id
+ * @param string clone_id
+ */
+updateSelectionOfOriginal = function(original_id, clone_id){
+    //selection has changed on the clone so change the selection on the original
+    var original = document.getElementById(original_id);
+    var clone = document.getElementById(clone_id);
+
+    for (var i = 0; i < clone.options.length; i++){
+        original.options[i].selected = clone.options[i].selected;
+    }
+    if (original.onchange){
+        setXFormsValue(original, true);
+    }
+};
+
+
+/**
+ * Checks if the element has a clone.
+ */
+_isCloned = function(element_id){
+    var clone = document.getElementById("clone-" + element_id);
+    if (clone){
+        return true;
+    }
+    else{
+        return false;
+    }
+};
+
+/**
+ * finds the index of the option
+ */
+_findIndexOfOption = function(selectElement, option){
+    var len = selectElement.options.length;
+    for (var i = 0; i < len; ++i){
+        if (i in selectElement.options && selectElement.options[i] === option){
+            return i;
+        }
+    }
+    return -1;
+};
+
 PresentationContext._setRequiredProperty = function(target, required) {
 //    dojo.debug("PresentationContext._setRequiredProperty: " + target + "='" + required + "'");
 
@@ -354,8 +713,8 @@ PresentationContext._setEnabledProperty = function(target, enabled) {
 
 PresentationContext._setControlValue = function(targetId, value) {
 	// SIDOC/CNAF : sidoc-infra-log
-    dojo.debug("PresentationContext.setControlValue: targetID = '" + targetId + "'");
-    dojo.debug("PresentationContext.setControlValue: value= '" + value + "'");
+  //  dojo.debug("PresentationContext.setControlValue: targetID = '" + targetId + "'");
+  //  dojo.debug("PresentationContext.setControlValue: value= '" + value + "'");
 
     var control = document.getElementById(targetId + "-value");
     if (control == null) {
@@ -364,8 +723,8 @@ PresentationContext._setControlValue = function(targetId, value) {
     }
 
 	// SIDOC/CNAF : sidoc-infra-log
-    dojo.debug("PresentationContext.setControlValue: control = '" + control + "'");
-    dojo.debug("PresentationContext.setControlValue: Node's name = '" + control.nodeName.toLowerCase() + "'");
+    // dojo.debug("PresentationContext.setControlValue: control = '" + control + "'");
+    // dojo.debug("PresentationContext.setControlValue: Node's name = '" + control.nodeName.toLowerCase() + "'");
 
     var listValue = " " + value + " ";
     switch (control.nodeName.toLowerCase()) {
@@ -376,12 +735,27 @@ PresentationContext._setControlValue = function(targetId, value) {
             _setElementText(control, value);
             //dojo.debug("PresentationContext.setControlValue: href = '" + control.href + "'");
             break;
+        case "div":
+            //TODO: Make save
+            break;
         case "img":
             // <xf:output appearance="image"/>
             control.src = value;
             break;
         case "input":
-            if (control.type.toLowerCase() == "hidden") {
+            if (control.type.toLowerCase() == "checkbox") {
+	            if (control.parentNode && _hasClass(control.parentNode, "selector-item")) {
+            		control.value = value;
+            	}
+            	else {
+            		// special treatment for a single checkbox
+               		control.checked = (value == "true") || (value == "1");
+               	}
+                break;
+            }
+            
+            //TODO: check if "if" statement is still needed, can probably be removed
+            if(control.type.toLowerCase() == "hidden") {
 
                 // special treatment for radiobuttons/checkboxes
                 var elements = eval("document.chibaform.elements");
@@ -401,6 +775,18 @@ PresentationContext._setControlValue = function(targetId, value) {
                 }
                 break;
             }
+            
+            if (control.type.toLowerCase() == "checkbox") {
+                var tmpWidget = dojo.widget.byId(targetId + "-value");
+                tmpWidget.checked = value;
+                if(this.checked=="false"){
+                   control.removeAttribute("checked");
+                }
+                else{
+                   control.setAttribute("checked", this.checked);
+                }
+                break;
+            }
 
             if (control.type.toLowerCase() == "button") {
                 // ignore
@@ -416,6 +802,16 @@ PresentationContext._setControlValue = function(targetId, value) {
             break;
         case "option":
             control.value = value;
+            if(control.parentNode && control.parentNode.nodeName.toLowerCase() == "optgroup")
+            {
+                var select_id=control.parentNode.parentNode.getAttribute("id");
+                if(_isCloned(select_id))
+                {
+                    // find the index of the changed option
+                    var changedIndex = _findIndexOfOption(control.parentNode.parentNode, control);
+                    _updateValueOfClone(select_id, "clone-" + select_id, changedIndex);
+                }
+            }
             break;
         case "span":
             // <xf:output mediatype="text/html"/>
@@ -440,6 +836,10 @@ PresentationContext._setControlValue = function(targetId, value) {
                 else {
                     option.selected = false;
                 }
+            }
+            var select_id = control.getAttribute("id");
+            if (_isCloned(select_id)) {
+                _updateSelectionOfClone(select_id, "clone-" + select_id);
             }
             break;
         case "table":
@@ -470,7 +870,7 @@ PresentationContext._setControlValue = function(targetId, value) {
 };
 
 PresentationContext._setControlLabel = function(parentId, value) {
-//    dojo.debug("PresentationContext._setControlLabel: " + parentId + "='" + value + "'");
+//    dojo.debug("PresentationContext._setControlLabel: ParrentId" + parentId + ",Value:'" + value + "'");
 
     var element = document.getElementById(parentId + "-label");
     if (element != null) {
@@ -492,6 +892,16 @@ PresentationContext._setControlLabel = function(parentId, value) {
             break;
         case "option":
             control.text = value;
+            if(control.parentNode && control.parentNode.nodeName.toLowerCase() == "optgroup")
+            {
+                var select_id=control.parentNode.parentNode.getAttribute("id");
+                if(_isCloned(select_id))
+                {
+                    // find the index of the changed option
+                    var changedIndex = _findIndexOfOption(control.parentNode.parentNode, control);
+                    _updateValueOfClone(select_id, "clone-" + select_id, changedIndex);
+                }
+            }
             break;
         case "input":
             if (control.type.toLowerCase() == "button") {
@@ -502,6 +912,9 @@ PresentationContext._setControlLabel = function(parentId, value) {
         default:
             // dirty hack for compact repeats: lookup enclosing table
             var td = document.getElementById(parentId);
+            if (td != null && td.nodeName.toLowerCase() == "div") {
+                td = td.parentNode;
+            }
             if (td != null && td.nodeName.toLowerCase() == "td") {
                 var tr = td.parentNode;
                 if (tr != null && tr.nodeName.toLowerCase() == "tr") {
@@ -510,7 +923,7 @@ PresentationContext._setControlLabel = function(parentId, value) {
                         var table = tbody.parentNode;
                         if (table != null && table.nodeName.toLowerCase() == "table") {
                             if (_hasClass(table, "compact-repeat")) {
-                                dojo.debug("ignoring label for '" + parentId + "' in compact repeat");
+                                // dojo.debug("ignoring label for '" + parentId + "' in compact repeat");
                                 break;
                             }
                         }
@@ -780,6 +1193,17 @@ PresentationContext._insertSelectorItem = function(targetId, originalId, positio
 
     // insert prototype clone
     itemsetElement.insertBefore(prototypeClone, referenceNode);
+    
+    if(itemsetElement && itemsetElement.nodeName.toLowerCase() == "optgroup")
+    {
+        //find the id of the select tag above
+        var select_id = itemsetElement.parentNode.getAttribute("id");
+        if(_isCloned(select_id))
+        {
+            var optionIndex = _findIndexOfOption(itemsetElement.parentNode, prototypeClone);
+            _updateSizeOfClone(select_id, "clone-" + select_id, optionIndex);
+        }
+    }
 };
 
 /**
@@ -871,8 +1295,20 @@ PresentationContext._deleteSelectorItem = function(targetId, originalId, positio
         }
     }
 
+    var deleteItem = items[deleteIndex];
+    var optionIndex = _findIndexOfOption(itemsetElement.parentNode, deleteItem);
     // delete item
-    itemset.removeChild(items[deleteIndex]);
+    itemset.removeChild(deleteItem);
+    
+    if(itemset && itemset.nodeName.toLowerCase() == "optgroup")
+    {
+        //find the id of the select tag above
+        var select_id = itemset.parentNode.getAttribute("id");
+        if(_isCloned(select_id))
+        {
+            _updateSizeOfClone(select_id, "clone-" + select_id, optionIndex);
+        }
+    }
 };
 
 /**
@@ -961,6 +1397,9 @@ PresentationContext._getRepeatNode = function(element) {
 
 PresentationContext._applyGeneratedIds = function(element, ids) {
     var id = element.getAttribute("id");
+    if(id == "-label") {
+        element.id = element.parentNode.id + id;
+    }
     if (id) {
         var generatedId = ids[id];
         if (generatedId) {

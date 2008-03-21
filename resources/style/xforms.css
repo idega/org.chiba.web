@@ -1,643 +1,173 @@
 /* ***************************************************************************** */
-/* ************** CSS STYLESHEET FOR STYLING XFORMS INSIDE OF HTML ************* */
+/* ************** XFORMS CSS STYLESHEET  ************* */
 /* this stylesheet uses table layout which may not be supported on all browsers. */
 /* ***************************************************************************** */
 
 /*********** GENERAL STUFF ***********/
 
-#loading{
-    position:absolute;
-    top:2px;
-    right:5px;
-    z-index:1000;
-    padding:3px;
-}
-
 .inactive{
     display:none;
 }
-#legend{padding:3px;}
+
+#loading{
+    position:absolute;
+    z-index:1000;
+}
+.messagePane{
+    display:block;
+    position:fixed;
+    z-index:1000;
+}
+
 
 /* #################### GROUP STYLES #################### */
-/* xf:groups will be rendered as fieldsets and therefore
+/* xf:groups will be rendered as fieldsets and therefore            
 are styleable via this matcher or more specifically by their
 appearance class 'minimal-group|compact-group|full-group'. */
-* > fieldset {
-    margin-bottom:5px;
-}
-/* IE */
-fieldset{
-    margin-bottom:5px;
-}
 
-/*********** used to render group labels ***********/
-fieldset > legend {
-    /*padding: 3px;
-    
-    margin-top:5px;
-    margin-bottom:5px;*/
-}
-
-/* IE */
-fieldset legend{
-    /*padding: 3px;
-    border: thin solid rgb( 188, 216, 132 );
-    color: rgb( 85, 96, 63 );
-    margin-top:5px;
-    margin-bottom:5px;*/
-}
-
-/*********** use to render group labels ***********/
-.legend{
-    color:#888888;
-    text-align:center;
-    }
-
-/*********** nested group ***********/
-fieldset > fieldset {
-    margin: 0px;
-    padding-top:0px;
-}
-
-/* IE */
-fieldset fieldset{
-    margin: 0px;
-}
-
-/*********** nested nested group ***********/
-fieldset > fieldset > fieldset {
-    margin: 0px;
-    display:block;
-}
 
 /*********** group appearances ***********/
-.minimal-group{
-    padding-top:5px;
+.group div{
+    display:block;
+    clear:both;
 }
+.group label{
+    float:left;
+}
+.group .value{
+    display:inline;}
+
 .minimal-group div{
-    display:inline;
-    margin-right:3px;
-}
+    display:inline; }
 
 .compact-group div{
     display:block;
-    margin-top:3px;
+    float:left; }
 
-    /*float:left;*/
-    /* Safari doesn't like the float. Firefox renders this correctly.*/
-}
 .compact-group div label{
     display:block;
 }
 .compact-group div .value{
-    display:inline;
-    margin-right:3px;
-}
+    display:inline; }
 
+.compact-group .disabled{
+    display:none;}
 
 .full-group div{
     display:block;
-    margin-top:3px;
-    clear:both;
-}
+    clear:both;}
+
 .full-group label{
-    /*width:10em;
-    float:left;*/
-}
+    float:left;}
+
 .full-group .value{
-    display:inline;
-}
+    display:inline;}
+
+.full-group .disabled{
+    display:none;}
 
 .minimal-group label{
-    display:inline;
-}
+    display:inline;}
+
+.minimal-group .disabled{
+    display:none;}
 
 /* #################### GENERAL XFORMS MIP AND COMMON-CHILD STYLES #################### */
+.alert {
+    position:absolute;}
 
 .invalid > .alert{
-    position:absolute;
-    border:thin solid #A42322;
-    /*background-color:#DAE9BB;*/
-    color:#A42322;
-    padding:2px;
-    height:14px;
-    margin-left:2px;
-    font-weight:bold;
-}
+    position:absolute;}
 
-.valid > .alert{
-    display:none;
-}
-.invalid .value{
-    color:white;
-    font-style:italic;
-    /*background:#A42322;*/
-}
+.valid .alert {
+    display: none;}
 
-/*
-.valid.alert{display:none;}
-.invalid.alert{
-    position:absolute;
-    border:thin solid #A42322;
-    background-color:#DAE9BB;
-    color:#A42322;
-    padding:2px;
-    height:14px;
-    margin-left:2px;
-    font-weight:bold;
-}
-*/
+.invalid .alert {
+    display: inline;}
+
+.disabled iframe {
+    display:none;}
 
 .disabled label{
-    display:none;
-}
+    display:none;}
+
 .disabled .value{
-    display:none;
-}
+    display:none;}
+
 .disabled {
-    display:none;
-}
+    display:none;}
+
 .disabled .alert{
-    display:none;
-}
+    display:none;}
+
 .disabled .progressbar{
-    display:none;
-}
+    display:none;}
+
+.disabled .help-icon {
+   display:none;}
+
+.disabled span {
+    display:none;}
 /*********** styles character used for signaling 'required' (normally '*') ***********/
-.required-symbol{
-    color:#A42322;
-    font-size:larger;
-}
+
 .repeat .label .required-symbol{
-    color:red;
-    display:inline;
-}
+    display:inline;}
 
-.optional .required-symbol{                         
-    display:none;
-}
-
-.enabled {
-}
-
-
-
+.optional .required-symbol{
+    display:none;}
 
 .help-text{
     position:absolute;
-    display:none;
-    width:300px;
-    border:thin solid gray;
-    background:azure;
-    padding:10px;
-}
-.help-symbol{
-    margin-left:3px;
-}
+    display:none;}
+
 /* #################### Repeat styles #################### */
-
 .repeat-prototype {
-    display: none;
-}
-
-.repeat-item {
-}
-
-.repeat-index {
-    /*background: #BCD884;*/
-}
-
-.repeat-index-pre {
-    /*background: #DAE9BB;*/
-}
+    display: none;}
 
 .repeat-selector {
-    /*float: left;*/
-}
+    /*float: left;*/}
 
 .selector-prototype {
-    display: none;
-}
-
+    display: none;}
 
 .minimal-repeat{
-    display:block;
-}
+    display:block;}
+
 .minimal-repeat .repeat-item{
     float:left;
-}
+    clear:none;}
+
 .minimal-repeat .repeat-index{
     float:left;
-}
+    clear:none;}
 
-
+.compact-repeat td .disabled {
+    display:none;}
 /* #################### SWITCH STYLES #################### */
 
 .switch .selected-case {
-    display: inherit;
-}
+    display: inherit;}
 
 .switch .deselected-case {
-    display: none;
-}
-
-.full-switch {
-    border-spacing: 0px;
-}
-
-.full-switch-body {
-    /*background: #F0F4EA;*/
-    /*border: 1px solid black;*/
-    border-top: none;
-}
-
-.full-switch .active-tab {
-    /*background: #F0F4EA;*/
-    /*border: 1px solid rgb(85, 96, 63);*/
-    border-right: none;
-    border-bottom: #F0F4EA;
-    padding: 3px 5px 3px 5px;
-    width: 10%;
-}
-
-.full-switch .active-tab input {
-    /*background: #F0F4EA;*/
-    border: none;
-}
-
-.full-switch .inactive-tab {
-    /*background: rgb(188, 216, 132);*/
-    /*border: 1px solid rgb(85, 96, 63);*/
-    border-right: none;
-    padding: 3px 5px 3px 5px;
-    width: 10%;
-}
-
-.full-switch .inactive-tab input {
-    /*background: rgb( 188, 216, 132 );*/
-    border: none;
-}
+    display: none;}
 
 .full-switch .filler-tab {
-    /*border: 1px solid rgb( 85, 96, 63 );*/
-    border-top: none;
-    border-right: none;
-    /*width: 90%;*/
-    /*overflow: hidden;*/
-}
-.group {
-	border: 0px;
-	}
+    overflow: hidden;}
+
 /* #################### CONTROL STYLES #################### */
 
-
-/* ### example rules for styling the actual controls (widgets) ### */
-/*
-.trigger > .value {
-    margin: 2px;
-    padding: 2px 2px 1px 2px;
-    color: #000000;
-    border: thin solid;
-    font-size: 10pt;
-    font-family: sans-serif;
-}
-*/
-
+.refresh-button{
+    display:block;
+    float:right;}
 
 /*********** Range specific styles ***********/
 .rangelabel td{
-    background:transparent;
-    text-align:center;
-    font-size:8pt;
-}
-
-.rangesteps{
-    height:25px;
-    width:6px;
-}
-.rangesteps td {
-    background: rgb( 188, 216, 132 );
-}
+    background:transparent;}
 
 .rangesteps td img{
     border:none;
-    display:block;
-}
+    display:block;}
 
-.rangesteps td a:hover img {
-    background: rgb( 218, 233, 187 );
-    width:6px;
-    height:25px;
-}
-.rangevalue * {
-    background:#564;
-}
-.rangesteps .rangevalue a:hover *{
-    background:#564;
-}
-/* IE */
-.rangesteps .rangevalue *{
-    background:#564;
-}
 /*********** Upload specific styles ***********/
 .progressbar{
-    display:none;
-}
-.progressbar .border{
-    margin-top:1px;
-    background: url(../images/progress-remainder.gif) repeat-x;
-    border-left: 1px solid gray;
-    border-right: 1px solid gray;
-    width: 100%;
-    height: 18px;
-}
-.progressbar .background {
-  	background: url(../images/progress-bar.gif) repeat-x;
-  	height: 18px;
-  	width: 0%;
-}
-
-.selected-case span.output{
-	display: block !important;
-	clear: both !important;
-	/*overflow: hidden;*/
-	/*width: auto !important;*/
-}
-
-.selected-case span.output label.label{
-	float: left;
-	clear: both !important;
-	padding: 4px;
-}
-
-.selected-case span.output span{
-	display: block;
-	float: left;
-	clear: right !important;
-	padding: 4px;
-}
-
-/* Extra stylings */
-/*#formHeading{
-	border: 1px #949494 solid;
-	background: #88827e url("/content/files/public/boxHeaderTiler.gif") left top repeat-x;
-	font-family: Arial, "Helvetica", "Arial", sans-serif;
-	font-size: 118%;
-	color: #fff;
-	font-weight: bold;
-	text-shadow: #000 2px 2px 1px;
-	padding: 4px 0 0 6px;
-	margin: 0 2px 2px;
-	height: 18px;
-	position: relative;
-	line-height: 13px;
-}*/
-div.info {
-	height: 54px;
-	background: url(images/info_tiler.gif) repeat-x #ABBAC3;
-	padding: 13px 15px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	text-shadow: #fff 2px 2px 1px;
-	line-height: 18px;
-	border-bottom: 1px #788892 solid;
-}
-div.info h1 {
-	margin: 0;
-	font-size: 22px;
-}
-
-div.fbc_header_text{
-	border-top: 1px #a4a4a4 solid;
-	border-bottom: 1px #a4a4a4 solid;
-	background: url(images/sub_header_tiler.gif) repeat-x #d6d6d6;
-	height: 18px;
-	color: #222222;
-	font-size: 12px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	padding-left: 15px;
-	padding-top: 4px;
-	margin: 0;
-	clear: both;
-	font-weight: bold;
-}
-span.required-symbol{
-	color: #ff2700;
-	font-size: 1.4em;
-}
-.invalid .alert{
-	border-width: 0 !important;
-	background: transparent !important;
-	color: #ff2700;
-	position: relative;
-	top: -4px;
-}
-.invalid input.value{
-	background: #ffe2ca !important;
-	color: #000;
-}
-/*select.value{
-width: auto !important;
-min-width: 128px;
-}*/
-select.value option{
-	padding: 2px;
-
-}
-fieldset.group.full-group {
-	padding-left: 0px			!important;
-	padding-right: 0px			!important;
-	margin-left: 0px			!important;
-	margin-right:0px			!important;
-}
-div.input input.value, 
-div.textarea textarea.value,
-div.secret input.value,
-div.upload input.value,
-div.select select.value,
-div.select1 select.value {
-	background: #ffffff !important;
-	width: 166px;
-	margin-right: 20px;
-	margin-bottom: 8px;
-	border: 2px solid;
-	border-bottom-color: LightGrey;
-	border-left-color: Black;
-	border-top-color: Black;
-	border-right-color: LightGrey;
-}
-label.label{
-    float: left;
-	width: 160px 				!important;
-	font-size: 11px;
-	font-weight: bold;
-	padding-top: 4px;
-	color: #222222;
-	margin-left: 13px;
-}
-div.select1 > span, div.select > span {
-	position: relative;
-margin-left: 175px;
-display: block;
-	top: -12px;
-}
-div.select1 > span > span.selector-item, div.select > span > span.selector-item {
-	display: block;
-}
-span.selector-item > input.value {
-	margin-top: 0px;
-}
-span.selector-item > span.label {
-	position: relative;
-	top: -5px;
-}
-/*div.select1 > span > span.selector-item {
-	display: inline;
-	border: 2px solid Red;
-}
-div.select1 > span.alert {
-	border: none;
-	background-color: Red;
-	display: none;
-}*/
-.helperText {
-	visibility: hidden;
-}
-div.select1 > span.selector-prototype {
-	border: none;
-}
-fieldset.group textarea {
-	width: 352px 			!important;
-	height: 80px			!important;
-}
-.fbc_simple_text {
-	clear: both;
-	margin-top: 16px;
-	margin-bottom: 0;
-	padding-bottom: 0;
-}
-.trigger > input {
-	background: url(images/button_next.png) no-repeat;
-	filter: none;
-	width: 86px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	color: #21262D;
-	text-align: center;
-	font-size: 18px;
-	font-weight: bold;
-	height: 35px;
-	border: 0;
-}
-.trigger > input:hover {
-	color: #571900;
-	background-image: url(images/button_next_hover.png);
-	filter: none;	
-}
-div.fbc_button_area {
-	padding-right: 17px;
-	padding-left: 17px;
-	padding-top: 16px;
-	text-align: right;
-	height: 49px;
-	background: url(images/bottom_tiler.gif) repeat-x #AEBCC5;
-}
-div.label {
-	clear: both;
-	position: relative;
-	border-top: 1px #fff solid;
-	border-bottom: 1px #B2B6B8 solid;
-	height: 28px;
-	background: url(images/header_tiler.gif) repeat-x #fff;
-}
-div.label h1 {
-	float: left;
-	color: #002243;
-	font-size: 13px;
-	text-transform: uppercase;
-	margin: 0;
-	padding: 7px 0 0 14px;
-}
-
-/* .case.selected-case{
-	overflow-y: auto 			!important;
-	top: 25px;
-	bottom: 0px 				!important;
-	position: absolute;
-	left: 0;
-	right: 0px;
-}
-fieldset.group{
-	overflow: auto 			!important;
-	top: 45px;
-	bottom: 23px 			!important;
-	position: absolute;
-	left: 0;
-	right: 0px;
-}
-fieldset.group fieldset.group{
-	overflow: auto 			!important;
-	top: 0px;
-	bottom: auto 			!important;
-	position: relative 		!important;
-	left: 0;
-	right: 0px;
-} */
-span.selector-item{
-	clear: both 			!important;
-	//float: left;
-}
-span.selector-item span.label{
-	margin-left: 5px;
-}
-fieldset.group .trigger{
-	float: right;
-}
-div.phases {
-	position: absolute;
-	top: -7px;
-	right: 9px;
-}
-
-div.phases ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-
-div.phases ul li {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/blue_orb.png',sizingMethod='scale');
-	width: 20px;
-	height: 20px;
-	text-align: center;
-	color: #fff;
-	display: block;
-	float: left;
-	padding-top: 3px;
-	margin-right: 4px;
-	margin-top: 11px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 12px;
-}
-
-html>body div.phases ul li {
-	background: url(images/blue_orb.png) no-repeat top center;
-	filter: none;
-}
-
-div.phases ul li.current {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/orange_orb.png',sizingMethod='scale');
-	width: 40px;
-	height: 46px;
-	font-size: 26px;
-	padding-top: 5px;
-	margin-top: 0;
-}
-
-html>body div.phases ul li.current {
-	background-image: url(images/orange_orb.png);
-	filter: none;
-}
-.selector-item {
-	width: 300px				!important;
-}
+    display:none;}

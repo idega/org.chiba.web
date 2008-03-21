@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.3 2007/05/29 17:11:03 civilis Exp $
+ * $Id: IWBundleStarter.java,v 1.4 2008/03/21 15:57:12 anton Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -9,35 +9,29 @@
  */
 package org.chiba.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.transform.TransformerException;
 
+import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.web.session.impl.DefaultXFormsSessionManagerImpl;
-import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xslt.TransformerService;
-import org.chiba.xml.xslt.impl.CachingTransformerService;
-import org.chiba.xml.xslt.impl.ResourceResolver;
 
-import com.idega.chiba.web.xml.xslt.impl.ChibaBundleResourceResolver;
-import com.idega.chiba.web.xml.xslt.impl.HttpResourceResolver;
+import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.include.GlobalIncludeManager;
 
+import com.idega.servlet.filter.IWBundleResourceFilter;
+
 /**
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2007/05/29 17:11:03 $ by $Author: civilis $
+ * Last modified: $Date: 2008/03/21 15:57:12 $ by $Author: anton $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -45,67 +39,44 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	private static final String STYLE_SHEET_URL = "/style/xforms.css";
 	public static final String BUNDLE_IDENTIFIER = "org.chiba.web";
+	
+    private String defaultRequestEncoding = "UTF-8";
 
 	public static final String TRANSFORMER_SERVICE = TransformerService.class.getName();
+	
+	public static WebFactory webFactory = new WebFactory();
 
-	public static final URI XSLT_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/xslt/html4.xsl");
-	private static final URI CHIBA_CONFIG_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/chiba-config.xml");
-
+//	public static final URI XSLT_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/xslt/html4.xsl");
+//	private static final URI CHIBA_CONFIG_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/chiba-config.xml");
+	
 	public void start(IWBundle starterBundle) {
-		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER, STYLE_SHEET_URL);
-		
+	
+    	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
+    	String styleSheetsPath = "/idegaweb/bundles/org.chiba.web.bundle/resources/xslt/";
+    	
 		IWMainApplication application = starterBundle.getApplication();
-
-		// create transformer service
-		ResourceResolver resolver = new ChibaBundleResourceResolver(application);
-		CachingTransformerService transformerService = new CachingTransformerService(resolver);
-		transformerService.addResourceResolver(new HttpResourceResolver());
+    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, chibaConfigURI);
+    	
+    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"components.xsl");
+    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html4.xsl");
+    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"ui.xsl");
+    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html-form-controls.xsl");
 		
-		application.setAttribute(TRANSFORMER_SERVICE, transformerService);
+		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER, STYLE_SHEET_URL);
 
-    	// cache default stylesheet
+        webFactory.setServletContext(application.getServletContext());
         try {
-			transformerService.getTransformer(XSLT_URI);
-		}
-		catch (TransformerException e) {
-			log.log(Level.SEVERE, "Cannot load XForms transformer stylesheet", e);
-		}
-		
-		createXFormsSessionManager(0, 0);
-		
-		// read chiba config
-		try {
-			InputStream inputStream = resolver.resolve(CHIBA_CONFIG_URI).getInputStream();
-			Config.getInstance(inputStream);
-		}
-		catch (IOException e) {
-			log.log(Level.SEVERE, "Error reading chiba config", e);
-		}
-		catch (XFormsConfigException e) {
-			log.log(Level.SEVERE, "Error initializing chiba config", e);
-		}
+            webFactory.initConfiguration();
+            defaultRequestEncoding = webFactory.getConfig().getProperty("defaultRequestEncoding", defaultRequestEncoding);
+            //webFactory.initLogging(this.getClass());
+            webFactory.initTransformerService();
+            webFactory.initXFormsSessionManager();
+        } catch (XFormsConfigException e) {
+            e.printStackTrace();
+        }
 	}
 
 	public void stop(IWBundle starterBundle) {
-		starterBundle.getApplication().removeAttribute(TRANSFORMER_SERVICE);
-		DefaultXFormsSessionManagerImpl manager = DefaultXFormsSessionManagerImpl.getInstance();
-		manager.kill();
-		manager.interrupt();
+		webFactory.destroyXFormsSessionManager();
 	}
-
-	/**
-     * factory method to create and setup an XFormsSessionManager. Overwrite this to provide your own implementation.
-     *
-     * @param wipingInterval
-     * @param timeout
-     */
-    protected void createXFormsSessionManager(int wipingInterval, int timeout) {
-        DefaultXFormsSessionManagerImpl manager = DefaultXFormsSessionManagerImpl.getInstance();
-        
-        manager.setInterval(wipingInterval);
-        manager.setTimeout(timeout);
-
-        //start running the session cleanup
-        manager.start();
-    }
 }

@@ -1,7 +1,6 @@
 package com.idega.chiba.web.xml.xslt.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 import org.chiba.xml.xslt.impl.FileResource;
 import org.chiba.xml.xslt.impl.Resource;
@@ -20,7 +19,7 @@ public class ChibaBundleResourceResolver implements ResourceResolver {
 		this.sBundlesDirectory = System.getProperty(DefaultIWBundle.SYSTEM_BUNDLES_RESOURCE_DIR);
 	}
 
-	public Resource resolve(URI uri) throws IOException {
+	public Resource resolve(URI uri) {
 		if (!uri.getScheme().equals("bundle")) {
         	return null;
 		}

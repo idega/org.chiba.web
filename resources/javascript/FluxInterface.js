@@ -70,7 +70,7 @@ function keepAlive() {
         localActivity();
         if(DWREngine){
             DWREngine.setErrorHandler(handleExceptions);
-            DWREngine.setOrdered(false);
+            DWREngine.setOrdered(true);
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
         }
@@ -125,7 +125,7 @@ function submitFunction(control) {
 }
 
 // call processor to execute a trigger
-function chiba_activate(target) {
+function chibaActivate(target) {
     forceRepeatIndex(dojo.byId(target));
 
     // lookup value element
@@ -142,17 +142,20 @@ function chiba_activate(target) {
     dojo.debug("Flux.activate: " + id);
     useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(false);
+    DWREngine.setOrdered(true);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.fireAction(id, sessionKey, updateUI);
+    //Flux.fireAction(updateUI, id, sessionKey);
     return false;
 }
 
 // call processor to update a controls' value
-function setXFormsValue(control) {
+function setXFormsValue(control, forceControl) {
     DWREngine.setErrorHandler(handleExceptions);
     var target;
-    if (window.event) {
+    //forceControll is used to ignore the window.event
+    // => set to true if you want to call this function on a control, other than the source of the event
+    if (window.event && !forceControl) {
         target = window.event.srcElement;
     }
     else {
@@ -216,7 +219,7 @@ function setXFormsValue(control) {
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
     useLoadingMessage();
 
-    DWREngine.setOrdered(false);
+    DWREngine.setOrdered(true);
     DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
@@ -245,6 +248,7 @@ function setRange(id, value) {
     DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
+    //Flux.setXFormsValue(updateUI, id, value, sessionKey);
 }
 
 
@@ -344,7 +348,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         case "chiba-replace-all":
             isDirty = false;
             skipShutdown = true;
-            context.handleReplaceAll();
+            context.handleReplaceAll(properties["webcontext"]);
             break;
         case "chiba-state-changed":
             if (properties["value"] != "") {
@@ -387,6 +391,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         case "chiba-script-action":
             dojo.debug("handle Script action: " + properties["script"]);
             eval(properties["script"]);
+            break;
+        case "xforms-focus":
+            context.handleFocus(targetId);
             break;
         default:
             dojo.debug("Event " + type + " unknown");
@@ -468,7 +475,8 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
     useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(false);
+    DWREngine.setOrdered(true);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, updateUI);
+    //Flux.setRepeatIndex(updateUI, repeatId, targetPosition, sessionKey);
 }

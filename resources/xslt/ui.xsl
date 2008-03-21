@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
     xmlns:xhtml="http://www.w3.org/1999/xhtml"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xforms="http://www.w3.org/2002/xforms"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.3 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.4 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -28,12 +28,54 @@
     <!-- #################################### GROUPS ########################################################### -->
     <!-- ####################################################################################################### -->
 
-    <!-- ### DEFAULT GROUP ### -->
-    <xsl:template match="xforms:group" name="group">
+    <!-- ### DEFAULT GROUP - this is used if no @apprearance has been defined ### -->
+    <xsl:template match="xforms:group">
         <xsl:variable name="group-id" select="@id"/>
         <xsl:variable name="group-classes">
             <xsl:call-template name="assemble-compound-classes">
-                <xsl:with-param name="appearance" select="@xforms:appearance | @appearance"/>
+                <xsl:with-param name="appearance" select="@appearance"/>
+            </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:call-template name="group-body-div">
+            <xsl:with-param name="group-id" select="$group-id"/>
+            <xsl:with-param name="group-classes" select="$group-classes"/>
+        </xsl:call-template>
+    </xsl:template>
+
+    <xsl:template name="group-body-div">
+        <xsl:param name="group-id"/>
+        <xsl:param name="group-classes"/>
+        <xsl:param name="group-label" select="true()"/>
+
+        <div id="{$group-id}" class="{$group-classes}">
+            <div>
+                <xsl:choose>
+                    <xsl:when test="$group-label and xforms:label">
+                        <xsl:attribute name="id">
+                            <xsl:value-of select="concat($group-id, '-label')"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="class">
+                            <xsl:call-template name="assemble-label-classes"/>
+                        </xsl:attribute>
+                        <xsl:apply-templates select="xforms:label"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="style">display:none;</xsl:attribute>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </div>
+
+            <xsl:apply-templates select="*[not(self::xforms:label)]"/>
+        </div>
+    </xsl:template>
+
+    <!-- this template is used for all groups with an appearance -->
+    <xsl:template match="xforms:group[@appearance]" name="group">
+        <xsl:variable name="group-id" select="@id"/>
+        <xsl:variable name="group-classes">
+            <xsl:call-template name="assemble-compound-classes">
+                <xsl:with-param name="appearance" select="@appearance"/>
             </xsl:call-template>
         </xsl:variable>
 
@@ -74,8 +116,8 @@
     <!-- ####################################### REPEAT ######################################################### -->
     <!-- ######################################################################################################## -->
 
-    <!-- ### MINIMAL REPEAT ### -->
-    <xsl:template match="xforms:repeat[@xforms:appearance='minimal'] | xforms:repeat[@appearance='minimal']" name="minimal-repeat">
+	<!-- ### MINIMAL REPEAT ### -->
+    <xsl:template match="xforms:repeat[@appearance='minimal']" name="minimal-repeat">
         <xsl:variable name="repeat-id" select="@id"/>
         <xsl:variable name="repeat-index" select="chiba:data/@chiba:index"/>
         <xsl:variable name="repeat-classes">
@@ -143,7 +185,7 @@
 
 
     <!-- ### COMPACT REPEAT ### -->
-    <xsl:template match="xforms:repeat[@xforms:appearance='compact'] | xforms:repeat[@appearance='compact']" name="compact-repeat">
+    <xsl:template match="xforms:repeat[@appearance='compact']" name="compact-repeat">
         <xsl:variable name="repeat-id" select="@id"/>
         <xsl:variable name="repeat-index" select="chiba:data/@chiba:index"/>
         <xsl:variable name="repeat-classes">
@@ -242,7 +284,7 @@
     <xsl:template name="processCompactPrototype">
         <xsl:param name="id"/>
 
-        <table class="repeat-prototype">
+        <table style="display:none;">
             <tr id="{$id}-prototype" class="repeat-prototype enabled readwrite optional valid">
                 <xsl:call-template name="processCompactChildren"/>
             </tr>
@@ -282,7 +324,7 @@
         <xsl:variable name="group-id" select="@id"/>
         <xsl:variable name="group-classes">
             <xsl:call-template name="assemble-compound-classes">
-                <xsl:with-param name="appearance" select="@xforms:appearance | @appearance"/>
+                <xsl:with-param name="appearance" select="@appearance"/>
             </xsl:call-template>
         </xsl:variable>
 
@@ -300,7 +342,7 @@
 
 
     <!-- ### FULL REPEAT ### -->
-    <xsl:template match="xforms:repeat[@xforms:appearance='full'] | xforms:repeat[@appearance='full']" name="full-repeat">
+    <xsl:template match="xforms:repeat[@appearance='full']" name="full-repeat">
         <xsl:variable name="repeat-id" select="@id"/>
         <xsl:variable name="repeat-index" select="chiba:data/@chiba:index"/>
         <xsl:variable name="repeat-classes">
@@ -413,12 +455,12 @@
         <xsl:variable name="id" select="@id"/>
 
         <xsl:choose>
-            <xsl:when test="@xforms:appearance='full' or @appearance='full'">
+            <xsl:when test="@appearance='full'">
                 <xsl:call-template name="processFullPrototype">
                     <xsl:with-param name="id" select="$id"/>
                 </xsl:call-template>
             </xsl:when>
-            <xsl:when test="@xforms:appearance='compact' or @appearance='compact'">
+            <xsl:when test="@appearance='compact'">
                 <xsl:call-template name="processCompactPrototype">
                     <xsl:with-param name="id" select="$id"/>
                 </xsl:call-template>
@@ -439,7 +481,7 @@
         <xsl:variable name="parent" select=".."/>
 
         <xsl:choose>
-            <xsl:when test="local-name($parent)='select1' and ($parent/@xforms:appearance='full' or $parent/@appearance='full')">
+            <xsl:when test="local-name($parent)='select1' and $parent/@appearance='full'">
                 <xsl:call-template name="build-radiobutton-prototype">
                     <xsl:with-param name="item-id" select="$item-id"/>
                     <xsl:with-param name="itemset-id" select="$itemset-id"/>
@@ -447,7 +489,7 @@
                     <xsl:with-param name="parent" select="$parent"/>
                 </xsl:call-template>
             </xsl:when>
-            <xsl:when test="local-name($parent)='select' and ($parent/@xforms:appearance='full' or $parent/@appearance='full')">
+            <xsl:when test="local-name($parent)='select' and $parent/@appearance='full'">
                 <xsl:call-template name="build-checkbox-prototype">
                     <xsl:with-param name="item-id" select="$item-id"/>
                     <xsl:with-param name="itemset-id" select="$itemset-id"/>
@@ -477,7 +519,7 @@
         easier to maintain the switch cause all relevant markup is kept under the
         same root element.
     -->
-    <xsl:template match="xforms:switch[@xforms:appearance='full'] | xforms:switch[@appearance='full']" name="full-switch">
+    <xsl:template match="xforms:switch[@appearance='full']" name="full-switch">
         <xsl:variable name="switch-id" select="@id"/>
         <xsl:variable name="switch-classes">
             <xsl:call-template name="assemble-compound-classes">
@@ -520,7 +562,7 @@
         <xsl:variable name="switch-id" select="@id"/>
         <xsl:variable name="switch-classes">
             <xsl:call-template name="assemble-compound-classes">
-                <xsl:with-param name="appearance" select="@xforms:appearance | @appearance"/>
+                <xsl:with-param name="appearance" select="@appearance"/>
             </xsl:call-template>
         </xsl:variable>
 
@@ -578,7 +620,7 @@
 
         <xsl:variable name="incremental">
             <xsl:choose>
-                <xsl:when test="@xforms:incremental | @incremental ='true'">incremental</xsl:when>
+                <xsl:when test="@incremental ='true'">incremental</xsl:when>
                 <xsl:otherwise/>
             </xsl:choose>
         </xsl:variable>
