@@ -54,7 +54,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         WebUtil.nonCachingResponse(response);
         
         try {
-            if (request.getMethod().equalsIgnoreCase("POST")) {
+            if (false && request.getMethod().equalsIgnoreCase("POST")) {
                 updating=true;
                 // updating ... - this is only called when ServletAdapter is in use
                 ChibaEvent chibaEvent = new DefaultChibaEventImpl();
@@ -68,13 +68,13 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
             }else{
                 String referer = null;
 
-                if(updating){
+                if(updating) {
                     // updating ... - this is only called when ServletAdapter is in use
                     referer = (String) getProperty(XFormsSession.REFERER);
                     setProperty("update","true");
                     String forwardTo = request.getContextPath() + "/view?sessionKey=" + getKey() + "&referer=" + referer;
                     response.sendRedirect(response.encodeRedirectURL(forwardTo));
-                }else{
+                } else {
                     referer = request.getQueryString();
 
                     response.setContentType(WebUtil.HTML_CONTENT_TYPE);
@@ -98,7 +98,6 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     uiGenerator.setInput(this.getAdapter().getXForms());
                     uiGenerator.setOutput(context.getResponseWriter());
                     uiGenerator.generate();
-
                 }
             }
         } catch (IOException e) {
