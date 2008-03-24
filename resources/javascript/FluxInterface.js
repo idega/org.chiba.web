@@ -70,7 +70,8 @@ function keepAlive() {
         localActivity();
         if(DWREngine){
             DWREngine.setErrorHandler(handleExceptions);
-            DWREngine.setOrdered(true);
+            //DWREngine.setOrdered(true);
+            DWREngine.setOrdered(false);
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
         }
@@ -142,7 +143,8 @@ function chibaActivate(target) {
     dojo.debug("Flux.activate: " + id);
     useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(true);
+    //DWREngine.setOrdered(true);
+    DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.fireAction(id, sessionKey, updateUI);
     //Flux.fireAction(updateUI, id, sessionKey);
@@ -219,7 +221,8 @@ function setXFormsValue(control, forceControl) {
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
     useLoadingMessage();
 
-    DWREngine.setOrdered(true);
+    //DWREngine.setOrdered(true);
+    DWREngine.setOrdered(false);
     DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
@@ -475,7 +478,8 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
     useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(true);
+    //DWREngine.setOrdered(true);
+    DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, updateUI);
     //Flux.setRepeatIndex(updateUI, repeatId, targetPosition, sessionKey);
