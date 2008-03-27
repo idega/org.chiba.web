@@ -23,14 +23,14 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/03/27 10:42:30 $ by $Author: civilis $
+ * Last modified: $Date: 2008/03/27 14:13:36 $ by $Author: civilis $
  */
 
 public abstract class FileUploadManager {
 	
-    public static final String UPLOADS_PATH = IWMainApplication.getIWMainApplication(FacesContext.getCurrentInstance()).getBundle(IWBundleStarter.BUNDLE_IDENTIFIER).getBundleBaseRealPath() + "/uploads/";
+    private static String UPLOADS_PATH;
     private static final String ENTRIES = "./child::entry";
     private static final String ENTRY_FILES = ".//entry[@filename]";
     
@@ -40,13 +40,20 @@ public abstract class FileUploadManager {
     public void cleanup(Node instance) {
 
 		Set<String> folders = getFilesFolders(instance);
-		String pathDir = "";
 		
 		for (String folder : folders) {
-		    pathDir = FileUploads.UPLOADS_PATH + folder + CoreConstants.SLASH;
+			String pathDir = getUPLOADSPATH() + folder + CoreConstants.SLASH;
 		    FileUtil.deleteNotEmptyDirectory(pathDir);
 		}
     }
+    
+    public static String getUPLOADSPATH() {
+		
+    	if(UPLOADS_PATH == null)
+    		UPLOADS_PATH = IWMainApplication.getIWMainApplication(FacesContext.getCurrentInstance()).getBundle(IWBundleStarter.BUNDLE_IDENTIFIER).getBundleBaseRealPath() + "/uploads/";
+
+    	return UPLOADS_PATH;
+	}
 
     public List<File> getFiles(String identifier, Node instance) {
 
@@ -83,7 +90,7 @@ public abstract class FileUploadManager {
 		}
 
 		Set<String> filesFolders = new HashSet<String>();
-		List<String> pathValues= StringUtil.getValuesFromString(FileUploads.UPLOADS_PATH, CoreConstants.SLASH);
+		List<String> pathValues= StringUtil.getValuesFromString(getUPLOADSPATH(), CoreConstants.SLASH);
 		
 		for (int i = 0; i < entries.getLength(); i++) {
 		    	List<String> valuesFromString = StringUtil.getValuesFromString(entries.item(i).getTextContent(), CoreConstants.SLASH);
