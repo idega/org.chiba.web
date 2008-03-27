@@ -30,7 +30,7 @@ dojo.widget.defineWidget(
         progress: null,
         progressBackground: null,
         fillInTemplate: function() {
-        	console.log('fillInTemplate');
+  
             // todo: this var is a candidate for a (to be implemented) superclass
             this.xformsId = this.id.substring(0, this.id.length - 6);
 //            dojo.debug("Upload xformsId: " + this.xformsId);
@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 
         },
         onChange: function() {
-        	console.log('onChange');
+        
             if (this.xfreadonly == "true") {
                 this.inputNode.disabled = true;
             }
@@ -57,7 +57,7 @@ dojo.widget.defineWidget(
             }
         },
         updateProgress: function (value) {
-        	console.log('Update progress');
+        
             var progressDiv = document.getElementById(this.xformsId + "-progress-bg");
 
             if (value != 0) {
@@ -116,15 +116,15 @@ dojo.widget.defineWidget(
             var path = this.inputNode.value;
             
             var filename = path.substring(path.lastIndexOf("/") + 1);
-			console.log('Here: ' + filename);
+		
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
             progressUpdate = setInterval("Flux.fetchProgress('" + this.xformsId + "','" + filename + "','" + sessionKey + "', updateUI)", 1000);
-            console.log('Here 2: ' + progressUpdate);
+        
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
-            console.log('Here 3: ' + filename);
+         
             return true;
         }
     }
