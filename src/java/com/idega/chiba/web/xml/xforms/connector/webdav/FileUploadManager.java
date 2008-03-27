@@ -23,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/03/27 10:14:54 $ by $Author: arunas $
+ * Last modified: $Date: 2008/03/27 10:24:17 $ by $Author: arunas $
  */
 
 public abstract class FileUploadManager {
@@ -74,11 +74,14 @@ public abstract class FileUploadManager {
 	NodeList entries = util.getNodeset(instance);
 	Set<String> filesFolders = new HashSet<String>();
 	List<String> pathValues= StringUtil.getValuesFromString(FileUploads.UPLOADS_PATH, CoreConstants.SLASH);
+	
 	for (int i = 0; i < entries.getLength(); i++) {
 	    	List<String> valuesFromString = StringUtil.getValuesFromString(entries.item(i).getTextContent(), CoreConstants.SLASH);
-		filesFolders.add(valuesFromString.get(pathValues.size()));
+	    	filesFolders.add(valuesFromString.get(pathValues.size()));
 	}
+	
 	return filesFolders;
+	
     }
     
     protected abstract Element getUploadsElement(String identifier, Node instance);
