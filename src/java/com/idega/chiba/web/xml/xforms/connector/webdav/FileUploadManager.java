@@ -23,67 +23,75 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2008/03/27 10:24:17 $ by $Author: arunas $
+ * Last modified: $Date: 2008/03/27 10:42:30 $ by $Author: civilis $
  */
 
 public abstract class FileUploadManager {
+	
     public static final String UPLOADS_PATH = IWMainApplication.getIWMainApplication(FacesContext.getCurrentInstance()).getBundle(IWBundleStarter.BUNDLE_IDENTIFIER).getBundleBaseRealPath() + "/uploads/";
     private static final String ENTRIES = "./child::entry";
     private static final String ENTRY_FILES = ".//entry[@filename]";
+    
+    final private XPathUtil entriesXPUT = new XPathUtil(ENTRIES);
+    final private XPathUtil entryFilesXPUT = new XPathUtil(ENTRY_FILES);
       
     public void cleanup(Node instance) {
 
-	Set<String> folders = getFilesFolders(instance);
-	String pathDir = "";
-	for (String folder : folders) {
-	    pathDir = FileUploads.UPLOADS_PATH + folder + CoreConstants.SLASH;
-	    FileUtil.deleteNotEmptyDirectory(pathDir);
-	}
-
+		Set<String> folders = getFilesFolders(instance);
+		String pathDir = "";
+		
+		for (String folder : folders) {
+		    pathDir = FileUploads.UPLOADS_PATH + folder + CoreConstants.SLASH;
+		    FileUtil.deleteNotEmptyDirectory(pathDir);
+		}
     }
 
     public List<File> getFiles(String identifier, Node instance) {
 
-	List<File> fileList = new ArrayList<File>();
-
-	Element node = getUploadsElement(identifier, instance);
+		List<File> fileList = new ArrayList<File>();
 	
-	XPathUtil util = new XPathUtil(ENTRIES);
-	NodeList entries = util.getNodeset(node);
-
-	for (int i = 0; i < entries.getLength(); i++) {
+		Element node = getUploadsElement(identifier, instance);
+		NodeList entries;
+		
+		synchronized (entriesXPUT) {
+			entries = entriesXPUT.getNodeset(node);
+		}
 	
-	    try {
-		   URI uri = new URI (entries.item(i).getTextContent());
-		   File file = new File(uri);
-		   fileList.add(file);
-	    } catch (URISyntaxException e) {
-		 e.printStackTrace();
-	    }
-	 
-	}
-	
-	return fileList;
+		for (int i = 0; i < entries.getLength(); i++) {
+		
+		    try {
+			   URI uri = new URI (entries.item(i).getTextContent());
+			   File file = new File(uri);
+			   fileList.add(file);
+		    } catch (URISyntaxException e) {
+			 e.printStackTrace();
+		    }
+		 
+		}
+		
+		return fileList;
     }
     
     protected Set<String> getFilesFolders(Node instance) {
+    	
+    	NodeList entries;
+		
+		synchronized (entryFilesXPUT) {
+			entries = entryFilesXPUT.getNodeset(instance);
+		}
 
-	XPathUtil util = new XPathUtil(ENTRY_FILES);
-	NodeList entries = util.getNodeset(instance);
-	Set<String> filesFolders = new HashSet<String>();
-	List<String> pathValues= StringUtil.getValuesFromString(FileUploads.UPLOADS_PATH, CoreConstants.SLASH);
-	
-	for (int i = 0; i < entries.getLength(); i++) {
-	    	List<String> valuesFromString = StringUtil.getValuesFromString(entries.item(i).getTextContent(), CoreConstants.SLASH);
-	    	filesFolders.add(valuesFromString.get(pathValues.size()));
-	}
-	
-	return filesFolders;
-	
+		Set<String> filesFolders = new HashSet<String>();
+		List<String> pathValues= StringUtil.getValuesFromString(FileUploads.UPLOADS_PATH, CoreConstants.SLASH);
+		
+		for (int i = 0; i < entries.getLength(); i++) {
+		    	List<String> valuesFromString = StringUtil.getValuesFromString(entries.item(i).getTextContent(), CoreConstants.SLASH);
+		    	filesFolders.add(valuesFromString.get(pathValues.size()));
+		}
+		
+		return filesFolders;
     }
     
     protected abstract Element getUploadsElement(String identifier, Node instance);
-
 }
