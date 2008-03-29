@@ -3,6 +3,7 @@ package com.idega.chiba.web.session.impl;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -200,11 +201,14 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("checking for expired sessions at " + new Date(System.currentTimeMillis()));
         }
-        
-        for(XFormsSession session : xformsSessions.values()) {
+
+        XFormsSession session;
+        Iterator allSessions = this.xformsSessions.values().iterator();
+        while (allSessions.hasNext()) {
+            session = (XFormsSession) allSessions.next();
 
             if (isExpired(session)) {
-            	xformsSessions.values().remove(session);
+                allSessions.remove();
                 System.gc();
             }
         }
