@@ -23,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  *
- * Last modified: $Date: 2008/03/30 15:21:12 $ by $Author: civilis $
+ * Last modified: $Date: 2008/03/30 21:57:26 $ by $Author: civilis $
  */
 
 public abstract class FileUploadManager {
@@ -41,9 +41,12 @@ public abstract class FileUploadManager {
 
 		Set<String> folders = getFilesFolders(instance);
 		
-		for (String folder : folders) {
-			String pathDir = getUPLOADSPATH() + folder + CoreConstants.SLASH;
-		    FileUtil.deleteNotEmptyDirectory(pathDir);
+		if(folders != null) {
+		
+			for (String folder : folders) {
+				String pathDir = getUPLOADSPATH() + folder + CoreConstants.SLASH;
+			    FileUtil.deleteNotEmptyDirectory(pathDir);
+			}
 		}
     }
     
@@ -96,16 +99,27 @@ public abstract class FileUploadManager {
 		synchronized (entryFilesXPUT) {
 			entries = entryFilesXPUT.getNodeset(instance);
 		}
-
-		Set<String> filesFolders = new HashSet<String>();
-		List<String> pathValues= StringUtil.getValuesFromString(getUPLOADSPATH(), CoreConstants.SLASH);
 		
-		for (int i = 0; i < entries.getLength(); i++) {
-		    	List<String> valuesFromString = StringUtil.getValuesFromString(entries.item(i).getTextContent(), CoreConstants.SLASH);
-		    	filesFolders.add(valuesFromString.get(pathValues.size()));
+		if(entries != null && entries.getLength() != 0) {
+		
+			Set<String> filesFolders = new HashSet<String>();
+			List<String> pathValues = StringUtil.getValuesFromString(getUPLOADSPATH(), CoreConstants.SLASH);
+			
+			for (int i = 0; i < entries.getLength(); i++) {
+				
+				String uriStr = entries.item(i).getTextContent();
+				
+				if(!CoreConstants.EMPTY.equals(uriStr)) {
+					
+					List<String> valuesFromString = StringUtil.getValuesFromString(uriStr, CoreConstants.SLASH);
+			    	filesFolders.add(valuesFromString.get(pathValues.size()));
+				}
+			}
+			
+			return filesFolders;
 		}
-		
-		return filesFolders;
+
+		return null;
     }
     
     protected abstract Element getUploadsElement(String identifier, Node instance);
