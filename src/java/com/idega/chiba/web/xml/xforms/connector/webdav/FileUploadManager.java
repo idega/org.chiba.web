@@ -23,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/03/27 14:13:36 $ by $Author: civilis $
+ * Last modified: $Date: 2008/03/30 15:21:12 $ by $Author: civilis $
  */
 
 public abstract class FileUploadManager {
@@ -65,17 +65,25 @@ public abstract class FileUploadManager {
 		synchronized (entriesXPUT) {
 			entries = entriesXPUT.getNodeset(node);
 		}
-	
-		for (int i = 0; i < entries.getLength(); i++) {
 		
-		    try {
-			   URI uri = new URI (entries.item(i).getTextContent());
-			   File file = new File(uri);
-			   fileList.add(file);
-		    } catch (URISyntaxException e) {
-			 e.printStackTrace();
-		    }
-		 
+		if(entries != null) {
+		
+			for (int i = 0; i < entries.getLength(); i++) {
+				
+			    try {
+			    	String uriStr = entries.item(i).getTextContent();
+			    	
+			    	if(!CoreConstants.EMPTY.equals(uriStr)) {
+			    	
+			    		URI uri = new URI (uriStr);
+			    		File file = new File(uri);
+			    		fileList.add(file);
+			    	}
+				   
+			    } catch (URISyntaxException e) {
+			    	e.printStackTrace();
+			    }
+			}
 		}
 		
 		return fileList;
