@@ -16,18 +16,71 @@
 .inactive{
     display:none;
 }
+
 #legend{padding:3px;}
 
 /* #################### GROUP STYLES #################### */
 /* xf:groups will be rendered as fieldsets and therefore
 are styleable via this matcher or more specifically by their
 appearance class 'minimal-group|compact-group|full-group'. */
+
 * > fieldset {
     margin-bottom:5px;
 }
 /* IE */
 fieldset{
     margin-bottom:5px;
+}
+
+
+/*********** group appearances ***********/
+
+.group {
+	border: 0px;
+}
+	
+.minimal-group{
+    padding-top:5px;
+}
+
+.minimal-group div{
+    display:inline;
+    margin-right:3px;
+}
+
+.compact-group div{
+    display:block;
+    margin-top:3px;
+
+    /*float:left;*/
+    /* Safari doesn't like the float. Firefox renders this correctly.*/
+}
+
+.compact-group div label{
+    display:block;
+}
+
+.compact-group div .value{
+    display:inline;
+    margin-right:3px;
+}
+
+
+.full-group div{
+    display:block;
+    margin-top:3px;
+    clear:both;
+}
+.full-group label{
+    /*width:10em;
+    float:left;*/
+}
+.full-group .value{
+    display:inline;
+}
+
+.minimal-group label{
+    display:inline;
 }
 
 /*********** used to render group labels ***********/
@@ -70,47 +123,6 @@ fieldset > fieldset > fieldset {
     display:block;
 }
 
-/*********** group appearances ***********/
-.minimal-group{
-    padding-top:5px;
-}
-.minimal-group div{
-    display:inline;
-    margin-right:3px;
-}
-
-.compact-group div{
-    display:block;
-    margin-top:3px;
-
-    /*float:left;*/
-    /* Safari doesn't like the float. Firefox renders this correctly.*/
-}
-.compact-group div label{
-    display:block;
-}
-.compact-group div .value{
-    display:inline;
-    margin-right:3px;
-}
-
-
-.full-group div{
-    display:block;
-    margin-top:3px;
-    clear:both;
-}
-.full-group label{
-    /*width:10em;
-    float:left;*/
-}
-.full-group .value{
-    display:inline;
-}
-
-.minimal-group label{
-    display:inline;
-}
 
 /* #################### GENERAL XFORMS MIP AND COMMON-CHILD STYLES #################### */
 
@@ -128,6 +140,7 @@ fieldset > fieldset > fieldset {
 .valid > .alert{
     display:none;
 }
+
 .invalid .value{
     color:white;
     font-style:italic;
@@ -163,11 +176,14 @@ fieldset > fieldset > fieldset {
 .disabled .progressbar{
     display:none;
 }
+
 /*********** styles character used for signaling 'required' (normally '*') ***********/
+
 .required-symbol{
     color:#A42322;
     font-size:larger;
 }
+
 .repeat .label .required-symbol{
     color:red;
     display:inline;
@@ -180,9 +196,6 @@ fieldset > fieldset > fieldset {
 .enabled {
 }
 
-
-
-
 .help-text{
     position:absolute;
     display:none;
@@ -191,9 +204,11 @@ fieldset > fieldset > fieldset {
     background:azure;
     padding:10px;
 }
+
 .help-symbol{
     margin-left:3px;
 }
+
 /* #################### Repeat styles #################### */
 
 .repeat-prototype {
@@ -219,7 +234,6 @@ fieldset > fieldset > fieldset {
     display: none;
 }
 
-
 .minimal-repeat{
     display:block;
 }
@@ -229,7 +243,6 @@ fieldset > fieldset > fieldset {
 .minimal-repeat .repeat-index{
     float:left;
 }
-
 
 /* #################### SWITCH STYLES #################### */
 
@@ -285,9 +298,7 @@ fieldset > fieldset > fieldset {
     /*width: 90%;*/
     /*overflow: hidden;*/
 }
-.group {
-	border: 0px;
-	}
+
 /* #################### CONTROL STYLES #################### */
 
 
@@ -339,10 +350,11 @@ fieldset > fieldset > fieldset {
 .rangesteps .rangevalue *{
     background:#564;
 }
+
 /*********** Upload specific styles ***********/
 .progressbar{
-    display:none;
-}
+    display:none;}
+    
 .progressbar .border{
     margin-top:1px;
     background: url(../images/progress-remainder.gif) repeat-x;
