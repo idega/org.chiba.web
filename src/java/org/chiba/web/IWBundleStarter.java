@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.7 2008/03/31 11:39:43 anton Exp $
+ * $Id: IWBundleStarter.java,v 1.8 2008/04/01 14:27:38 civilis Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -9,48 +9,27 @@
  */
 package org.chiba.web;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.httpclient.HttpException;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xslt.TransformerService;
 
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.idegaweb.DefaultIWBundle;
-import com.idega.idegaweb.IWApplicationContext;
+import com.idega.chiba.web.xml.xforms.connector.webdav.FileUploadManager;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.include.GlobalIncludeManager;
-
-import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.IWBundleResourceFilter;
-import com.idega.slide.business.IWSlideService;
-import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/03/31 11:39:43 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/01 14:27:38 $ by $Author: civilis $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
-	private static final Logger log = Logger.getLogger(IWBundleStarter.class.getName());
-
 	public static final String BUNDLE_STYLES_PATH = "/style/xforms.css";
 	public static final String SLIDE_STYLES_PATH = "/files/public/style/xforms.css";
 	public static final String BUNDLE_IDENTIFIER = "org.chiba.web";
@@ -76,6 +55,9 @@ public class IWBundleStarter implements IWBundleStartable {
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html4.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"ui.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html-form-controls.xsl");
+    	
+//    	creates uploads dir if doesn't exist
+    	FileUploadManager.initUPLOADSPATH(starterBundle);
     	
 //    	saveToSlide("xforms.css");
 		

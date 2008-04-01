@@ -8,14 +8,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.faces.context.FacesContext;
-
-import org.chiba.web.IWBundleStarter;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWBundle;
 import com.idega.util.CoreConstants;
 import com.idega.util.FileUtil;
 import com.idega.util.StringUtil;
@@ -23,14 +20,14 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
- * Last modified: $Date: 2008/03/30 21:57:26 $ by $Author: civilis $
+ * Last modified: $Date: 2008/04/01 14:27:38 $ by $Author: civilis $
  */
 
 public abstract class FileUploadManager {
 	
-    private static String UPLOADS_PATH;
+    public static String UPLOADS_PATH;
     private static final String ENTRIES = "./child::entry";
     private static final String ENTRY_FILES = ".//entry[@filename]";
     
@@ -44,18 +41,16 @@ public abstract class FileUploadManager {
 		if(folders != null) {
 		
 			for (String folder : folders) {
-				String pathDir = getUPLOADSPATH() + folder + CoreConstants.SLASH;
+				String pathDir = UPLOADS_PATH + folder + CoreConstants.SLASH;
 			    FileUtil.deleteNotEmptyDirectory(pathDir);
 			}
 		}
     }
     
-    public static String getUPLOADSPATH() {
+    public static void initUPLOADSPATH(IWBundle bundle) {
 		
-    	if(UPLOADS_PATH == null)
-    		UPLOADS_PATH = IWMainApplication.getIWMainApplication(FacesContext.getCurrentInstance()).getBundle(IWBundleStarter.BUNDLE_IDENTIFIER).getBundleBaseRealPath() + "/uploads/";
-
-    	return UPLOADS_PATH;
+    	UPLOADS_PATH = bundle.getBundleBaseRealPath() + "/uploads/";
+		FileUtil.createFolder(UPLOADS_PATH);
 	}
 
     public List<File> getFiles(String identifier, Node instance) {
@@ -103,7 +98,7 @@ public abstract class FileUploadManager {
 		if(entries != null && entries.getLength() != 0) {
 		
 			Set<String> filesFolders = new HashSet<String>();
-			List<String> pathValues = StringUtil.getValuesFromString(getUPLOADSPATH(), CoreConstants.SLASH);
+			List<String> pathValues = StringUtil.getValuesFromString(UPLOADS_PATH, CoreConstants.SLASH);
 			
 			for (int i = 0; i < entries.getLength(); i++) {
 				
