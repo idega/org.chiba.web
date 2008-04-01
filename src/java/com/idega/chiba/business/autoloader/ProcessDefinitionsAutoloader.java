@@ -20,15 +20,14 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainSlideStartedEvent;
-import com.idega.presentation.IWContext;
 import com.idega.slide.business.IWSlideService;
 import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * @author <a href="mailto:anton@idega.com">Anton Makarov</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- * Last modified: $Date: 2008/03/31 11:39:54 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/01 17:01:55 $ by $Author: anton $
  */
 @Scope("singleton")
 @Service
@@ -41,37 +40,34 @@ public class ProcessDefinitionsAutoloader implements ApplicationListener {
 	}
 
 	public void onApplicationEvent(ApplicationEvent applicationEvent) {	
-//		if(applicationEvent instanceof IWMainSlideStartedEvent) {			
-//			
-//			try {
-//				WebdavExtendedResource webdav_resource = getWebdavExtendedResource(IWBundleStarter.SLIDE_STYLES_PATH);
-//				if (!webdav_resource.exists()) {
-//					IWBundle bundle = ((IWMainApplication) IWContext.getInstance()
-//							.getApplication()).getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
-//					InputStream is = bundle
-//							.getResourceInputStream(IWBundleStarter.BUNDLE_STYLES_PATH);
-//
-//					IWSlideService service_bean = getIWSlideService();
-//
-//					service_bean.uploadFileAndCreateFoldersFromStringAsRoot("files/public/style/", "xforms.css", is, "text/css", false);
-//				}
-//			} catch (IBOLookupException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (FileNotFoundException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (RemoteException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (HttpException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+		if(applicationEvent instanceof IWMainSlideStartedEvent) {			
+			
+			try {
+				WebdavExtendedResource webdav_resource = getWebdavExtendedResource(IWBundleStarter.SLIDE_STYLES_PATH + IWBundleStarter.CHIBA_CSS);
+				if (!webdav_resource.exists()) {
+					IWBundle bundle = ((IWMainSlideStartedEvent)applicationEvent).getIWMA().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
+					InputStream bis = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH);
+
+					IWSlideService service_bean = getIWSlideService();
+
+					service_bean.uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.SLIDE_STYLES_PATH, IWBundleStarter.CHIBA_CSS, bis, "text/css", false);
+				}
+			} catch (IBOLookupException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (HttpException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private IWSlideService getIWSlideService() throws IBOLookupException {
