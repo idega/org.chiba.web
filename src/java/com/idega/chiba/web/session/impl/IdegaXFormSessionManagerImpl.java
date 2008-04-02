@@ -203,7 +203,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
         }
 
         XFormsSession session;
-        Iterator allSessions = this.xformsSessions.values().iterator();
+        Iterator<XFormsSession> allSessions = this.xformsSessions.values().iterator();
         while (allSessions.hasNext()) {
             session = (XFormsSession) allSessions.next();
 
