@@ -25,17 +25,17 @@ import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * @author <a href="mailto:anton@idega.com">Anton Makarov</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.1 $
  * 
- * Last modified: $Date: 2008/04/02 11:44:10 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/02 13:09:14 $ by $Author: anton $
  */
 @Scope("singleton")
 @Service
-public class ProcessDefinitionsAutoloader implements ApplicationListener {
+public class StylesAutoloader implements ApplicationListener {
 
 	private final Logger logger;
 
-	public ProcessDefinitionsAutoloader() {
+	public StylesAutoloader() {
 		logger = Logger.getLogger(getClass().getName());
 	}
 
