@@ -25,9 +25,9 @@ import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * @author <a href="mailto:anton@idega.com">Anton Makarov</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
- * Last modified: $Date: 2008/04/01 17:01:55 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/02 11:44:10 $ by $Author: anton $
  */
 @Scope("singleton")
 @Service
@@ -46,7 +46,7 @@ public class ProcessDefinitionsAutoloader implements ApplicationListener {
 				WebdavExtendedResource webdav_resource = getWebdavExtendedResource(IWBundleStarter.SLIDE_STYLES_PATH + IWBundleStarter.CHIBA_CSS);
 				if (!webdav_resource.exists()) {
 					IWBundle bundle = ((IWMainSlideStartedEvent)applicationEvent).getIWMA().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
-					InputStream bis = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH);
+					InputStream bis = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH + IWBundleStarter.CHIBA_CSS);
 
 					IWSlideService service_bean = getIWSlideService();
 
