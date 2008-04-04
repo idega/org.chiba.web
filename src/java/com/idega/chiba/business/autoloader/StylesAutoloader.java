@@ -25,9 +25,9 @@ import com.idega.slide.util.WebdavExtendedResource;
 
 /**
  * @author <a href="mailto:anton@idega.com">Anton Makarov</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- * Last modified: $Date: 2008/04/02 13:09:14 $ by $Author: anton $
+ * Last modified: $Date: 2008/04/04 14:52:22 $ by $Author: anton $
  */
 @Scope("singleton")
 @Service
@@ -47,9 +47,8 @@ public class StylesAutoloader implements ApplicationListener {
 				if (!webdav_resource.exists()) {
 					IWBundle bundle = ((IWMainSlideStartedEvent)applicationEvent).getIWMA().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
 					InputStream bis = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH + IWBundleStarter.CHIBA_CSS);
-
 					IWSlideService service_bean = getIWSlideService();
-
+					
 					service_bean.uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.SLIDE_STYLES_PATH, IWBundleStarter.CHIBA_CSS, bis, "text/css", false);
 				}
 			} catch (IBOLookupException e) {

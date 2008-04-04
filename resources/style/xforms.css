@@ -399,14 +399,14 @@ fieldset > fieldset > fieldset {
     
 .progressbar .border{
     margin-top:1px;
-    background: url(../images/progress-remainder.gif) repeat-x;
+    background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/progress-remainder.gif) repeat-x;
     border-left: 1px solid gray;
     border-right: 1px solid gray;
     width: 100%;
     height: 18px;
 }
 .progressbar .background {
-  	background: url(../images/progress-bar.gif) repeat-x;
+  	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/progress-bar.gif) repeat-x;
   	height: 18px;
   	width: 0%;
 }
@@ -448,7 +448,7 @@ fieldset > fieldset > fieldset {
 }*/
 /*div.info {
 	height: 54px;
-	background: url(images/info_tiler.gif) repeat-x #ABBAC3;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/info_tiler.gif) repeat-x #ABBAC3;
 	padding: 13px 15px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 12px;
@@ -464,7 +464,7 @@ fieldset > fieldset > fieldset {
 div.fbc_header_text{
 	border-top: 1px #a4a4a4 solid;
 	border-bottom: 1px #a4a4a4 solid;
-	background: url(images/sub_header_tiler.gif) repeat-x #d6d6d6;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/sub_header_tiler.gif) repeat-x #d6d6d6;
 	height: 18px;
 	color: #222222;
 	font-size: 12px;
@@ -571,7 +571,7 @@ fieldset.group textarea {
 	padding-bottom: 0;
 }
 .trigger > input {
-	background: url(images/button_next.png) no-repeat;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/button_next.png) no-repeat;
 	filter: none;
 	width: 86px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -585,7 +585,7 @@ fieldset.group textarea {
 }
 .trigger > input:hover {
 	color: #571900;
-	background-image: url(images/button_next_hover.png);
+	background-image: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/button_next_hover.png);
 	filter: none;	
 }
 div.fbc_button_area {
@@ -594,7 +594,7 @@ div.fbc_button_area {
 	padding-top: 16px;
 	text-align: right;
 	height: 49px;
-	background: url(images/bottom_tiler.gif) repeat-x #AEBCC5;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/bottom_tiler.gif) repeat-x #AEBCC5;
 }
 div.label {
 	clear: both;
@@ -602,7 +602,7 @@ div.label {
 	border-top: 1px #fff solid;
 	border-bottom: 1px #B2B6B8 solid;
 	height: 28px;
-	background: url(images/header_tiler.gif) repeat-x #fff;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/header_tiler.gif) repeat-x #fff;
 }
 div.label h1 {
 	float: left;
@@ -660,7 +660,7 @@ div.phases ul {
 }
 
 div.phases ul li {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/blue_orb.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/idegaweb/bundles/org.chiba.web.bundle/resources/images/blue_orb.png',sizingMethod='scale');
 	width: 20px;
 	height: 20px;
 	text-align: center;
@@ -675,12 +675,12 @@ div.phases ul li {
 }
 
 html>body div.phases ul li {
-	background: url(images/blue_orb.png) no-repeat top center;
+	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/blue_orb.png) no-repeat top center;
 	filter: none;
 }
 
 div.phases ul li.current {
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='images/orange_orb.png',sizingMethod='scale');
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/idegaweb/bundles/org.chiba.web.bundle/resources/images/orange_orb.png',sizingMethod='scale');
 	width: 40px;
 	height: 46px;
 	font-size: 26px;
@@ -689,7 +689,7 @@ div.phases ul li.current {
 }
 
 html>body div.phases ul li.current {
-	background-image: url(images/orange_orb.png);
+	background-image: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/orange_orb.png);
 	filter: none;
 }
 .selector-item {
