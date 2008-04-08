@@ -168,11 +168,12 @@ function _styledTextareaSetXFormsValue(textareaID) {
         dojo.debug("Flux.setXFormsValue: " + controlID + "='" + value + "'");
         useLoadingMessage();
 
-        DWREngine.setOrdered(true);
+      //  DWREngine.setOrdered(true);
+        DWREngine.setOrdered(false);
         DWREngine.setErrorHandler(handleExceptions);
 
         var sessionKey = document.getElementById("chibaSessionKey").value;
-        Flux.setXFormsValue(updateUI, controlID, value, sessionKey);
+        Flux.setXFormsValue(controlID, value, sessionKey, updateUI);
 
         // Store the new last known value
         _styledTextareaLastKnownValue[textareaID] = value;
