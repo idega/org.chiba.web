@@ -19,9 +19,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/04/24 19:17:18 $ by $Author: arunas $
+ * Last modified: $Date: 2008/04/24 21:24:25 $ by $Author: laddi $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -44,7 +44,8 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	/**
 	 * resolves object, which is configured in the faces-config.xml, method value
 	 */
-    public Object resolve() throws XFormsException {
+    @Override
+		public Object resolve() throws XFormsException {
     	
         try {
         	String xpath = new URI(getURI()).getSchemeSpecificPart();
@@ -105,11 +106,11 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	cls = object.iterator().next().getClass();
 	
 	try {
-	   meth =  cls.getMethod(methodName, null);
+	   meth =  cls.getMethod(methodName, (Class) null);
 //	   collection-string 
 	   if (callprops[1].equals(type_name)) {
 	       for (Iterator<?> it = object.iterator(); it.hasNext();)    
-		   text = text + meth.invoke(it.next(), null).toString() + CoreConstants.COMMA + CoreConstants.SPACE;
+		   text = text + meth.invoke(it.next(), (Object) null).toString() + CoreConstants.COMMA + CoreConstants.SPACE;
 	       	text = text.substring(0, text.length()-2);	
 	   }
 	}catch (NoSuchMethodException e) {

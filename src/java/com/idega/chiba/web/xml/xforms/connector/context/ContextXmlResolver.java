@@ -20,9 +20,9 @@ import javax.faces.context.FacesContext;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2008/04/24 21:24:41 $ by $Author: laddi $
  */
 public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -32,7 +32,8 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
 	/**
 	 * resolves object, which is configured in the faces-config.xml, method value
 	 */
-    public Object resolve() throws XFormsException {
+    @Override
+		public Object resolve() throws XFormsException {
     	
         try {
         	String xpath = new URI(getURI()).getSchemeSpecificPart();
@@ -58,7 +59,6 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
             	return XmlUtil.getDocumentBuilder().newDocument();
             }
 
-            @SuppressWarnings("unchecked")
             Map<Locale, Map<String, String>> localizedItems = (Map<Locale, Map<String, String>>)value;
             
 	        return createResponseDocument(localizedItems);
