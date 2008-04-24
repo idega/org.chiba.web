@@ -1,5 +1,15 @@
 package com.idega.chiba.web.xml.xforms.connector.context;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.faces.context.FacesContext;
+
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
@@ -7,17 +17,11 @@ import org.w3c.dom.Document;
 import com.idega.util.CoreConstants;
 import com.idega.util.xml.XmlUtil;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.net.URI;
-
-import javax.faces.context.FacesContext;
-
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2008/04/24 19:17:18 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -28,6 +32,14 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	private static final String response_part4 = "></data>";
 	private static final String faces_exp_part1 = "#{";
 	private static final String faces_exp_part2 = "}";
+	private static final String method_prefix = "get";
+	private static final String type_name = "string";
+	private static final String object_type = "collection";
+	private Class<?> cls;
+	private Method meth; 
+	private String methodName;
+	private String [] callprops;
+	private String exp;
 	
 	/**
 	 * resolves object, which is configured in the faces-config.xml, method value
@@ -41,6 +53,9 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             	return super.resolve();
             
             String key = xpath.substring(autofill_key_prefix.length());
+            if (key.indexOf(CoreConstants.MINUS)>0)
+                 key = modifyKey(key);
+            
             FacesContext ctx = FacesContext.getCurrentInstance();
             
             if(ctx == null)
@@ -53,8 +68,8 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             		.append(faces_exp_part2)
             		.toString()
             	).getValue(ctx);
-            
-	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value.toString(), xpath).getDocumentElement();
+
+	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value instanceof Collection ? objectToString((Collection<?>)value) : value.toString(), xpath).getDocumentElement();
         } catch (Exception e) {
         	
         	try {
@@ -83,4 +98,43 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
         stream.close();
         return doc;
 	}
+    
+    protected String objectToString (Collection<?> object) {
+	
+	String text = CoreConstants.EMPTY;
+	cls = object.iterator().next().getClass();
+	
+	try {
+	   meth =  cls.getMethod(methodName, null);
+//	   collection-string 
+	   if (callprops[1].equals(type_name)) {
+	       for (Iterator<?> it = object.iterator(); it.hasNext();)    
+		   text = text + meth.invoke(it.next(), null).toString() + CoreConstants.COMMA + CoreConstants.SPACE;
+	       	text = text.substring(0, text.length()-2);	
+	   }
+	}catch (NoSuchMethodException e) {
+	    e.printStackTrace();  
+	} catch (IllegalArgumentException e) {
+	    e.printStackTrace();
+	} catch (IllegalAccessException e) {
+	    e.printStackTrace();
+	} catch (InvocationTargetException e) {
+	    e.printStackTrace();
+	}      
+
+	return text;
+    }
+
+    protected String modifyKey(String key) {
+	
+	callprops = key.split(CoreConstants.MINUS);
+	exp = key.substring(key.lastIndexOf(CoreConstants.MINUS)+1);
+//	collection type
+	if (callprops[0].equals(object_type)){
+	    key = exp.substring(0, exp.lastIndexOf(CoreConstants.DOT));
+	    methodName = exp.substring(exp.lastIndexOf(CoreConstants.DOT)+1);
+	    methodName = method_prefix + methodName.substring(0,1).toUpperCase() + methodName.substring(1, methodName.length()) ;
+	}
+	return key;
+    }
 }
