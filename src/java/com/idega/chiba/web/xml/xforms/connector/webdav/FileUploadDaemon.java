@@ -8,9 +8,9 @@ import com.idega.util.IWTimestamp;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/04/02 12:09:08 $ by $Author: arunas $
+ * Last modified: $Date: 2008/04/24 23:57:48 $ by $Author: laddi $
  */
 
 public class FileUploadDaemon implements ActionListener {
@@ -31,7 +31,7 @@ public class FileUploadDaemon implements ActionListener {
 	    if (event.getActionCommand().equalsIgnoreCase(THREAD_NAME)) {
 		System.out.println("[File Upload Daemon - "+ IWTimestamp.RightNow().toString()	+ "] - Deleting uploaded files older than 24h");
 		// deleting uploaded files older than 24h.
-		FileUtil.deleteAllFilesAndFolderInFolderOlderThan(FileUploadManager.UPLOADS_PATH, fileTimer.THREAD_SLEEP_24_HOURS);
+		FileUtil.deleteAllFilesAndFolderInFolderOlderThan(FileUploadManager.UPLOADS_PATH, EventTimer.THREAD_SLEEP_24_HOURS);
 	    }
 
 	} catch (Exception x) {

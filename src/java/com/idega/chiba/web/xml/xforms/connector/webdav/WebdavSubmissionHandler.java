@@ -30,7 +30,7 @@ import com.idega.slide.business.IWSlideService;
  * <p/>
  * 
  * @author Gediminas Paulauskas
- * @version $Id: WebdavSubmissionHandler.java,v 1.5 2008/03/27 07:25:15 arunas Exp $
+ * @version $Id: WebdavSubmissionHandler.java,v 1.6 2008/04/24 23:57:48 laddi Exp $
  */
 public class WebdavSubmissionHandler extends AbstractConnector implements SubmissionHandler {
     
@@ -91,7 +91,7 @@ public class WebdavSubmissionHandler extends AbstractConnector implements Submis
 		Element form_id = DOMUtil.getChildElement(instance, form_id_tag);
 		
         if (form_id != null) {
-        	return DOMUtil.getElementValue((Element) form_id);
+        	return DOMUtil.getElementValue(form_id);
         }
         return null;
 	}

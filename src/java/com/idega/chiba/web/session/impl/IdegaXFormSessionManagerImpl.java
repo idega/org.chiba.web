@@ -132,7 +132,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
                 LOGGER.debug("returning XFormsSession: " + id);
                 LOGGER.debug("Session count now: " + xformsSessions.size());
             }
-            return (XFormsSession) this.xformsSessions.get(id);
+            return this.xformsSessions.get(id);
         } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("XFormsSession: " + id + " not found");
@@ -205,7 +205,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
         XFormsSession session;
         Iterator<XFormsSession> allSessions = this.xformsSessions.values().iterator();
         while (allSessions.hasNext()) {
-            session = (XFormsSession) allSessions.next();
+            session = allSessions.next();
 
             if (isExpired(session)) {
                 allSessions.remove();

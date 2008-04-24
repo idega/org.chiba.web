@@ -107,7 +107,7 @@ import javax.servlet.http.HttpServletRequest;
 /**
  *
  * Class by Pierre-Alexandre Losson -- http://www.telio.be/blog
- * @author Original : plosson on 05-janv.-2006 10:46:33 - Last modified  by $Author: anton $ on $Date: 2008/03/21 15:57:05 $
+ * @author Original : plosson on 05-janv.-2006 10:46:33 - Last modified  by $Author: laddi $ on $Date: 2008/04/24 23:57:48 $
  * @version $id: $
  */
 public class UploadListener implements OutputStreamListener
@@ -163,10 +163,10 @@ public class UploadListener implements OutputStreamListener
         // updateUploadInfo("done");
     }
 
-    private long getDelta()
+    /*private long getDelta()
     {
         return (System.currentTimeMillis() - startTime) / 1000;
-    }
+    }*/
 
     private void updateUploadInfo(String status)
     {

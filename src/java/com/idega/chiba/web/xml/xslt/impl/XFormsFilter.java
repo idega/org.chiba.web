@@ -52,7 +52,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      *
      * @see http://java.sun.com/j2ee/sdk_1.3/techdocs/api/javax/servlet/Filter.html#init(javax.servlet.FilterConfig)
      */
-    public void init(FilterConfig filterConfig) throws ServletException {
+    @Override
+		public void init(FilterConfig filterConfig) throws ServletException {
     	
     	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
     	String styleSheetsPath = "/idegaweb/bundles/org.chiba.web.bundle/resources/xslt/";
@@ -84,7 +85,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      *
      * @see http://java.sun.com/j2ee/sdk_1.3/techdocs/api/javax/servlet/Filter.html#destroy()
      */
-    public void destroy() {
+    @Override
+		public void destroy() {
         if(LOG.isDebugEnabled()) {
             LOG.debug("cleanups allocated resources");
         }
@@ -97,7 +99,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      *
      * @see http://java.sun.com/j2ee/sdk_1.3/techdocs/api/javax/servlet/Filter.html#doFilter(javax.servlet.ServletRequest,%20javax.servlet.ServletResponse,%20javax.servlet.FilterChain)
      */
-    public void doFilter(ServletRequest srvRequest, ServletResponse srvResponse, FilterChain filterChain) throws IOException, ServletException {
+    @Override
+		public void doFilter(ServletRequest srvRequest, ServletResponse srvResponse, FilterChain filterChain) throws IOException, ServletException {
         
     	//ensure correct Request encoding
     	if(srvRequest.getCharacterEncoding() == null)
@@ -177,7 +180,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
         }
     }
 
-    protected byte[] prepareData(BufferedHttpServletResponseWrapper bufResponse) {
+    @Override
+		protected byte[] prepareData(BufferedHttpServletResponseWrapper bufResponse) {
         //remove DOCTYPE PI if it exists, Xerces in Chiba otherwise may try to download the system DTD (can cause latency problems)
         byte[] data = removeDocumentTypePI(bufResponse.getData());
         //correct the <xforms:instance> xmlns="" problem (workaround for namespace problems in eXist)
@@ -191,7 +195,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      * @param srvRequest the Servlet request
      * @return true if one of the XFORMS_* constants was found, otherwise false
      */
-    protected boolean handleRequestAttributes(HttpServletRequest request) {
+    @Override
+		protected boolean handleRequestAttributes(HttpServletRequest request) {
         if(request.getAttribute(WebFactory.XFORMS_NODE) != null
                || request.getAttribute(WebFactory.XFORMS_URI) != null
                || request.getAttribute(WebFactory.XFORMS_INPUTSOURCE) != null
@@ -212,7 +217,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      * @param bufResponse The buffered response
      * @return true if the response contains an XForm, false otherwise
      */
-    protected boolean handleResponseBody(HttpServletRequest request,BufferedHttpServletResponseWrapper bufResponse) {
+    @Override
+		protected boolean handleResponseBody(HttpServletRequest request,BufferedHttpServletResponseWrapper bufResponse) {
 
         //[1] check if body parsing is explicitly requested
         if(request.getAttribute(WebFactory.PARSE_RESPONSE_BODY)!= null) return true;
@@ -249,7 +255,8 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      * @return true if configuration sets a value of 'true' for 'filter.ignoreResponseBody' in Chbia config and false
      * in all other cases
      */
-    protected boolean disableReponseBodyParsing() {
+    @Override
+		protected boolean disableReponseBodyParsing() {
         boolean ignoreResponse = false;
         try {
             ignoreResponse = Config.getInstance().getProperty(WebFactory.IGNORE_RESPONSEBODY).equalsIgnoreCase("true");
@@ -268,9 +275,10 @@ public class XFormsFilter extends org.chiba.web.filter.XFormsFilter {
      * @param srvRequest The request
      * @return true if the request is to update an XForm, false otherwise
      */
-    public boolean isXFormUpdateRequest(HttpServletRequest srvRequest) {
+    @Override
+		public boolean isXFormUpdateRequest(HttpServletRequest srvRequest) {
         //get the http request object
-        HttpServletRequest request = (HttpServletRequest) srvRequest;
+        HttpServletRequest request = srvRequest;
 
         //must be a POST request
         if (!request.getMethod().equals("POST"))
