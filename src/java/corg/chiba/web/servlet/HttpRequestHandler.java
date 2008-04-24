@@ -97,8 +97,17 @@
 // Copyright 2005 Chibacon Liss�/Turner GbR
 package corg.chiba.web.servlet;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -114,19 +123,11 @@ import corg.chiba.web.upload.MonitoredDiskFileItemFactory;
 import corg.chiba.web.upload.UploadInfo;
 import corg.chiba.web.upload.UploadListener;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 /**
  * Default implementation for handling HTTP requests.
  *
  * @author Ulrich Nicolas Liss&eacute;
- * @version $Id: HttpRequestHandler.java,v 1.2 2008/03/21 15:56:58 anton Exp $
+ * @version $Id: HttpRequestHandler.java,v 1.3 2008/04/24 21:01:13 laddi Exp $
  */
 public class HttpRequestHandler {
     private static final Logger LOGGER = Logger.getLogger(HttpRequestHandler.class);
@@ -253,7 +254,7 @@ public class HttpRequestHandler {
     protected Map[] parseRequest(HttpServletRequest request) throws FileUploadException, UnsupportedEncodingException {
         Map[] parameters = new Map[4];
 
-        if (FileUpload.isMultipartContent(new ServletRequestContext(request))) {
+        if (FileUploadBase.isMultipartContent(new ServletRequestContext(request))) {
             UploadListener uploadListener = new UploadListener(request, this.sessionKey);
             DiskFileItemFactory factory = new MonitoredDiskFileItemFactory(uploadListener);
             factory.setRepository(new File(this.uploadRoot));
@@ -717,7 +718,7 @@ public class HttpRequestHandler {
         return this.dateTimePrefix;
     }
     
-    private class DayTimeDurationValue
+    protected class DayTimeDurationValue
     {
     	/**
     	 * xdt:dayTimeDuration looks like P1DT2H30M00S
@@ -788,7 +789,8 @@ public class HttpRequestHandler {
     		return(days != null && hours != null && minutes != null && seconds != null);
     	}
     	
-    	public String toString()
+    	@Override
+			public String toString()
     	{
     		if(!isComplete())
     			return new String();
@@ -821,7 +823,7 @@ public class HttpRequestHandler {
     	}
     }
     
-    private class DateTimeValue
+    protected class DateTimeValue
     {
     	/**
     	 * xs:dateTime looks like 2006-09-19T10:56:00.00+1:00 or YYYY-MM-DDTHH:mm:ss.ms+tz
@@ -954,7 +956,8 @@ public class HttpRequestHandler {
     		return new String(toDateString() + "T" + hour + ":" + minute + ":" + second + "." + millisecond + timezone);
     	}
     	
-    	public String toString()
+    	@Override
+			public String toString()
     	{
     		if(isCompleteDateTime())
     			return toDateTimeString();

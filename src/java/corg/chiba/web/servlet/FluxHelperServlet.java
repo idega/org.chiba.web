@@ -96,7 +96,15 @@
  */
 package corg.chiba.web.servlet;
 
-import org.apache.commons.fileupload.FileUpload;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.chiba.adapter.ChibaEvent;
 import org.chiba.adapter.DefaultChibaEventImpl;
@@ -105,13 +113,6 @@ import org.chiba.xml.xforms.config.Config;
 import corg.chiba.web.WebAdapter;
 import corg.chiba.web.session.XFormsSession;
 import corg.chiba.web.session.XFormsSessionManager;
-
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
 
 /**
  * Provides extra functionality that's not easily handled with AJAX. This helper servlet will only be triggered in
@@ -139,14 +140,16 @@ public class FluxHelperServlet extends AbstractChibaServlet {
      *
      * @return - Returns a short description of the servlet.
      */
-    public String getServletInfo() {
+    @Override
+		public String getServletInfo() {
         return "Ajax Servlet Controller for Chiba XForms Processor";
     }
 
     /**
      * Destroys the servlet.
      */
-    public void destroy() {
+    @Override
+		public void destroy() {
     }
 
     /**
@@ -155,7 +158,8 @@ public class FluxHelperServlet extends AbstractChibaServlet {
      * @throws javax.servlet.ServletException
      * @throws java.io.IOException
      */
-    protected void doPost(HttpServletRequest request,
+    @Override
+		protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
         HttpSession session = request.getSession(true);
@@ -177,7 +181,7 @@ public class FluxHelperServlet extends AbstractChibaServlet {
             chibaEvent.initEvent("http-request", null, request);
             webAdapter.dispatch(chibaEvent);
 
-            boolean isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
+            boolean isUpload = FileUploadBase.isMultipartContent(new ServletRequestContext(request));
 
             if (isUpload) {
                 ServletOutputStream out = response.getOutputStream();
