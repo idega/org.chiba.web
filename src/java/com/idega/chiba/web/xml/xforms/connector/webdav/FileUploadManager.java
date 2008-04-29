@@ -1,6 +1,7 @@
 package com.idega.chiba.web.xml.xforms.connector.webdav;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,9 +21,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
- * Last modified: $Date: 2008/04/01 14:27:38 $ by $Author: civilis $
+ * Last modified: $Date: 2008/04/29 09:55:04 $ by $Author: arunas $
  */
 
 public abstract class FileUploadManager {
@@ -42,7 +43,7 @@ public abstract class FileUploadManager {
 		
 			for (String folder : folders) {
 				String pathDir = UPLOADS_PATH + folder + CoreConstants.SLASH;
-			    FileUtil.deleteNotEmptyDirectory(pathDir);
+				FileUtil.deleteNotEmptyDirectory(pathDir);
 			}
 		}
     }
@@ -50,8 +51,37 @@ public abstract class FileUploadManager {
     public static void initUPLOADSPATH(IWBundle bundle) {
 		
     	UPLOADS_PATH = bundle.getBundleBaseRealPath() + "/uploads/";
-		FileUtil.createFolder(UPLOADS_PATH);
-	}
+	FileUtil.createFolder(UPLOADS_PATH);
+	
+    }
+    
+    public void cleanup (String filePath) {
+	
+	FileUtil.deleteNotEmptyDirectory(UPLOADS_PATH + filePath);
+    }
+    
+    /**
+     * upload file in directory
+     * @param input 
+     * @param fileName
+     * @param pathDir
+     */
+    public void upload(InputStream input, String fileName, String pathDir) {
+	
+	 FileUtil.streamToFile(input, UPLOADS_PATH + pathDir, fileName);
+    }
+    
+    public List<File> getFiles(String pathDir) {
+	
+	List<File> fileList = new ArrayList<File>();
+	
+	File[] files = FileUtil.getAllFilesInDirectory(UPLOADS_PATH + pathDir);
+	
+	for (int i = 0; i < files.length; i++)
+	    fileList.add(files[i]);
+	
+	return fileList;
+    }
 
     public List<File> getFiles(String identifier, Node instance) {
 
