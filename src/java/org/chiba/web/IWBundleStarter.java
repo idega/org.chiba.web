@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.10 2008/04/02 12:05:26 arunas Exp $
+ * $Id: IWBundleStarter.java,v 1.11 2008/05/01 15:39:41 civilis Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -12,22 +12,19 @@ package org.chiba.web;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xslt.TransformerService;
 
-import com.idega.chiba.web.xml.xforms.connector.webdav.FileUploadDaemon;
-import com.idega.chiba.web.xml.xforms.connector.webdav.FileUploadManager;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
-
 import com.idega.servlet.filter.IWBundleResourceFilter;
 
 /**
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/04/02 12:05:26 $ by $Author: arunas $
+ * Last modified: $Date: 2008/05/01 15:39:41 $ by $Author: civilis $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -42,7 +39,6 @@ public class IWBundleStarter implements IWBundleStartable {
 	public static final String TRANSFORMER_SERVICE = TransformerService.class.getName();
 	
 	public static WebFactory webFactory = new WebFactory();
-	public FileUploadDaemon fileUplodDaemon;
 
 //	public static final URI XSLT_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/xslt/html4.xsl");
 //	private static final URI CHIBA_CONFIG_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/chiba-config.xml");
@@ -60,12 +56,6 @@ public class IWBundleStarter implements IWBundleStartable {
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"ui.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html-form-controls.xsl");
     	
-//    	creates uploads dir if doesn't exist
-    	FileUploadManager.initUPLOADSPATH(starterBundle);
-//	intializing and starting daemon
-    	fileUplodDaemon = new FileUploadDaemon();
-    	fileUplodDaemon.start();
-
 //		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER, BUNDLE_STYLES_PATH);
 
         webFactory.setServletContext(application.getServletContext());
@@ -82,6 +72,5 @@ public class IWBundleStarter implements IWBundleStartable {
 
 	public void stop(IWBundle starterBundle) {
 		webFactory.destroyXFormsSessionManager();
-		fileUplodDaemon.stop();
 	}
 }
