@@ -1,30 +1,23 @@
 /* ***************************************************************************** */
-/* ************** XFORMS CSS STYLESHEET  ************* */
+/* ************** CSS STYLESHEET FOR STYLING XFORMS INSIDE OF HTML ************* */
 /* this stylesheet uses table layout which may not be supported on all browsers. */
 /* ***************************************************************************** */
 
 /*********** GENERAL STUFF ***********/
+
 #loading{
-	position: absolute;
-	top: 2px;
-	right: 5px;
-	z-index: 1000;
-	padding: 3px;
+    position:absolute;
+    top:2px;
+    right:5px;
+    z-index:1000;
+    padding:3px;
 }
 
 .inactive{
-	display: none;
+    display:none;
 }
 
-.messagePane{
-	display: block;
-	position: fixed;
-	z-index: 1000;
-}
-
-#legend{
-	padding: 3px;
-}
+#legend{padding:3px;}
 
 /* #################### GROUP STYLES #################### */
 /* xf:groups will be rendered as fieldsets and therefore
@@ -32,366 +25,346 @@ are styleable via this matcher or more specifically by their
 appearance class 'minimal-group|compact-group|full-group'. */
 
 * > fieldset {
-	margin-bottom: 5px;
+    margin-bottom:5px;
 }
-
 /* IE */
 fieldset{
-	margin-bottom: 8px;
+    margin-bottom:5px;
 }
 
+
 /*********** group appearances ***********/
+
 .group {
 	border: 0px;
 }
-
-.group div{
-	display: block;
-	clear: both;
-	margin: 0 !important;
-}
-
-.group .enabled {
-	padding-top: 8px;
-}
-
-.group label {
-	font-family: Arial, Helvetica, sans-serif;
-}
-
-.group .value {
-	display: inline;
-	border: 1px #666 solid !important;
-}
-
+	
 .minimal-group{
-	padding-top: 5px;
+    padding-top:5px;
 }
 
 .minimal-group div{
-	display: inline;
-	margin-right: 3px;
+    display:inline;
+    margin-right:3px;
 }
 
 .compact-group div{
-	display: block;
-	margin-top: 3px;
+    display:block;
+    margin-top:3px;
+
+    /*float:left;*/
+    /* Safari doesn't like the float. Firefox renders this correctly.*/
 }
 
 .compact-group div label{
-	display: block;
+    display:block;
 }
 
 .compact-group div .value{
-	display: inline;
-	margin-right: 3px;
+    display:inline;
+    margin-right:3px;
 }
 
-.compact-group .disabled{
-	display: none;
-}
 
 .full-group div{
-	display: block;
-	margin-top: 3px;
-	clear: both;
+    display:block;
+    margin-top:3px;
+    clear:both;
 }
-
-.full-group {
-	margin: 0 !important;
-	padding: 0 !important;
+.full-group label{
+    /*width:10em;
+    float:left;*/
 }
-
-fieldset legend.label {
-	border-top: 1px #a4a4a4 solid;
-	border-bottom: 1px #a4a4a4 solid;
-	background: url(images/sub_header_tiler.gif) repeat-x #d6d6d6;
-	height: 22px;
-	line-height: 22px;
-	color: #222222;
-	font-size: 12px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	padding: 0 15px;
-	display: block !important;
-	float: right !important;
-	font-weight: bold;
-	width: 100% !important;
-	margin-bottom: 8px !important;
-}
-
 .full-group .value{
-	display: inline;
+    display:inline;
 }
 
 .minimal-group label{
-	display: inline;
+    display:inline;
 }
 
-.minimal-group .disabled{
-	display: none;
+/*********** used to render group labels ***********/
+fieldset > legend {
+    /*padding: 3px;
+    
+    margin-top:5px;
+    margin-bottom:5px;*/
+}
+
+/* IE */
+fieldset legend{
+    /*padding: 3px;
+    border: thin solid rgb( 188, 216, 132 );
+    color: rgb( 85, 96, 63 );
+    margin-top:5px;
+    margin-bottom:5px;*/
 }
 
 /*********** use to render group labels ***********/
 .legend{
-	border: thin groove;
-	color: #888888;
-	text-align: center;
-}
+    color:#888888;
+    text-align:center;
+    }
 
 /*********** nested group ***********/
 fieldset > fieldset {
-	margin: 0px;
-	padding-top: 0px;
+    margin: 0px;
+    padding-top:0px;
 }
 
 /* IE */
 fieldset fieldset{
-	position: relative;
-	display: block;
-	margin: 0px;
+    margin: 0px;
 }
 
 /*********** nested nested group ***********/
 fieldset > fieldset > fieldset {
-	margin: 0px;
-	display: block;
+    margin: 0px;
+    display:block;
 }
 
 
 /* #################### GENERAL XFORMS MIP AND COMMON-CHILD STYLES #################### */
-.alert {
-	position: absolute;
-}
 
 .invalid > .alert{
-	position: absolute;
-	border: thin solid #A42322;
-	color: #A42322;
-	padding: 2px;
-	height: 14px;
-	margin-left: 2px;
-	font-weight: bold;
+    position:absolute;
+    border:thin solid #A42322;
+    /*background-color:#DAE9BB;*/
+    color:#A42322;
+    padding:2px;
+    height:14px;
+    margin-left:2px;
+    font-weight:bold;
 }
 
 .valid > .alert{
-	display: none;
+    display:none;
 }
 
 .invalid .value{
-	color: white;
-	font-style: italic;
+    color:white;
+    font-style:italic;
+    /*background:#A42322;*/
 }
 
-.invalid .alert {
-	display: inline;
+/*
+.valid.alert{display:none;}
+.invalid.alert{
+    position:absolute;
+    border:thin solid #A42322;
+    background-color:#DAE9BB;
+    color:#A42322;
+    padding:2px;
+    height:14px;
+    margin-left:2px;
+    font-weight:bold;
 }
-
-.disabled iframe {
-	display: none;
-}
+*/
 
 .disabled label{
-	display: none;
+    display:none;
 }
-
 .disabled .value{
-	display: none;
+    display:none;
 }
-
 .disabled {
-	display: none;
+    display:none;
 }
-
 .disabled .alert{
-	display: none;
+    display:none;
 }
-
 .disabled .progressbar{
-	display: none;
-}
-
-.disabled .help-icon {
-	display: none;
-}
-
-.disabled span {
-	display: none;
+    display:none;
 }
 
 /*********** styles character used for signaling 'required' (normally '*') ***********/
+
 .required-symbol{
-	color: #A42322;
-	font-size: larger;
+    color:#A42322;
+    font-size:larger;
 }
 
 .repeat .label .required-symbol{
-	color: red;
-	display: inline;
+    color:red;
+    display:inline;
 }
 
 .optional .required-symbol{                         
-	display: none;
+    display:none;
 }
 
-.label{
-	color: rgb(85, 96, 63);
-}
-
-.optional .required-symbol{
-	display: none;
+.enabled {
 }
 
 .help-text{
-	position: absolute;
-	display: none;
-	width: 300px;
-	border: thin solid gray;
-	background: azure;
-	padding: 10px;
+    position:absolute;
+    display:none;
+    width:300px;
+    border:thin solid gray;
+    background:azure;
+    padding:10px;
 }
 
 .help-symbol{
-	margin-left: 3px;
+    margin-left:3px;
 }
 
 /* #################### Repeat styles #################### */
+
 .repeat-prototype {
-	display: none;
+    display: none;
+}
+
+.repeat-item {
+}
+
+.repeat-index {
+    /*background: #BCD884;*/
+}
+
+.repeat-index-pre {
+    /*background: #DAE9BB;*/
+}
+
+.repeat-selector {
+    /*float: left;*/
 }
 
 .selector-prototype {
-	display: none;
+    display: none;
 }
 
 .minimal-repeat{
-	display: block;
+    display:block;
 }
-
 .minimal-repeat .repeat-item{
-	float: left;
-	clear: none;
+    float:left;
 }
-
 .minimal-repeat .repeat-index{
-	float: left;
-	clear: none;
-}
-
-.compact-repeat td .disabled {
-	display: none;
+    float:left;
 }
 
 /* #################### SWITCH STYLES #################### */
+
 .switch .selected-case {
-	display: inherit;
+    display: inherit;
 }
 
 .switch .deselected-case {
-	display: none;
+    display: none;
 }
 
 .full-switch {
-	border-spacing: 0px;
+    border-spacing: 0px;
 }
 
 .full-switch-body {
-	border-top: none;
+    /*background: #F0F4EA;*/
+    /*border: 1px solid black;*/
+    border-top: none;
 }
 
 .full-switch .active-tab {
-	border-right: none;
-	border-bottom: #F0F4EA;
-	padding: 3px 5px 3px 5px;
-	width: 10%;
+    /*background: #F0F4EA;*/
+    /*border: 1px solid rgb(85, 96, 63);*/
+    border-right: none;
+    border-bottom: #F0F4EA;
+    padding: 3px 5px 3px 5px;
+    width: 10%;
 }
 
 .full-switch .active-tab input {
-	border: none;
+    /*background: #F0F4EA;*/
+    border: none;
 }
 
 .full-switch .inactive-tab {
-	border-right: none;
-	padding: 3px 5px 3px 5px;
-	width: 10%;
+    /*background: rgb(188, 216, 132);*/
+    /*border: 1px solid rgb(85, 96, 63);*/
+    border-right: none;
+    padding: 3px 5px 3px 5px;
+    width: 10%;
 }
 
 .full-switch .inactive-tab input {
-	border: none;
+    /*background: rgb( 188, 216, 132 );*/
+    border: none;
 }
 
 .full-switch .filler-tab {
-	border-top: none;
-	border-right: none;
+    /*border: 1px solid rgb( 85, 96, 63 );*/
+    border-top: none;
+    border-right: none;
+    /*width: 90%;*/
+    /*overflow: hidden;*/
 }
 
 /* #################### CONTROL STYLES #################### */
-.textarea > .value{
-	width: 380px;
-	height: 100px;
-}
 
-.refresh-button{
-	display: block;
-	float: right;
-	border: thin solid gray;
-	padding: 2px;
-	margin-left: 10px;
+
+/* ### example rules for styling the actual controls (widgets) ### */
+/*
+.trigger > .value {
+    margin: 2px;
+    padding: 2px 2px 1px 2px;
+    color: #000000;
+    border: thin solid;
+    font-size: 10pt;
+    font-family: sans-serif;
 }
+*/
+
 
 /*********** Range specific styles ***********/
 .rangelabel td{
-	background: transparent;
-	text-align: center;
-	font-size: 8pt;
+    background:transparent;
+    text-align:center;
+    font-size:8pt;
 }
 
 .rangesteps{
-	height: 25px;
-	width: 6px;
+    height:25px;
+    width:6px;
 }
 .rangesteps td {
-	background: rgb( 188, 216, 132 );
+    background: rgb( 188, 216, 132 );
 }
 
 .rangesteps td img{
-	border: none;
-	display: block;
+    border:none;
+    display:block;
 }
 
 .rangesteps td a:hover img {
-	background: rgb( 218, 233, 187 );
-	width: 6px;
-	height: 25px;
+    background: rgb( 218, 233, 187 );
+    width:6px;
+    height:25px;
 }
-
 .rangevalue * {
-	background: #564;
+    background:#564;
 }
-
 .rangesteps .rangevalue a:hover *{
-	background: #564;
+    background:#564;
 }
-
 /* IE */
 .rangesteps .rangevalue *{
-	background: #564;
+    background:#564;
 }
 
 /*********** Upload specific styles ***********/
 .progressbar{
-	display: none;
-}
+    display:none;}
     
 .progressbar .border{
-	margin-top: 1px;
-	background: url(../images/progress-remainder.gif) repeat-x;
-	border-left: 1px solid gray;
-	border-right: 1px solid gray;
-	width: 100%;
-	height: 18px;
+    margin-top:1px;
+    background: url(/idegaweb/bundles/org.chiba.web/resources/images/progress-remainder.gif) repeat-x;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+    width: 100%;
+    height: 18px;
 }
 .progressbar .background {
-  	background: url(../images/progress-bar.gif) repeat-x;
+  	background: url(/idegaweb/bundles/org.chiba.web/resources/images/progress-bar.gif) repeat-x;
   	height: 18px;
   	width: 0%;
 }
@@ -399,6 +372,8 @@ fieldset > fieldset > fieldset {
 .selected-case span.output{
 	display: block !important;
 	clear: both !important;
+	/*overflow: hidden;*/
+	/*width: auto !important;*/
 }
 
 .selected-case span.output label.label{
@@ -415,6 +390,35 @@ fieldset > fieldset > fieldset {
 }
 
 /* Extra stylings */
+/*#formHeading{
+	border: 1px #949494 solid;
+	background: #88827e url("/content/files/public/boxHeaderTiler.gif") left top repeat-x;
+	font-family: Arial, "Helvetica", "Arial", sans-serif;
+	font-size: 118%;
+	color: #fff;
+	font-weight: bold;
+	text-shadow: #000 2px 2px 1px;
+	padding: 4px 0 0 6px;
+	margin: 0 2px 2px;
+	height: 18px;
+	position: relative;
+	line-height: 13px;
+}*/
+div.info {
+	height: 54px;
+	background: url(images/info_tiler.gif) repeat-x #ABBAC3;
+	padding: 13px 15px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-shadow: #fff 2px 2px 1px;
+	line-height: 18px;
+	border-bottom: 1px #788892 solid;
+}
+div.info h1 {
+	margin: 0;
+	font-size: 22px;
+}
+
 div.fbc_header_text{
 	border-top: 1px #a4a4a4 solid;
 	border-bottom: 1px #a4a4a4 solid;
@@ -429,12 +433,10 @@ div.fbc_header_text{
 	clear: both;
 	font-weight: bold;
 }
-
 span.required-symbol{
 	color: #ff2700;
 	font-size: 1.4em;
 }
-
 .invalid .alert{
 	border-width: 0 !important;
 	background: transparent !important;
@@ -442,23 +444,24 @@ span.required-symbol{
 	position: relative;
 	top: -4px;
 }
-
 .invalid input.value{
 	background: #ffe2ca !important;
 	color: #000;
 }
-
+/*select.value{
+width: auto !important;
+min-width: 128px;
+}*/
 select.value option{
 	padding: 2px;
-}
 
+}
 fieldset.group.full-group {
-	padding-left: 0px !important;
-	padding-right: 0px !important;
-	margin-left: 0px !important;
-	margin-right: 0px !important;
+	padding-left: 0px			!important;
+	padding-right: 0px			!important;
+	margin-left: 0px			!important;
+	margin-right:0px			!important;
 }
-
 div.input input.value, 
 div.textarea textarea.value,
 div.secret input.value,
@@ -475,75 +478,74 @@ div.select1 select.value {
 	border-top-color: Black;
 	border-right-color: LightGrey;
 }
-
 label.label{
-	float: left;
-	width: 180px !important;
+    float: left;
+	width: 160px 				!important;
 	font-size: 11px;
 	font-weight: bold;
+	padding-top: 4px;
 	color: #222222;
 	margin-left: 13px;
-	margin-right: 8px;
 }
-
 div.select1 > span, div.select > span {
 	position: relative;
-	margin-left: 175px;
-	display: block;
+margin-left: 175px;
+display: block;
 	top: -12px;
 }
-
 div.select1 > span > span.selector-item, div.select > span > span.selector-item {
 	display: block;
 }
-
 span.selector-item > input.value {
 	margin-top: 0px;
 }
-
 span.selector-item > span.label {
 	position: relative;
 	top: -5px;
 }
-
+/*div.select1 > span > span.selector-item {
+	display: inline;
+	border: 2px solid Red;
+}
+div.select1 > span.alert {
+	border: none;
+	background-color: Red;
+	display: none;
+}*/
 .helperText {
 	visibility: hidden;
 }
-
 div.select1 > span.selector-prototype {
 	border: none;
 }
-
 fieldset.group textarea {
-	width: 352px !important;
-	height: 80px !important;
+	width: 352px 			!important;
+	height: 80px			!important;
 }
-
 .fbc_simple_text {
 	clear: both;
 	margin-top: 16px;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
-
 .trigger > input {
-	background: #999;
+	background: url(images/button_next.png) no-repeat;
+	filter: none;
+	width: 86px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	text-decoration: none;
 	color: #21262D;
 	text-align: center;
 	font-size: 18px;
 	font-weight: bold;
-	padding: 5px 10px;
+	height: 35px;
+	border: 0;
 }
-
 .trigger > input:hover {
-	color: #fff;
-	border-color: #333 !important;
-	background: #666;
-	cursor: pointer;
+	color: #571900;
+	background-image: url(images/button_next_hover.png);
+	filter: none;	
 }
-
 div.fbc_button_area {
 	padding-right: 17px;
 	padding-left: 17px;
@@ -552,7 +554,6 @@ div.fbc_button_area {
 	height: 49px;
 	background: url(images/bottom_tiler.gif) repeat-x #AEBCC5;
 }
-
 div.label {
 	clear: both;
 	position: relative;
@@ -561,7 +562,6 @@ div.label {
 	height: 28px;
 	background: url(images/header_tiler.gif) repeat-x #fff;
 }
-
 div.label h1 {
 	float: left;
 	color: #002243;
@@ -571,18 +571,40 @@ div.label h1 {
 	padding: 7px 0 0 14px;
 }
 
-span.selector-item{
-	clear: both !important;
+/* .case.selected-case{
+	overflow-y: auto 			!important;
+	top: 25px;
+	bottom: 0px 				!important;
+	position: absolute;
+	left: 0;
+	right: 0px;
 }
-
+fieldset.group{
+	overflow: auto 			!important;
+	top: 45px;
+	bottom: 23px 			!important;
+	position: absolute;
+	left: 0;
+	right: 0px;
+}
+fieldset.group fieldset.group{
+	overflow: auto 			!important;
+	top: 0px;
+	bottom: auto 			!important;
+	position: relative 		!important;
+	left: 0;
+	right: 0px;
+} */
+span.selector-item{
+	clear: both 			!important;
+	//float: left;
+}
 span.selector-item span.label{
 	margin-left: 5px;
 }
-
 fieldset.group .trigger{
 	float: right;
 }
-
 div.phases {
 	position: absolute;
 	top: -7px;
@@ -629,5 +651,5 @@ html>body div.phases ul li.current {
 	filter: none;
 }
 .selector-item {
-	width: 300px !important;
+	width: 300px				!important;
 }
