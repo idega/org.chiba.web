@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.11 2008/04/09 19:28:17 anton Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.12 2008/05/08 13:39:48 anton Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -131,6 +131,7 @@
         <submission-handler scheme="xmlrpc" class="org.chiba.connectors.xmlrpc.XMLRPCSubmissionHandler"/>
         <submission-handler scheme="webdav" class="com.idega.chiba.web.xml.xforms.connector.webdav.WebdavSubmissionHandler"/>
         <submission-handler scheme="xformsBPM" class="com.idega.block.form.process.XFormsBPMSubmissionHandler" />
+        <submission-handler scheme="xforms" class="com.idega.block.form.process.XFormsSubmissionHandler" />
         
         <!--        <submission-handler scheme="jms" class="org.chiba.connectors.jms.JMSSubmissionHandler"/>-->
         <!--
