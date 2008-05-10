@@ -1,11 +1,14 @@
 package com.idega.chiba.web.upload;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.chiba.xml.dom.DOMUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -20,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/05/01 15:39:40 $ by $Author: civilis $
+ * Last modified: $Date: 2008/05/10 19:28:12 $ by $Author: anton $
  */
 @Scope("singleton")
 @TmpFileResolverType("xformVariables")
@@ -51,7 +54,7 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		}
 		
 		Node instance = (Node)resource;
-		
+		DOMUtil.prettyPrintDOM(instance);
 		Element node = getUploadsElement(identifier, instance);
 		NodeList entries;
 		
@@ -72,6 +75,12 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		    		if(uriStr.startsWith("file:"))
 		    			uriStr = uriStr.substring("file:".length());
 		    		
+		    		try {
+						uriStr = URLDecoder.decode(uriStr, "UTF-8");
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
+					
 		    		File f = new File(uriStr);
 		    		files.add(f);
 		    	}
