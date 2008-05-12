@@ -23,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/05/10 19:28:12 $ by $Author: anton $
+ * Last modified: $Date: 2008/05/12 23:14:43 $ by $Author: anton $
  */
 @Scope("singleton")
 @TmpFileResolverType("xformVariables")
@@ -68,9 +68,9 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 			
 			for (int i = 0; i < entries.getLength(); i++) {
 				
-				String uriStr = entries.item(i).getTextContent();
+				String uriStr = entries.item(i).getChildNodes().item(0).getTextContent();
 		    	
-		    	if(!CoreConstants.EMPTY.equals(uriStr)) {
+		    	if(!CoreConstants.EMPTY.equals(uriStr) && !uriStr.startsWith(CoreConstants.NEWLINE)) {
 		    		
 		    		if(uriStr.startsWith("file:"))
 		    			uriStr = uriStr.substring("file:".length());
