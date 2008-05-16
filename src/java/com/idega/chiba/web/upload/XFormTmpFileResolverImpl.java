@@ -23,9 +23,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/05/12 23:14:43 $ by $Author: anton $
+ * Last modified: $Date: 2008/05/16 15:13:33 $ by $Author: anton $
  */
 @Scope("singleton")
 @TmpFileResolverType("xformVariables")
@@ -54,7 +54,6 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		}
 		
 		Node instance = (Node)resource;
-		DOMUtil.prettyPrintDOM(instance);
 		Element node = getUploadsElement(identifier, instance);
 		NodeList entries;
 		
