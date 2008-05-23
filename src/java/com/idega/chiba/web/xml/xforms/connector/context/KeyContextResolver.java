@@ -19,9 +19,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  *
- * Last modified: $Date: 2008/04/26 02:21:37 $ by $Author: arunas $
+ * Last modified: $Date: 2008/05/23 14:42:27 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -70,7 +70,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             		.toString()
             	).getValue(ctx);
 
-	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value instanceof Collection ? objectToString((Collection<?>)value) : value.toString(), xpath).getDocumentElement();
+	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value instanceof Collection ? objectToString((Collection<?>)value) : value.toString().toLowerCase(), xpath).getDocumentElement();
         } catch (Exception e) {
         	
         	try {
