@@ -111,7 +111,7 @@ function handleExceptions(msg) {
     //    if(msg.indexOf(":") != -1){
     //        alert(msg.substring(msg.lastIndexOf(":") +1 ));
     //    }else{
-    alert(msg);
+    //alert(msg);
     //    }
 }
 /*
