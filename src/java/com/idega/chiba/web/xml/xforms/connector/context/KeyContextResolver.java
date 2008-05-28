@@ -19,9 +19,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  *
- * Last modified: $Date: 2008/05/28 08:48:15 $ by $Author: arunas $
+ * Last modified: $Date: 2008/05/28 08:58:07 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -107,6 +107,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	
 	try {
 	   meth =  cls.getMethod(methodName, null);
+	  
 //	   collection-string 
 	   if (callprops[1].equals(type_name)) {
 	       for (Iterator<?> it = object.iterator(); it.hasNext();)    {
@@ -114,6 +115,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 		   if (!CoreConstants.EMPTY.equals(value))
 		       text = text + value + CoreConstants.COMMA + CoreConstants.SPACE;
 	       }
+	       if (!CoreConstants.EMPTY.equals(text))
 	       	text = text.substring(0, text.length()-2);	
 	   }
 	}catch (NoSuchMethodException e) {
