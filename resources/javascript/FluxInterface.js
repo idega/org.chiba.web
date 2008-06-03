@@ -308,7 +308,6 @@ function _getEventTarget(event) {
 // callback for updating any control
 function updateUI(data) {
     dojo.debug("updateUI: " + data);
-
     var eventLog = data.documentElement.childNodes;
 
     for (var i = 0; i < eventLog.length; i++) {
@@ -425,7 +424,7 @@ function _highlightFailedRequired() {
         }
 
     }
-    new Effect.Pulsate(document.getElementById("required-msg"));
+    //new Effect.Pulsate(document.getElementById("required-msg"));
     submissionErrors ++;
 }
 
