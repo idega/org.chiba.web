@@ -371,7 +371,7 @@
                     dojo.require("dojo.debug.console");
                 </script>
             </xsl:if>
-            <div id="messagePane" style="display:none;">message</div>
+            <div id="messagePane"/>
         </div>
     </xsl:template>
 

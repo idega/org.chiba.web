@@ -44,7 +44,7 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         newdiv.innerHTML = 'message';
         ni.appendChild(newdiv);
         dojo.require("dojo.widget.Toaster");
-        var params = { type:"Chiba",showDelay: 5000, positionDirection: "bl-up", messageTopic: message};
+        var params = { type:"Chiba",showDelay: 5000, positionDirection: "tr-down", messageTopic: message};
 
         dojo.widget.createWidget("Toaster",params, dojo.byId(divIdName));
         dojo.event.topic.publish(message, message);

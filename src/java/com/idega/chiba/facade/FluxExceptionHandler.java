@@ -2,9 +2,13 @@ package com.idega.chiba.facade;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
+import org.chiba.xml.dom.DOMUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
+import com.idega.util.xml.XPathUtil;
 
 /**
  * 
@@ -18,21 +22,23 @@ import org.w3c.dom.Element;
 @Scope("request")
 @Service("fluxexhand")
 public class FluxExceptionHandler extends FluxFacade {
-	private String errorMsg = "Flux error";
+	
+//	private static XPathUtil submitErrorElement;
 
 	public FluxExceptionHandler() {
 		super();
 	}
 
-	public Element fireAction(String id, String sessionKey)
-			throws FluxException {
+	public Element fireAction(String id, String sessionKey) {
 		Element element = null;
 		try {
 			element = super.fireAction(id, sessionKey);
 		} catch (Exception e) {
-//			throw new FluxException(errorMsg);
+			System.out.println("----------------------Exception in flux: fireAction --------------------");
+			e.printStackTrace();
     	} finally {
-			return element;
+			DOMUtil.prettyPrintDOM(element);
+    		return element;
 		}
 	}
 
@@ -41,9 +47,11 @@ public class FluxExceptionHandler extends FluxFacade {
 		Element element = null;
 		try {
 			element = super.setXFormsValue(id, value, sessionKey);
-		} catch (Exception e) {
-//			throw new FluxException(errorMsg);
+		} catch (FluxException e) {
+			System.out.println("----------------------Exception in flux: setXFormsValue --------------------");
+			e.printStackTrace();
 		} finally {
+			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
@@ -53,9 +61,11 @@ public class FluxExceptionHandler extends FluxFacade {
 		Element element = null;
 		try {
 			element = super.setRepeatIndex(id, position, sessionKey);
-		} catch (Exception e) {
-//			throw new FluxException(errorMsg);
+		} catch (FluxException e) {
+			System.out.println("----------------------Exception in flux: setRepeatIndex --------------------");
+			e.printStackTrace();
 		} finally {
+			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
@@ -65,8 +75,10 @@ public class FluxExceptionHandler extends FluxFacade {
 		try {
 			element = super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
-//			throw new FluxException(errorMsg);
+			System.out.println("----------------------Exception in flux --------------------");
+			
 		} finally {
+			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
@@ -86,4 +98,14 @@ public class FluxExceptionHandler extends FluxFacade {
 			//TODO implement exception handling
 		}
     }
+    
+//    private boolean hasErrors(Node context) {
+//    		
+//		if(submitErrorElement == null)
+//			submitErrorElement = new XPathUtil(".//xf:setvalue[@model='data_model']");
+//		
+//		Element errorElement =  (Element)submitErrorElement.getNode(context);
+//		
+//		return (errorElement == null) ? false : true;
+//    }
 }

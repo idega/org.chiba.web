@@ -409,7 +409,7 @@ function _highlightFailedRequired() {
 
     // show an alert if the user repeatedly sends incomplete data
     if (submissionErrors >= 1) {
-        alert("Please provide values for all required fields.")
+        //alert("Please provide values for all required fields.")
         submissionErrors = 0;
     }
 
