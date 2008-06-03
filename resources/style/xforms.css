@@ -19,6 +19,16 @@
 
 #legend{padding:3px;}
 
+.messagePane{
+    border:solid;
+    border-width:1px;
+    background:lightyellow;
+    left:20px;
+    top:20px;
+    padding:10px;
+    
+}
+
 /* #################### GROUP STYLES #################### */
 /* xf:groups will be rendered as fieldsets and therefore
 are styleable via this matcher or more specifically by their
