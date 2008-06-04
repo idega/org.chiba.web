@@ -32,10 +32,10 @@ public class FluxExceptionHandler extends FluxFacade {
 	public Element fireAction(String id, String sessionKey) {
 		Element element = null;
 		try {
-//			element = super.fireAction(id, sessionKey);
-			throw new FluxException("Test error");
+			element = super.fireAction(id, sessionKey);
 		} catch (Exception e) {
 //			System.out.println("----------------------Exception in flux: fireAction --------------------");
+//			e.printStackTrace();
     	} finally {
 //			DOMUtil.prettyPrintDOM(element);
     		return element;
