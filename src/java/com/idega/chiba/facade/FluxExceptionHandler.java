@@ -32,12 +32,12 @@ public class FluxExceptionHandler extends FluxFacade {
 	public Element fireAction(String id, String sessionKey) {
 		Element element = null;
 		try {
-			element = super.fireAction(id, sessionKey);
+//			element = super.fireAction(id, sessionKey);
+			throw new FluxException("Test error");
 		} catch (Exception e) {
-			System.out.println("----------------------Exception in flux: fireAction --------------------");
-			e.printStackTrace();
+//			System.out.println("----------------------Exception in flux: fireAction --------------------");
     	} finally {
-			DOMUtil.prettyPrintDOM(element);
+//			DOMUtil.prettyPrintDOM(element);
     		return element;
 		}
 	}
@@ -47,11 +47,10 @@ public class FluxExceptionHandler extends FluxFacade {
 		Element element = null;
 		try {
 			element = super.setXFormsValue(id, value, sessionKey);
-		} catch (FluxException e) {
+		} catch (Exception e) {
 			System.out.println("----------------------Exception in flux: setXFormsValue --------------------");
-			e.printStackTrace();
 		} finally {
-			DOMUtil.prettyPrintDOM(element);
+//			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
@@ -61,11 +60,10 @@ public class FluxExceptionHandler extends FluxFacade {
 		Element element = null;
 		try {
 			element = super.setRepeatIndex(id, position, sessionKey);
-		} catch (FluxException e) {
+		} catch (Exception e) {
 			System.out.println("----------------------Exception in flux: setRepeatIndex --------------------");
-			e.printStackTrace();
 		} finally {
-			DOMUtil.prettyPrintDOM(element);
+//			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
@@ -75,10 +73,9 @@ public class FluxExceptionHandler extends FluxFacade {
 		try {
 			element = super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
-			System.out.println("----------------------Exception in flux --------------------");
-			
+			System.out.println("----------------------Exception in flux: fetchProgress --------------------");
 		} finally {
-			DOMUtil.prettyPrintDOM(element);
+//			DOMUtil.prettyPrintDOM(element);
 			return element;
 		}
 	}
