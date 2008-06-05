@@ -111,6 +111,7 @@ function handleExceptions(msg) {
     //    if(msg.indexOf(":") != -1){
     //        alert(msg.substring(msg.lastIndexOf(":") +1 ));
     //    }else{
+    /*---------Anton---commented this alert because we use xforms messages instead*/
     //alert(msg);
     //    }
 }
