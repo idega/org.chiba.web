@@ -171,8 +171,8 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-                                <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
-                                <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>
+								<!-- @Author=Arunas onblur action for autofill (removed onchange action)-->                                
+                                <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>                         
                             </xsl:otherwise>
                         </xsl:choose>
                         <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
