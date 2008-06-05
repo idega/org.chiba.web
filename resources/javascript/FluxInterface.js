@@ -425,6 +425,7 @@ function _highlightFailedRequired() {
         }
 
     }
+    //--------Anton-------is not used and causes exceptions to throw in dwr------------
     //new Effect.Pulsate(document.getElementById("required-msg"));
     submissionErrors ++;
 }
