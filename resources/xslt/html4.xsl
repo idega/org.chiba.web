@@ -145,21 +145,21 @@
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
+					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
+					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>
                 <!-- for DWR AJAX -->
                 <!-- changed path to dwr as /dwr instead of /Flux -->
                 <script type="text/javascript">
-					IWCORE.includeScript("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
+					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
                 </script>
                 <xsl:text>
 </xsl:text>               
@@ -169,32 +169,32 @@
                 
                 <!-- mootools lib -->
                         <script type="text/javascript">
-                            IWCORE.includeScript("<xsl:value-of select="$uriToMootoolsLib" />");
+                            LazyLoader.load("<xsl:value-of select="$uriToMootoolsLib" />", null);
                         </script>
                         <xsl:text>
 </xsl:text>
                         <!-- dojo lib -->
                         <script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />");
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", null);
                 		</script>
                         <xsl:text>
 </xsl:text>
                         <script type="text/javascript">
-                            IWCORE.includeScriptBatch(["<xsl:value-of select="$uriToPrototypeLib" />", "<xsl:value-of select="$uriToScriptaculousLib" />"]);
-                            <!--  IWCORE.includeScript("<xsl:value-of select="$uriToPrototypeLib" />");-->
+                            LazyLoader.loadMultiple(["<xsl:value-of select="$uriToPrototypeLib" />", "<xsl:value-of select="$uriToScriptaculousLib" />"], null);
+                            <!--  LazyLoader.load("<xsl:value-of select="$uriToPrototypeLib" />", null);-->
                         </script>
                         <xsl:text>
 </xsl:text>
                         <!-- scriptaculous lib -->
                         <!--  
                         <script type="text/javascript">
-                            IWCORE.includeScript("<xsl:value-of select="$uriToScriptaculousLib" />");
+                            LazyLoader.load("<xsl:value-of select="$uriToScriptaculousLib" />", null);
                         </script>
                         <xsl:text>
 </xsl:text>
 -->
 						<!--<script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />");
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />", null);
                 		</script>
                         <xsl:text>
 </xsl:text>-->
@@ -209,19 +209,19 @@
 
                         <!-- for DWR AJAX -->
                         <script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />");
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />", null);
                 		</script>
                         <xsl:text>
 </xsl:text>
                         <!-- XForms Client -->
                         <script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />");
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", null);
                 		</script>
                         <xsl:text>
 </xsl:text>
                         <!-- general xforms utils -->
                         <script type="text/javascript">
-							IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />");
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />", null);
                 		</script>
                         <xsl:text>
 </xsl:text>
@@ -229,19 +229,19 @@
 
                 <script type="text/javascript">
                     <!--dojo.setModulePrefix("chiba","chiba");-->
-                    IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />");
+                    LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />", null);
                 </script><xsl:text>
 </xsl:text>
 
                 <!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
                 <xsl:if test="$uses-html-textarea">
 	                <script type="text/javascript">
-						IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />");
+						LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />", null);
                		</script>
                     <xsl:text>
 </xsl:text>
 					<script type="text/javascript">
-						IWCORE.includeScript("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />");
+						LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", null);
                		</script>
                     <xsl:text>
 </xsl:text>
