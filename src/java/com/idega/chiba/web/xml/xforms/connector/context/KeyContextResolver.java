@@ -8,20 +8,19 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.faces.context.FacesContext;
-
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
 
 import com.idega.util.CoreConstants;
+import com.idega.util.expression.ELUtil;
 import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  *
- * Last modified: $Date: 2008/05/28 08:58:07 $ by $Author: arunas $
+ * Last modified: $Date: 2008/06/12 18:26:18 $ by $Author: civilis $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -30,8 +29,6 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	private static final String response_part2 = ">";
 	private static final String response_part3 = "</";
 	private static final String response_part4 = "></data>";
-	private static final String faces_exp_part1 = "#{";
-	private static final String faces_exp_part2 = "}";
 	private static final String method_prefix = "get";
 	private static final String type_name = "string";
 	private static final String object_type = "collection";
@@ -57,19 +54,8 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             if (key.indexOf(CoreConstants.MINUS)>0)
                  key = modifyKey(key);
             
-            FacesContext ctx = FacesContext.getCurrentInstance();
+            Object value = ELUtil.getInstance().getBean(key);
             
-            if(ctx == null)
-            	return createResponseDocument(CoreConstants.EMPTY, "foobar").getDocumentElement();
-            
-            Object value = 
-            	ctx.getApplication().createValueBinding(
-            		new StringBuilder(faces_exp_part1)
-            		.append(key)
-            		.append(faces_exp_part2)
-            		.toString()
-            	).getValue(ctx);
-
 	        return createResponseDocument(value == null ? CoreConstants.EMPTY : value instanceof String ? (String)value : value instanceof Collection ? objectToString((Collection<?>)value) : value.toString().toLowerCase(), xpath).getDocumentElement();
         } catch (Exception e) {
         	
