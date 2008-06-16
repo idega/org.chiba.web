@@ -110,6 +110,21 @@ dojo.widget.defineWidget(
                     this.disabledNodes.push(uControl);
                 }
             }
+            
+            /*
+            * @author <a href="mailto:arunas@idega.com">Arunas Vasmanas</a>	
+            * added script: 	
+            * disable all triggers in xform when uploading file is in process 
+            */
+            var trigContainers = document.getElementsByClassName("trigger", "chibaform");
+            for (var trig = 0; trig < trigContainers.length; trig++) {
+                var trigControl = dojo.byId(trigContainers[trig].id + "-value");
+                if (trigControl && trigControl.id != this.id && !trigControl.disabled) {
+                    // disable control and store for later state restoring
+                    trigControl.disabled = true;
+                    this.disabledNodes.push(trigControl);
+                }
+            }
 
             Effect.BlindDown(this.xformsId + "-progress");
 
