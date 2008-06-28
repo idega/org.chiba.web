@@ -1,31 +1,30 @@
 package com.idega.chiba.web.upload;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.chiba.xml.dom.DOMUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.idega.core.file.tmp.TmpFileResolverType;
 import com.idega.core.file.tmp.TmpFileResolver;
+import com.idega.core.file.tmp.TmpFileResolverType;
+import com.idega.core.file.tmp.TmpFilesModifyStrategy;
 import com.idega.util.CoreConstants;
 import com.idega.util.xml.XPathUtil;
 
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2008/05/16 15:13:33 $ by $Author: anton $
+ * Last modified: $Date: 2008/06/28 19:13:34 $ by $Author: civilis $
  */
 @Scope("singleton")
 @TmpFileResolverType("xformVariables")
@@ -45,50 +44,67 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
     	byVariableNameXpath = new XPathUtil(".//node()[@mapping = $variableName]");
 	}
 
-	public Collection<File> resolveFiles(String identifier, Object resource) {
+	protected Collection<URI> resolveReplaceFilesUris(String identifier, Object resource, TmpFilesModifyStrategy replaceStrategy) {
 		
 		if(!(resource instanceof Node)) {
 			
-			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Wrong resource provided. Expected of type "+Node.class.getName()+", but got "+resource.getClass().getName());
-			return new ArrayList<File>(0);
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Wrong resource provided. Expected of type "+Node.class.getName()+", but got "+(resource != null ? resource.getClass().getName() : null));
+			return new ArrayList<URI>(0);
 		}
 		
-		Node instance = (Node)resource;
-		Element node = getUploadsElement(identifier, instance);
-		NodeList entries;
+		final NodeList entries;
+		final Node instance = (Node)resource;
 		
-		synchronized (entriesXPUT) {
+		if(identifier == null) {
+			
+			entries = entryFilesXPath.getNodeset(instance);
+			
+		} else {
+		
+			Element node = getUploadsElement(identifier, instance);
 			entries = entriesXPUT.getNodeset(node);
 		}
 		
-		if(entries != null) {
+		if(entries != null && entries.getLength() != 0) {
 			
-			ArrayList<File> files = new ArrayList<File>(entries.getLength());
+			ArrayList<URI> uris = new ArrayList<URI>(entries.getLength());
 			
 			for (int i = 0; i < entries.getLength(); i++) {
 				
-				String uriStr = entries.item(i).getChildNodes().item(0).getTextContent();
+				Node item = entries.item(i).getChildNodes().item(0);
+				String uriStr = item.getTextContent();
 		    	
 		    	if(!CoreConstants.EMPTY.equals(uriStr) && !uriStr.startsWith(CoreConstants.NEWLINE)) {
 		    		
-		    		if(uriStr.startsWith("file:"))
-		    			uriStr = uriStr.substring("file:".length());
-		    		
 		    		try {
-						uriStr = URLDecoder.decode(uriStr, "UTF-8");
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
+						URI uri = new URI(uriStr);
+						
+						if(replaceStrategy != null)
+							uri = replaceStrategy.executeMove(uri, item);
+						
+						if(uri != null)
+							uris.add(uri);
+						
+					} catch (Exception e) {
+						Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while decoding and creating uri from uri string. Skipping. Uri="+uriStr, e);
 					}
-					
-		    		File f = new File(uriStr);
-		    		files.add(f);
 		    	}
 			}
 			
-			return files;
+			return uris;
 		}
 		
-		return new ArrayList<File>(0);
+		return new ArrayList<URI>(0);
+	}
+	
+	public Collection<URI> resolveFilesUris(String identifier, Object resource) {
+		
+		return resolveReplaceFilesUris(identifier, resource, null);
+	}
+	
+	public void replaceAllFiles(Object resource, TmpFilesModifyStrategy replaceStrategy) {
+		
+		resolveReplaceFilesUris(null, resource, replaceStrategy);
 	}
 	
 	public String getRealBasePath() {
