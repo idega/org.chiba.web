@@ -1,0 +1,105 @@
+<data xmlns:xf="http://www.w3.org/2002/xforms"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:ev="http://www.w3.org/2001/xml-events"
+      xmlns:chiba="http://chiba.sourceforge.net/xforms">
+                        <form_id>2500</form_id>
+                        <Identifier_number_fbc_51 mapping="string:caseIdentifier" nodeType="formIdentifier">P-2008-06-28-0003</Identifier_number_fbc_51>
+                        <Simple_text_input_fbc_5 mapping="string:ownerPostCode">a</Simple_text_input_fbc_5>
+                        <Simple_text_input_fbc_6 mapping="string:ownerMobile"/>
+                        <Simple_text_input_fbc_7 mapping="string:ownerFax"/>
+                        <Simple_text_input_fbc_8 mapping="string:ownerPhone">a</Simple_text_input_fbc_8>
+                        <Simple_text_input_fbc_9 mapping="string:ownerAverageNumberOfEmployees"/>
+                        <Simple_text_input_fbc_10 mapping="string:ownerAddress">a</Simple_text_input_fbc_10>
+                        <Simple_text_input_fbc_11 mapping="string:ownerMunicipality"/>
+                        <Simple_text_input_fbc_12 mapping="string:ownerSupportForProjectManualInput"/>
+                        <Simple_text_input_fbc_13 mapping="string:ownerContactPerson">a</Simple_text_input_fbc_13>
+                        <Simple_text_input_fbc_14 mapping="string:ownerFullName">Administrator</Simple_text_input_fbc_14>
+                        <sample1_fbc_15 mapping="string:ownerNameOfProject">a</sample1_fbc_15>
+                        <Simple_text_input_fbc_16 mapping="string:ownerKennitala">a</Simple_text_input_fbc_16>
+                        <sample2_fbc_17 mapping="string:ownerBusinessConcept">a</sample2_fbc_17>
+                        <sample9_fbc_26 mapping="string:ownerAppliedProjectDescription"/>
+                        <sample10_fbc_40 mapping="string:ownerResult"/>
+                        <sample7_fbc_27 mapping="string:ownerApplicantBackground"/>
+                        <sample6_fbc_28 mapping="string:ownerPotentialDevelopment"/>
+                        <sample5_fbc_29 mapping="string:ownerProjectPresentStatus"/>
+                        <sample8_1_fbc_31 mapping="list:ownerSupportForProject">e1</sample8_1_fbc_31>
+                        <sample3_fbc_34 mapping="string:ownerBusinessConceptDetail"/>
+                        <sample4_fbc_36 mapping="string:ownerCompetitions"/>
+                        <table_fbc_37 mapping="objlist:ownerCostsAndMainTasks">
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                              <row>
+                                    <task_finance/>
+                                    <finance_amount/>
+                              </row>
+                        </table_fbc_37>
+                        <table_fbc_38 mapping="objlist:ownerFinanceOfTasks">
+                              <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                              <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                                 <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                                 <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                                 <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                                 <row>
+                                    <task/>
+                                    <cost_estimate/>
+                                    <estimated_time/>
+                              </row>
+                        </table_fbc_38>
+                        <sample13_fbc_41 mapping="list:ownerInformationAboutProgram"/>
+                        <Simple_text_input_fbc_42 mapping="string:ownerCustomInformationAboutProgram"/>
+                        <Email_fbc_47 mapping="string:ownerEmailAddress" xsi:nil="false">a@aa.com</Email_fbc_47>
+                        <saveFormData>
+                              <formIdentifier/>
+                              <linkToForm/>
+                              <submissionId/>
+                        </saveFormData>
+                        <Multi_file_upload_with_description_fbc_60 mapping="files:ownerAttachments"> 
+                                 <entry filename="ums" mediatype="application/vnd.ms-excel">file:/Users/arunas/europa_eclipse/workspace/eplatform_apps/Zegovsimple/target/egovsimple-4.0.0-SNAPSHOT/tmpFiles/xformsAttachments/1214661004000/ums<description>test1</description>
+                                 </entry>
+                                 <entry filename="run.sh" mediatype="application/octet-stream">file:/Users/arunas/europa_eclipse/workspace/eplatform_apps/Zegovsimple/target/egovsimple-4.0.0-SNAPSHOT/tmpFiles/xformsAttachments/1214661016315/run.sh<description>test2</description>
+                                 </entry>
+      <entry filename="" mediatype="">
+                                       <description/>
+                                 </entry>
+                        </Multi_file_upload_with_description_fbc_60>
+                  <params nodeType="formParams">?taskInstanceId=521&amp;userId=2&amp;caseIdentifierNumber=3&amp;caseCategoryId=1&amp;caseType=1&amp;startProcess=startProcess</params>
+</data>
