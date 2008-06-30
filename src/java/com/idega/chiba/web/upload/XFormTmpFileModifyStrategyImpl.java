@@ -28,9 +28,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/06/28 19:13:43 $ by $Author: civilis $
+ * Last modified: $Date: 2008/06/30 13:31:50 $ by $Author: civilis $
  */
 @Scope("singleton")
 @TmpFileResolverType("xformSlide")
@@ -66,8 +66,8 @@ public class XFormTmpFileModifyStrategyImpl implements TmpFilesModifyStrategy {
 				parentFolder = String.valueOf(System.currentTimeMillis());
 
 //			building slide store path
-			String folder = SLIDE_STORE_PATH+parentFolder;
-			newUri = new URI(SLIDE_SCHEME, folder+CoreConstants.SLASH+finfo.getFileName(), null);
+			String folder = SLIDE_STORE_PATH+parentFolder+CoreConstants.SLASH;
+			newUri = new URI(SLIDE_SCHEME, folder+finfo.getFileName(), null);
 			
 			item.setTextContent(newUri.toString());
 			
