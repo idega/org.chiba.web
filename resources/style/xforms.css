@@ -208,11 +208,12 @@ fieldset > fieldset > fieldset {
 
 .help-text{
     position:absolute;
-    display:none;
+    /* @author=Arunas help text display changed*/
+  /*  display:block;
     width:300px;
     border:thin solid gray;
     background:azure;
-    padding:10px;
+    padding:10px;*/
 }
 
 .help-symbol{
@@ -522,8 +523,9 @@ div.select1 > span.alert {
 	background-color: Red;
 	display: none;
 }*/
+/*@author=Arunas help text always visible*/
 .helperText {
-	visibility: hidden;
+	visibility: visible;
 }
 div.select1 > span.selector-prototype {
 	border: none;

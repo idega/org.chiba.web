@@ -555,15 +555,19 @@
         <!-- help in repeats not supported yet due to a cloning problem with help elements -->
         <xsl:if test="string-length(.) != 0 and not(ancestor::xforms:repeat)">
                 <xsl:element name="a">
-                    <xsl:attribute name="onclick">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='block';return false;</xsl:attribute>
-                    <xsl:attribute name="onblur">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='none';</xsl:attribute>
+                 <!--@author=Arunas display=none changed into display=block -->
+                  <!--    <xsl:attribute name="onclick">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='block';return false;</xsl:attribute>
+	                     <xsl:attribute name="onblur">document.getElementById('<xsl:value-of select="../@id"/>' + '-helptext').style.display='block';</xsl:attribute>
+                    -->
                     <xsl:attribute name="href">#</xsl:attribute>
                     <xsl:attribute name="style">text-decoration:none;</xsl:attribute>
                     <xsl:attribute name="class">help-icon</xsl:attribute>
-                    <img src="{concat($contextroot, $imagesPath, 'help_icon.gif')}" class="help-symbol" alt="?" border="0"/>
+                  <!--@author=Arunas do not show question mark  -->
+                  <!--   <img src="{concat($contextroot, $imagesPath, 'help_icon.gif')}" class="help-symbol" alt="?" border="0"/> --> 
+                  
                 </xsl:element>
-                <!--<span id="{../@id}-helptext" class="help-text" style="position:absolute;display:none;width:250px;border:thin solid gray 1px;background:lightgrey;padding:5px;">-->
-                <span id="{../@id}-helptext" class="help-text">
+                <!-- <span id="{../@id}-helptext" class="help-text" style="position:absolute;display:block;width:250px;border:thin solid gray 1px;background:lightgrey;padding:5px;"> -->
+                 <span id="{../@id}-helptext" class="help-text">
                     <xsl:apply-templates/>
                 </span>
         </xsl:if>
