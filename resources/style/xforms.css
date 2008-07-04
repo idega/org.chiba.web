@@ -242,7 +242,7 @@ fieldset > fieldset > fieldset {
 }
 
 .selector-prototype {
-    display: none;
+    display: none !important;
 }
 
 .minimal-repeat{
