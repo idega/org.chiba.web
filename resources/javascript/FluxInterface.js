@@ -14,6 +14,10 @@ var skipShutdown = false;
 // ***** Messages to the user - you may overwrite these in your forms with inline script blocks
 var confirmMsg = "There are changed data. Really exit?";
 
+// ***** Localised variables
+var standardLayerMsg = ""
+
+
 
 /******************************************************************************
  PAGE init
@@ -130,6 +134,9 @@ function submitFunction(control) {
 function chibaActivate(target) {
     forceRepeatIndex(dojo.byId(target));
 
+	/*---------Anton---action button is pressed---*/
+	showLoadingMessage("Processing data");
+
     // lookup value element
     while (target && ! _hasClass(target, "value")) {
         target = target.parentNode;
@@ -149,6 +156,7 @@ function chibaActivate(target) {
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.fireAction(id, sessionKey, updateUI);
     //Flux.fireAction(updateUI, id, sessionKey);
+  
     return false;
 }
 
@@ -309,6 +317,9 @@ function _getEventTarget(event) {
 // callback for updating any control
 function updateUI(data) {
     dojo.debug("updateUI: " + data);
+    
+    //showLoadingMessage("Saving data");
+    
     var eventLog = data.documentElement.childNodes;
 
     for (var i = 0; i < eventLog.length; i++) {
@@ -331,6 +342,8 @@ function updateUI(data) {
 
         var context = new PresentationContext();
         _handleServerEvent(context, type, targetId, targetName, properties);
+        /*---------Anton---user interface was updated after buton press*/
+        closeLoadingMessage();
     }
 }
 
@@ -388,6 +401,12 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             var currentUpload = dojo.widget.byId(targetId + "-value");
             currentUpload.updateProgress(properties["progress"])
             break;
+        case "xforms-submit":
+        	showLoadingMessage("Saving data");
+        	break;
+        case "xforms-submit-done":
+        	closeLoadingMessage();
+        	break;
         case "xforms-submit-error":
             _highlightFailedRequired();
             break;
