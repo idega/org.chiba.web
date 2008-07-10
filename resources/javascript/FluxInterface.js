@@ -15,7 +15,7 @@ var skipShutdown = false;
 var confirmMsg = "There are changed data. Really exit?";
 
 // ***** Localised variables
-var standardLayerMsg = ""
+var standardLayerMsg = "";
 
 
 
@@ -401,12 +401,12 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             var currentUpload = dojo.widget.byId(targetId + "-value");
             currentUpload.updateProgress(properties["progress"])
             break;
-        case "xforms-submit":
+        /*case "xforms-submit":
         	showLoadingMessage("Saving data");
         	break;
         case "xforms-submit-done":
         	closeLoadingMessage();
-        	break;
+        	break;*/
         case "xforms-submit-error":
             _highlightFailedRequired();
             break;
