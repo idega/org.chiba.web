@@ -24,6 +24,9 @@ import org.chiba.xml.xforms.exception.XFormsException;
 
 import com.idega.block.web2.business.Web2Business;
 import com.idega.business.IBOLookup;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 
 /**
@@ -124,6 +127,15 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("uriToMootoolsLib", business.getBundleURIToMootoolsLib());
 			generator.setParameter("uriToPrototypeLib", business.getBundleURIToPrototypeLib());
 			generator.setParameter("uriToScriptaculousLib", business.getBundleURIToScriptaculousLib());
+			
+			IWBundle bundle = getBundle((FacesContext)iwc, IWBundleStarter.BUNDLE_IDENTIFIER);
+			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
+			
+			String localizationStr = new StringBuilder("if(Localization == null) var Localization = {};")
+				.append("Localization.STANDARD_LAYER_MSG 		= '")	.append(iwrb.getLocalizedString("", ""))	.append("';")
+				.toString();
+			
+			generator.setParameter("localization", localizationStr);
 		
 		} catch (RuntimeException e) {
 			throw e;
@@ -145,5 +157,11 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			e.printStackTrace();
 			return null;
 		}
+    }
+    
+    public IWBundle getBundle(FacesContext ctx, String bundleIdentifier) {
+    	
+    	IWMainApplication iwma = IWMainApplication.getIWMainApplication(ctx);
+		return iwma.getBundle(bundleIdentifier);
     }
 }

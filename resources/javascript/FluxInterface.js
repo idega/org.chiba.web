@@ -15,7 +15,9 @@ var skipShutdown = false;
 var confirmMsg = "There are changed data. Really exit?";
 
 // ***** Localised variables
-var standardLayerMsg = "";
+if(Localization == null) var Localization = {};
+Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
+
 
 
 
@@ -135,7 +137,7 @@ function chibaActivate(target) {
     forceRepeatIndex(dojo.byId(target));
 
 	/*---------Anton---action button is pressed---*/
-	showLoadingMessage("Processing data");
+	showLoadingMessage(Localization.STANDARD_LAYER_MSG);
 
     // lookup value element
     while (target && ! _hasClass(target, "value")) {
