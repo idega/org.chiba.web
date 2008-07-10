@@ -26,8 +26,9 @@
     <xsl:param name="uriToPrototypeLib" select="''"/>
     <xsl:param name="uriToScriptaculousLib" select="''"/>
     <xsl:param name="uriToMootoolsLib" select="''"/>
-    
-    <xsl:param name="localization" select="''"/>
+	<xsl:param name="pageBusyMessage" select="'Loading...'"/>
+	
+	<xsl:param name="localization" select="''"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -136,7 +137,8 @@
 
             <!-- include needed javascript files -->
             <xsl:if test="$scripted='true'">
-                <!-- dojo init -->
+				<xsl:text>
+</xsl:text>
                 <script type="text/javascript">
                     var djConfig = {
                     debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
@@ -144,116 +146,47 @@
                 </script>
                 <xsl:text>
 </xsl:text>
-                <!-- for DWR AJAX -->
-                <!-- changed path to dwr as /dwr instead of /Flux -->
-                <script type="text/javascript">
-					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />");
+<!--
+				<script type="text/javascript">
+					showLoadingMessage("<xsl:value-of select="$pageBusyMessage" />");
                 </script>
-                <xsl:text>
-</xsl:text>
-                <!-- for DWR AJAX -->
-                <!-- changed path to dwr as /dwr instead of /Flux -->
-                <script type="text/javascript">
-					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />");
-                </script>
-                <xsl:text>
-</xsl:text>
-                <!-- for DWR AJAX -->
-                <!-- changed path to dwr as /dwr instead of /Flux -->
-                <script type="text/javascript">
-					LazyLoader.load("<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />");
-                </script>
-                <xsl:text>
-</xsl:text>               
-
-
-                <!-- PLEASE DON'T CHANGE THE FORMATTING OF THE XSL:TEXT ELEMENTS - THEY PROVIDE CLEAN LINE BREAKS IN THE OUTPUT -->
-                
-                <!-- mootools lib -->
-                        <script type="text/javascript">
-                            LazyLoader.load("<xsl:value-of select="$uriToMootoolsLib" />", null);
-                        </script>
-                        <xsl:text>
-</xsl:text>
-                        <!-- dojo lib -->
-                        <script type="text/javascript">
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", null);
-                		</script>
-                        <xsl:text>
-</xsl:text>
-                        <script type="text/javascript">
-                            LazyLoader.loadMultiple(["<xsl:value-of select="$uriToPrototypeLib" />", "<xsl:value-of select="$uriToScriptaculousLib" />"], null);
-                            <!--  LazyLoader.load("<xsl:value-of select="$uriToPrototypeLib" />", null);-->
-                        </script>
-                        <xsl:text>
-</xsl:text>
-                        <!-- scriptaculous lib -->
-                        <!--  
-                        <script type="text/javascript">
-                            LazyLoader.load("<xsl:value-of select="$uriToScriptaculousLib" />", null);
-                        </script>
-                        <xsl:text>
-</xsl:text>
 -->
-						<!--<script type="text/javascript">
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'scriptaculous/src/effects.js')" />", null);
-                		</script>
-                        <xsl:text>
-</xsl:text>-->
-
-                <!--<script type="text/javascript" src="{concat($contextroot,$scriptPath,'prototype.js')}">&#160;</script>
                 <xsl:text>
-</xsl:text>-->
-                <!-- scriptaculous lib -->
-                <!--<script type="text/javascript" src="{concat($contextroot,$scriptPath,'scriptaculous/src/scriptaculous.js')}">&#160;</script>
-                <xsl:text>
-</xsl:text>-->
-
-                        <!-- Chiba localization -->
-                        <script type="text/javascript">
-							<xsl:value-of select="$localization" />
-                		</script>
-                        
-                        <!-- for DWR AJAX -->
-                        <script type="text/javascript">
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />", null);
-                		</script>
-                        <xsl:text>
 </xsl:text>
-                        <!-- XForms Client -->
-                        <script type="text/javascript">
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", null);
-                		</script>
-                        <xsl:text>
-</xsl:text>
-                        <!-- general xforms utils -->
-                        <script type="text/javascript">
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />", null);
-                		</script>
-                        <xsl:text>
-</xsl:text>
-                <!-- ############################# Debug section ################################ -->
-
                 <script type="text/javascript">
-                    <!--dojo.setModulePrefix("chiba","chiba");-->
-                    LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />", null);
-                </script><xsl:text>
+                	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
+                	LazyLoader.loadMultiple([
+                								"<xsl:value-of select="$uriToPrototypeLib" />",
+												"<xsl:value-of select="$uriToScriptaculousLib" />",
+				
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />",
+											
+												"<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />",
+												"<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />",
+												"<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />",
+											
+												"<xsl:value-of select="$uriToMootoolsLib" />",
+											
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />",
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />",
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />",
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />",
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
+											
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
+											], function() {closeAllLoadingMessages();});
+                </script>
+               <xsl:text>
 </xsl:text>
-
-                <!-- import fckeditor for <textarea xforms:mediatype='html/text'/> -->
                 <xsl:if test="$uses-html-textarea">
-	                <script type="text/javascript">
-						LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />", null);
-               		</script>
-                    <xsl:text>
-</xsl:text>
-					<script type="text/javascript">
-						LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", null);
-               		</script>
                     <xsl:text>
 </xsl:text>
                     <script type="text/javascript"><xsl:text>
-</xsl:text>_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);<xsl:text>
+</xsl:text>window.addEvent('load', function() {
+							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
+								_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
+							});
+						});<xsl:text>
 </xsl:text>
                     </script>
                 </xsl:if>
@@ -375,7 +308,11 @@
             </xsl:choose>
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
-                    dojo.require("dojo.debug.console");
+	                window.addEvent('load', function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                    	dojo.require("dojo.debug.console");
+	                    });
+                    });
                 </script>
             </xsl:if>
             <div id="messagePane"/>

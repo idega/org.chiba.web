@@ -40,7 +40,11 @@
             <!--<xsl:when test="chiba:data[@chiba:type='date' or @chiba:type='dateTime']">-->
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
-                    dojo.require("chiba.widget.DropdownDatePicker");
+               		window.addEvent('load', function() {
+	               		LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                    	dojo.require("chiba.widget.DropdownDatePicker");
+	                    });
+                    });
                 </script>
 				<xsl:variable name="controlType">
 
@@ -85,7 +89,11 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <script type="text/javascript">
-                            dojo.require("chiba.widget.Boolean");
+                        	window.addEvent('load', function() {
+                        		LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                            		dojo.require("chiba.widget.Boolean");
+                            	});
+                            });
                         </script>
                         <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
                             <xsl:if test="string-length($navindex) != 0">
@@ -226,7 +234,11 @@
                 <!-- SIDOC/CNAF : sidoc-infra-204, implementation de l'approche Dojo -->
                 <xsl:if test="$scripted='true'">
                     <script type="text/javascript">
-                        dojo.require("chiba.widget.Link");
+                    	window.addEvent('load', function() {
+	                    	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                        	dojo.require("chiba.widget.Link");
+	                        });
+	                    });
                     </script>
                 </xsl:if>
                 <xsl:element name="a">
@@ -510,7 +522,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                	window.addEvent('load', function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                	});
+                	});
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -593,7 +609,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                	window.addEvent('load', function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                	});
+	                });
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -674,7 +694,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                	window.addEvent('load', function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                	});
+                	});
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -757,7 +781,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                        initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                	window.addEvent('load', function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                        initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                	});
+	                });
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -992,7 +1020,11 @@
 
         <xsl:if test="$scripted='true'">
             <script type="text/javascript">
-                dojo.require("chiba.widget.Upload");
+            	window.addEvent('load', function() {
+	            	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                	dojo.require("chiba.widget.Upload");
+	                });
+                });
             </script>
 
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
