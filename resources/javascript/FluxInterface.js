@@ -15,11 +15,10 @@ var skipShutdown = false;
 var confirmMsg = "There are changed data. Really exit?";
 
 // ***** Localised variables
-if(Localization == null) var Localization = {};
-Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
-
-
-
+if(Localization == null) {
+	var Localization = {};
+	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
+}
 
 /******************************************************************************
  PAGE init

@@ -26,6 +26,8 @@
     <xsl:param name="uriToPrototypeLib" select="''"/>
     <xsl:param name="uriToScriptaculousLib" select="''"/>
     <xsl:param name="uriToMootoolsLib" select="''"/>
+    
+    <xsl:param name="localization" select="''"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -207,6 +209,11 @@
                 <xsl:text>
 </xsl:text>-->
 
+                        <!-- Chiba localization -->
+                        <script type="text/javascript">
+							<xsl:value-of select="$localization" />
+                		</script>
+                        
                         <!-- for DWR AJAX -->
                         <script type="text/javascript">
 							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />", null);
