@@ -1,4 +1,5 @@
-dojo.require("dojo.event.*");
+LazyLoader.load('/idegaweb/bundles/org.chiba.web.bundle/resources/javascript/dojo-0.4/dojo.js', function() {
+	dojo.require("dojo.event.*");
 
                     var pulseInterval;
 
@@ -22,3 +23,4 @@ dojo.require("dojo.event.*");
                         }
                     }
                     dojo.addOnLoad(initXForms);
+});
