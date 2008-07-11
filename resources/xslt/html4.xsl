@@ -149,13 +149,15 @@
 
 
     		<!-- Chiba localization -->
-<xsl:text>
+				<xsl:text>
+</xsl:text>
 			   	<script type="text/javascript">
 					if(Localization == null) {
 						var Localization = {};
 						Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$localization" />';
 					}
 				</script>
+				<xsl:text>
 </xsl:text>
 
 <!--
