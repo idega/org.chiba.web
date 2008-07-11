@@ -130,12 +130,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			
 			IWBundle bundle = getBundle((FacesContext)iwc, IWBundleStarter.BUNDLE_IDENTIFIER);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
-			
-			String localizationStr = new StringBuilder("if(Localization == null) var Localization = {};\n")
-				.append("Localization.STANDARD_LAYER_MSG 		= '")	.append(iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"))	.append("';")
-				.toString();
-			
-			generator.setParameter("localization", localizationStr);
+	
+			generator.setParameter("localization", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"));
 		
 		} catch (RuntimeException e) {
 			throw e;

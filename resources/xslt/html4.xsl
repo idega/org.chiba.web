@@ -146,6 +146,18 @@
                 </script>
                 <xsl:text>
 </xsl:text>
+
+
+    		<!-- Chiba localization -->
+<xsl:text>
+			   	<script type="text/javascript">
+					if(Localization == null) {
+						var Localization = {};
+						Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$localization" />';
+					}
+				</script>
+</xsl:text>
+
 <!--
 				<script type="text/javascript">
 					showLoadingMessage("<xsl:value-of select="$pageBusyMessage" />");
