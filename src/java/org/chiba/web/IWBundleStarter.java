@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.12 2008/07/11 06:18:26 valdas Exp $
+ * $Id: IWBundleStarter.java,v 1.13 2008/07/11 07:44:21 civilis Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -21,10 +21,10 @@ import com.idega.servlet.filter.IWBundleResourceFilter;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/07/11 06:18:26 $ by $Author: valdas $
+ * Last modified: $Date: 2008/07/11 07:44:21 $ by $Author: civilis $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -45,8 +45,8 @@ public class IWBundleStarter implements IWBundleStartable {
 	
 	public void start(IWBundle starterBundle) {
 	
-    	String chibaConfigURI = starterBundle.getVirtualPathWithFileNameString("chiba-config.xml");
-    	String styleSheetsPath = starterBundle.getVirtualPathWithFileNameString("resources/xslt/");
+    	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
+    	String styleSheetsPath = "/idegaweb/bundles/org.chiba.web.bundle/resources/xslt/";
     	
 		IWMainApplication application = starterBundle.getApplication();
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, chibaConfigURI);
