@@ -26,7 +26,6 @@
     <xsl:param name="uriToPrototypeLib" select="''"/>
     <xsl:param name="uriToScriptaculousLib" select="''"/>
     <xsl:param name="uriToMootoolsLib" select="''"/>
-	<xsl:param name="pageBusyMessage" select="'Loading...'"/>
 	
 	<xsl:param name="localization" select="''"/>
 
@@ -159,12 +158,19 @@
 				</script>
 				<xsl:text>
 </xsl:text>
-
-<!--
 				<script type="text/javascript">
-					showLoadingMessage("<xsl:value-of select="$pageBusyMessage" />");
+					if (IE) {
+						registerEvent(window, 'load', function() {
+							showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+							
+							<!-- Just to be on the safe side - loading message should be closed by LazyLoader -->
+							var timeOutId = window.setTimeout(function() {
+								window.clearTimeout(timeOutId);
+								closeAllLoadingMessages();
+							}, 3000);
+						});
+					}
                 </script>
--->
                 <xsl:text>
 </xsl:text>
                 <script type="text/javascript">
