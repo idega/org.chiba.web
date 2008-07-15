@@ -997,6 +997,11 @@
             </xsl:attribute>
             <xsl:attribute name="type">file</xsl:attribute>
             <xsl:attribute name="value"/>
+            <xsl:choose>
+                <xsl:when test="$scripted='true'">
+                    <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
+                </xsl:when>
+            </xsl:choose>
             <xsl:if test="chiba:data/@chiba:readonly='true'">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
