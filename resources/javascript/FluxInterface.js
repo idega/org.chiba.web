@@ -23,8 +23,16 @@ if(Localization == null) {
 /******************************************************************************
  PAGE init
  ******************************************************************************/
+ 
+var chibaXFormsInited = false;
+ 
 function initXForms(){
-    dojo.event.connect("before",window,"onunload","close");
+	
+	if(!chibaXFormsInited) {
+	
+	    chibaXFormsInited = true;
+	    dojo.event.connect("before",window,"onunload","close");
+	}
 }
 
 /******************************************************************************

@@ -22,5 +22,7 @@ LazyLoader.load('/idegaweb/bundles/org.chiba.web.bundle/resources/javascript/doj
                             }
                         }
                     }
-                    dojo.addOnLoad(initXForms);
+                    
+                    initXForms();                    
+                    //dojo.addOnLoad(initXForms);
 });
