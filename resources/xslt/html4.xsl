@@ -305,7 +305,7 @@
         <div id="chiba-body">
             <xsl:copy-of select="@*"/>
             <div id="loading">
-                <img src="{concat($contextroot, $imagesPath, 'indicator.gif')}" class="disabled" id="indicator" alt="loading" />
+            	<!-- <img src="{concat($contextroot, $imagesPath, 'indicator.gif')}" class="disabled" id="indicator" alt="loading" /> -->
             </div>
 
             <xsl:variable name="outermostNodeset"
