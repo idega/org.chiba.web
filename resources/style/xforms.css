@@ -417,7 +417,7 @@ fieldset > fieldset > fieldset {
 }*/
 div.info {
 	height: 54px;
-	background: url(images/info_tiler.gif) repeat-x #ABBAC3;
+	background: url(/idegaweb/bundles/org.chiba.web/resources/images/info_tiler.gif) repeat-x #ABBAC3;
 	padding: 13px 15px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 12px;
@@ -433,7 +433,7 @@ div.info h1 {
 div.fbc_header_text{
 	border-top: 1px #a4a4a4 solid;
 	border-bottom: 1px #a4a4a4 solid;
-	background: url(images/sub_header_tiler.gif) repeat-x #d6d6d6;
+	anton--background: url(/idegaweb/bundles/org.chiba.web/resources/images/sub_header_tiler.gif) repeat-x #d6d6d6;
 	height: 18px;
 	color: #222222;
 	font-size: 12px;
@@ -541,7 +541,7 @@ fieldset.group textarea {
 	padding-bottom: 0;
 }
 .trigger > input {
-	background: url(images/button_next.png) no-repeat;
+	background: url(/idegaweb/bundles/org.chiba.web/resources/images/button_next.png) no-repeat;
 	filter: none;
 	width: 86px;
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -555,7 +555,7 @@ fieldset.group textarea {
 }
 .trigger > input:hover {
 	color: #571900;
-	background-image: url(images/button_next_hover.png);
+	background-image: url(/idegaweb/bundles/org.chiba.web/resources/images/button_next_hover.png);
 	filter: none;	
 }
 div.fbc_button_area {
@@ -564,7 +564,7 @@ div.fbc_button_area {
 	padding-top: 16px;
 	text-align: right;
 	height: 49px;
-	background: url(images/bottom_tiler.gif) repeat-x #AEBCC5;
+	background: url(/idegaweb/bundles/org.chiba.web/resources/images/bottom_tiler.gif) repeat-x #AEBCC5;
 }
 div.label {
 	clear: both;
@@ -572,7 +572,7 @@ div.label {
 	border-top: 1px #fff solid;
 	border-bottom: 1px #B2B6B8 solid;
 	height: 28px;
-	background: url(images/header_tiler.gif) repeat-x #fff;
+	background: url(/idegaweb/bundles/org.chiba.web/resources/images/header_tiler.gif) repeat-x #fff;
 }
 div.label h1 {
 	float: left;
@@ -645,7 +645,7 @@ div.phases ul li {
 }
 
 html>body div.phases ul li {
-	background: url(images/blue_orb.png) no-repeat top center;
+	background: url(/idegaweb/bundles/org.chiba.web/resources/images/blue_orb.png) no-repeat top center;
 	filter: none;
 }
 
@@ -659,7 +659,7 @@ div.phases ul li.current {
 }
 
 html>body div.phases ul li.current {
-	background-image: url(images/orange_orb.png);
+	background-image: url(/idegaweb/bundles/org.chiba.web/resources/images/orange_orb.png);
 	filter: none;
 }
 .selector-item {
