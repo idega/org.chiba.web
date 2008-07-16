@@ -179,9 +179,10 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-								<!-- @Author=Arunas onblur and onmousedown action for autofill (removed onchange action)-->                                
-                                <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
-                                <xsl:attribute name="onmousedown">setXFormsValue(this);</xsl:attribute>                      
+								<!-- @Author=Arunas onblur and onclick action for autofill (removed onchange action)-->                                
+                                <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>   
+                                 <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
+                                <!-- <xsl:attribute name="onmousedown">setXFormsValue(this);</xsl:attribute>     -->                  
                                 
                             </xsl:otherwise>
                         </xsl:choose>
@@ -1014,7 +1015,7 @@
                         </xsl:attribute>
             -->
             <xsl:if test="$scripted='true'">
-                <!--<xsl:attribute name="onchange">submitFile(this);</xsl:attribute>-->
+                <!-- <xsl:attribute name="onchange">submitFile(this);</xsl:attribute> -->
                 <xsl:attribute name="dojoType">chiba:Upload</xsl:attribute>
                 <xsl:attribute name="xfreadonly">
                     <xsl:value-of select="chiba:data/@chiba:readonly"/>
