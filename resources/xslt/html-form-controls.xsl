@@ -179,11 +179,9 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-								<!-- @Author=Arunas onblur and onclick action for autofill (removed onchange action)-->                                
-                                <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>   
+								<!-- @Author=Arunas onblur action for autofill (removed onchange action)-->                                
+                               <!--   <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>--> 
                                  <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
-                                <!-- <xsl:attribute name="onmousedown">setXFormsValue(this);</xsl:attribute>     -->                  
-                                
                             </xsl:otherwise>
                         </xsl:choose>
                         <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
@@ -956,7 +954,7 @@
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
                             <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
-
+                            
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
                         <!--
