@@ -152,7 +152,7 @@ fieldset > fieldset > fieldset {
 }
 
 .invalid .value{
-    color:white;
+    color:black;
     font-style:italic;
     /*background:#A42322;*/
 }
