@@ -150,6 +150,9 @@ function chibaActivate(target) {
     while (target && ! _hasClass(target, "value")) {
         target = target.parentNode;
     }
+	if (!target) {
+		return false;
+	}
 
     var id = target.id;
     if (id.substring(id.length - 6, id.length) == "-value") {
@@ -272,11 +275,25 @@ function setRange(id, value) {
     //Flux.setXFormsValue(updateUI, id, value, sessionKey);
 }
 
+var FluxInterfaceRepeatedIndexes = [];
+var FluxInterfaceBusyWithRepeatIndex = false;
 
 // call the processor to set a repeat's index
 function setRepeatIndex(e) {
+	if (FluxInterfaceBusyWithRepeatIndex) {
+		return false;
+	}
+	FluxInterfaceBusyWithRepeatIndex = true;
+	
     // get event target
     var target = _getEventTarget(e);
+    if (!target) {
+    	return;
+    } 
+	if (FluxInterfaceRepeatedIndexes[target.id] != null) {
+		return false;
+	}
+	FluxInterfaceRepeatedIndexes[target.id] = 'true';
 
     // lookup repeat item
     while (target && ! _hasClass(target, "repeat-item")) {
@@ -325,6 +342,7 @@ function _getEventTarget(event) {
 
 // callback for updating any control
 function updateUI(data) {
+	closeAllLoadingMessages();
     dojo.debug("updateUI: " + data);
     
     //showLoadingMessage("Saving data");
@@ -408,7 +426,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         case "upload-progress-event":
         //            _updateProgress(targetId,properties["progress"])
             var currentUpload = dojo.widget.byId(targetId + "-value");
-            currentUpload.updateProgress(properties["progress"])
+            if (currentUpload != null) {
+            	currentUpload.updateProgress(properties["progress"]);
+            }
             break;
         /*case "xforms-submit":
         	showLoadingMessage("Saving data");
@@ -510,6 +530,22 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, updateUI);
+    Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, {
+    	callback: function(result) {
+   			updateUI(result);
+   			FluxInterfaceBusyWithRepeatIndex = false;
+   		}
+    });
     //Flux.setRepeatIndex(updateUI, repeatId, targetPosition, sessionKey);
+}
+
+function activateChibaFileUploaders() {
+	if (IE) {
+		var uploadElements = jQuery('input.chibaFileUploaderStyleClass');
+		if (uploadElements != null && uploadElements.length > 0) {
+			for (var i = 0; i < uploadElements.length; i++) {
+				chibaActivate(uploadElements[i]);
+			}
+		}
+	}
 }

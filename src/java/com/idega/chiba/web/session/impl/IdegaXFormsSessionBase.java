@@ -125,10 +125,11 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			Web2Business business = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
 			
 			generator.setParameter("uriToMootoolsLib", business.getBundleURIToMootoolsLib());
+			generator.setParameter("uriTojQueryLib", business.getBundleURIToJQueryLib());
 			generator.setParameter("uriToPrototypeLib", business.getBundleURIToPrototypeLib());
 			generator.setParameter("uriToScriptaculousLib", business.getBundleURIToScriptaculousLib());
 			
-			IWBundle bundle = getBundle((FacesContext)iwc, IWBundleStarter.BUNDLE_IDENTIFIER);
+			IWBundle bundle = getBundle(iwc, IWBundleStarter.BUNDLE_IDENTIFIER);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 	
 			generator.setParameter("localization", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"));

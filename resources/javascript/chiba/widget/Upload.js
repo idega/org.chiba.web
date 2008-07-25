@@ -80,7 +80,7 @@ dojo.widget.defineWidget(
                 var elemId = this.xformsId + "-progress-bg";
 
                 setTimeout("document.getElementById('" + elemId + "').style.width=0", 2000);
-                setTimeout("Effect.BlindUp('" + this.xformsId + "-progress')", 1500);
+                setTimeout("jQuery('#" + this.xformsId + "-progress').hide('slow')", 1500);
             }
         },
         _submitFile: function(){
@@ -126,7 +126,10 @@ dojo.widget.defineWidget(
                 }
             }
 
-            Effect.BlindDown(this.xformsId + "-progress");
+            var progressBarElement = $(this.xformsId + "-progress");
+            if (progressBarElement != null) {
+            	jQuery(progressBarElement).show('slow');
+            }
 
             var path = this.inputNode.value;
             

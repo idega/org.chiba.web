@@ -1004,7 +1004,7 @@
             <xsl:if test="chiba:data/@chiba:readonly='true'">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
-            <xsl:attribute name="class">value</xsl:attribute>
+            <xsl:attribute name="class">chibaFileUploaderStyleClass</xsl:attribute>
 			<!-- Content types accepted, from mediatype xforms:upload attribute
             to accept input attribute -->
             <!--

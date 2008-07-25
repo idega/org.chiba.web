@@ -26,6 +26,7 @@
     <xsl:param name="uriToPrototypeLib" select="''"/>
     <xsl:param name="uriToScriptaculousLib" select="''"/>
     <xsl:param name="uriToMootoolsLib" select="''"/>
+    <xsl:param name="uriTojQueryLib" select="''"/>
 	
 	<xsl:param name="localization" select="''"/>
 
@@ -186,6 +187,7 @@
 												"<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />",
 											
 												"<xsl:value-of select="$uriToMootoolsLib" />",
+												"<xsl:value-of select="$uriTojQueryLib" />",
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />",
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />",
@@ -194,7 +196,7 @@
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
-											], function() {closeAllLoadingMessages();});
+											], function() {closeAllLoadingMessages(); activateChibaFileUploaders();});
                 </script>
                <xsl:text>
 </xsl:text>
