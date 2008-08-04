@@ -32,7 +32,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
     protected Map<String, XFormsSession> xformsSessions;
     protected int maxSessions;
     
-    private static final int DEFAULT_TIMEOUT = 5 * 60 * 1000; //default is 5 Minutes (expressed in milliseconds)
+    private static final int DEFAULT_TIMEOUT = 60 * 60 * 1000; //default is 60 Minutes (expressed in milliseconds)
     private int timeout = DEFAULT_TIMEOUT;
     private boolean stopped = false;
     private long interval = 1500;
