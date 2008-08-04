@@ -540,12 +540,10 @@ chiba.setRepeatIndex = function(targetRepeatElement){
 }
 
 function activateChibaFileUploaders() {
-	if (IE) {
-		var uploadElements = jQuery('input.chibaFileUploaderStyleClass');
-		if (uploadElements != null && uploadElements.length > 0) {
-			for (var i = 0; i < uploadElements.length; i++) {
-				chibaActivate(uploadElements[i]);
-			}
+	var uploadElements = jQuery('input.chibaFileUploaderStyleClass');
+	if (uploadElements != null && uploadElements.length > 0) {
+		for (var i = 0; i < uploadElements.length; i++) {
+			chibaActivate(uploadElements[i]);
 		}
 	}
 }
