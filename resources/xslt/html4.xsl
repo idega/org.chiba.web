@@ -196,7 +196,7 @@
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
-											], function() {closeAllLoadingMessages(); activateChibaFileUploaders();});
+											], function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
                 </script>
                <xsl:text>
 </xsl:text>

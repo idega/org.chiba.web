@@ -166,7 +166,12 @@ function chibaActivate(target) {
     //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    Flux.fireAction(id, sessionKey, updateUI);
+    Flux.fireAction(id, sessionKey, {
+    	callback: function(data) {
+    		updateUI(data);
+    		manageHelpTextIconsForForm();
+    	}
+    });
     //Flux.fireAction(updateUI, id, sessionKey);
   
     return false;

@@ -272,4 +272,23 @@ function LTrim(VALUE){
     return strTemp;
 }
 
-
+function manageHelpTextIconsForForm() {
+	jQuery('.help-text').each(function() {
+		jQuery(this).children('span.output').hide();
+		
+		if (jQuery(this).attr('helptextinited') == null) {
+			jQuery(this).attr('helptextinited', 'true');
+			
+			jQuery(this).prepend('<span class="helpIcon"></span>');
+			jQuery(this).children('.helpIcon').mouseover(function() {
+				jQuery('.help-text span.output').hide();
+				jQuery(this).siblings('span.output').show('fast').bind('click mouseout', function() {
+					var timeOutId = window.setTimeout(function() {
+						window.clearTimeout(timeOutId);
+						jQuery('.help-text span.output').hide('slow');
+					}, 750);
+				});
+			});
+		}
+	});
+}
