@@ -22,9 +22,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/06/28 19:13:59 $ by $Author: civilis $
+ * Last modified: $Date: 2008/08/07 09:33:32 $ by $Author: civilis $
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -40,7 +40,6 @@ public final class XFormTmpFileResolverImplTest extends IdegaBaseTest {
 	@Test
 	public void testResolveAllFilesUris() throws Exception {
 		
-		System.setProperty(IdegaBaseTest.testSystemProp, "true");
 		ClassPathResource cpr = new ClassPathResource("submissionInstance2AttachmentsStart.xml", getClass());
 		URI startSubmissionUri = cpr.getURI();
 		InputStream is = cpr.getInputStream();
