@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.13 2008/07/11 07:44:21 civilis Exp $
+ * $Id: IWBundleStarter.java,v 1.14 2008/08/25 11:30:06 arunas Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -8,6 +8,8 @@
  * license terms.
  */
 package org.chiba.web;
+
+import java.util.Locale;
 
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xslt.TransformerService;
@@ -21,10 +23,10 @@ import com.idega.servlet.filter.IWBundleResourceFilter;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/07/11 07:44:21 $ by $Author: civilis $
+ * Last modified: $Date: 2008/08/25 11:30:06 $ by $Author: arunas $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -47,6 +49,9 @@ public class IWBundleStarter implements IWBundleStartable {
 	
     	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
     	String styleSheetsPath = "/idegaweb/bundles/org.chiba.web.bundle/resources/xslt/";
+    	
+//	TODO  for xforms format decimals
+	Locale.setDefault(new Locale("is","IS"));
     	
 		IWMainApplication application = starterBundle.getApplication();
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, chibaConfigURI);
