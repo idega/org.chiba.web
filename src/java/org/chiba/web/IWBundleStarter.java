@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.15 2008/08/26 07:02:27 arunas Exp $
+ * $Id: IWBundleStarter.java,v 1.16 2008/08/26 08:59:01 arunas Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.servlet.filter.IWBundleResourceFilter;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/08/26 07:02:27 $ by $Author: arunas $
+ * Last modified: $Date: 2008/08/26 08:59:01 $ by $Author: arunas $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -41,6 +41,8 @@ public class IWBundleStarter implements IWBundleStartable {
 	public static final String TRANSFORMER_SERVICE = TransformerService.class.getName();
 	
 	public static WebFactory webFactory = new WebFactory();
+	
+	private Locale icelandicLocale = new Locale("is", "IS"); 
 
 //	public static final URI XSLT_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/xslt/html4.xsl");
 //	private static final URI CHIBA_CONFIG_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/chiba-config.xml");
@@ -50,6 +52,9 @@ public class IWBundleStarter implements IWBundleStartable {
     	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
     	String styleSheetsPath = "/idegaweb/bundles/org.chiba.web.bundle/resources/xslt/";
     	
+//	TODO for xforms decimal formating
+    	if (!Locale.getDefault().equals(icelandicLocale)) 
+	    	Locale.setDefault(icelandicLocale);
     	
 		IWMainApplication application = starterBundle.getApplication();
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, chibaConfigURI);
