@@ -17,11 +17,15 @@
 //  }
 //}
 
-function _setElementText (element, text) {
+function _setElementText (element, text) {            	
     if (document.all) {
-        element.innerText = text;
+    /* Changed @ 2008 08 27 by Arunas xforms translations in IE*/
+    	element.firstChild.data = text;
+       // element.innerText = text;
     }
     else {
+    	    	           	    
+    	
         if (element.firstChild) {
             element.firstChild.data = text;
         }
