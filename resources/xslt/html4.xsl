@@ -160,17 +160,10 @@
 				<xsl:text>
 </xsl:text>
 				<script type="text/javascript">
-					if (IE) {
-						registerEvent(window, 'load', function() {
-							showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-							
-							<!-- Just to be on the safe side - loading message should be closed by LazyLoader -->
-							var timeOutId = window.setTimeout(function() {
-								window.clearTimeout(timeOutId);
-								closeAllLoadingMessages();
-							}, 3000);
-						});
-					}
+				window.addEvent('load', function() { 
+					showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+				});	
+				
                 </script>
                 <xsl:text>
 </xsl:text>
