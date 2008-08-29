@@ -18,21 +18,12 @@
 //}
 
 function _setElementText (element, text) {            	
-    if (document.all) {
+  
     /* Changed @ 2008 08 27 by Arunas xforms translations in IE*/
-    	element.firstChild.data = text;
-       // element.innerText = text;
-    }
-    else {
-    	    	           	    
-    	
-        if (element.firstChild) {
-            element.firstChild.data = text;
-        }
-        else {
-            element.appendChild(document.createTextNode(text));
-        }
-    }
+    if (element.firstChild) 
+		element.firstChild.data = text;
+    else 
+		element.appendChild(document.createTextNode(text));
 
     return true;
 }
