@@ -160,10 +160,9 @@
 				<xsl:text>
 </xsl:text>
 				<script type="text/javascript">
-				window.addEvent('load', function() { 
-					showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-				});	
-				
+					window.onload = function() {
+						showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+					};	
                 </script>
                 <xsl:text>
 </xsl:text>
