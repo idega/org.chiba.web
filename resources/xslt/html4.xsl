@@ -162,6 +162,13 @@
 				<script type="text/javascript">
 					window.onload = function() {
 						showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+						
+						<!-- Just to be on the safe side - loading message should be closed by LazyLoader -->
+						var timeOutId = window.setTimeout(function() {
+							window.clearTimeout(timeOutId);
+							closeAllLoadingMessages();
+						}, 3000);
+						
 					};	
                 </script>
                 <xsl:text>
