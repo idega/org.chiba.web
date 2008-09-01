@@ -32,6 +32,8 @@ function initXForms(){
 	
 	    chibaXFormsInited = true;
 	    dojo.event.connect("before",window,"onunload","close");
+	    // Added @ 2008 09 01 by Arunas 
+	    closeAllLoadingMessages();              	    
 	}
 }
 

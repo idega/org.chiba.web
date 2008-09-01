@@ -19,12 +19,13 @@
 
 function _setElementText (element, text) {            	
   
-    /* Changed @ 2008 08 27 by Arunas xforms translations in IE*/
-    if (element.firstChild) 
-		element.firstChild.data = text;
-    else 
-		element.appendChild(document.createTextNode(text));
-
+//	Changed @ 2008 08 27 by Arunas xforms translations in IE
+     if (element.firstChild) {
+            element.firstChild.data = text;
+        }
+        else {
+            element.appendChild(document.createTextNode(text));
+        }
     return true;
 }
 
