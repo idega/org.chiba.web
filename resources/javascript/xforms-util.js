@@ -279,10 +279,8 @@ function manageHelpTextIconsForForm() {
 			jQuery(this).children('.helpIcon').mouseover(function() {
 				jQuery('.help-text span.output').hide();
 				jQuery(this).siblings('span.output').show('fast').bind('click mouseout', function() {
-					var timeOutId = window.setTimeout(function() {
-						window.clearTimeout(timeOutId);
 						jQuery('.help-text span.output').hide('slow');
-					}, 750);
+			
 				});
 			});
 		}
