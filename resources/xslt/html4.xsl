@@ -159,21 +159,7 @@
 				</script>
 				<xsl:text>
 </xsl:text>
-				<script type="text/javascript">
-					window.onload = function() {
-						showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-						
-						<!-- Just to be on the safe side - loading message should be closed by LazyLoader -->
-						var timeOutId = window.setTimeout(function() {
-							window.clearTimeout(timeOutId);
-							closeAllLoadingMessages();
-						}, 3000);
-						
-					};	
-                </script>
-                <xsl:text>
-</xsl:text>
-                <script type="text/javascript">
+		  <script type="text/javascript">
                 	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
                 	LazyLoader.loadMultiple([
                 								"<xsl:value-of select="$uriToPrototypeLib" />",
