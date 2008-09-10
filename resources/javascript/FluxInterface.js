@@ -145,8 +145,7 @@ function submitFunction(control) {
 function chibaActivate(target) {
     forceRepeatIndex(dojo.byId(target));
 
-	/*---------Anton---action button is pressed---*/
-	showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+
 
     // lookup value element
     while (target && ! _hasClass(target, "value")) {
@@ -164,6 +163,9 @@ function chibaActivate(target) {
 
     dojo.debug("Flux.activate: " + id);
     useLoadingMessage();
+    /*---------Aton---action button is pressed---*/
+    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+    
     DWREngine.setErrorHandler(handleExceptions);
     //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
