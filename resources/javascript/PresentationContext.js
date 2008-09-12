@@ -43,11 +43,16 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         newdiv.setAttribute('style',"display:none");
         newdiv.innerHTML = 'message';
         ni.appendChild(newdiv);
-        dojo.require("dojo.widget.Toaster");
+        
+        // @author= Arunas :
+        // changed rendered message into humman msg.
+        humanMsg.displayMsg(message);
+        
+    /*  dojo.require("dojo.widget.Toaster");
         var params = { type:"Chiba",showDelay: 5000, positionDirection: "tl-down", messageTopic: message};
 
         dojo.widget.createWidget("Toaster",params, dojo.byId(divIdName));
-        dojo.event.topic.publish(message, message);
+        dojo.event.topic.publish(message, message); */
     }
 };
 
