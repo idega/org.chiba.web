@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.16 2008/09/19 11:54:00 civilis Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.17 2008/09/22 13:51:09 arunas Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -169,6 +169,8 @@
         <function namespace="http://chiba.sourceforge.net/xforms" name="validate" class="org.chiba.xml.xforms.xpath.ChibaExtensionFunctions"/>
         <function namespace="http://chiba.sourceforge.net/xforms" name="calculate" class="org.chiba.xml.xforms.xpath.ChibaExtensionFunctions"/>
         <function namespace="http://idega.com/xforms" name="userNameAlreadyExists" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+        
+         <function namespace="http://idega.com/xforms" name="validate" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
     </extension-functions>
 
     <custom-elements>
@@ -179,6 +181,7 @@
             public YourClass(Element, Model);
         -->
         <!--element namespace="http://yourdomain.com/path" name="yourcontrol" class="com.yourdomain.yourpackage.YourClass"/-->
+        <element namespsace="http://idega.com/xforms" name="validator" class="com.idega.chiba.web.xml.xforms.components.CustomElement" />
     </custom-elements>
 
 
