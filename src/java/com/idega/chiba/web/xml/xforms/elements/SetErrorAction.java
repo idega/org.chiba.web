@@ -26,11 +26,13 @@ public class SetErrorAction extends AbstractBoundAction{
     public void init() throws XFormsException {
         super.init();
         
-        this.targetAttribute = getXFormsAttribute(TARGET_ATTRIBUTE);
-        if (this.targetAttribute == null) {
-            throw new XFormsBindingException("missing target attribute at " + this, this.target, null);
-        }
-     // two ways to get value one is with value attribute ohter <node>text<node>        
+//        this.targetAttribute = getXFormsAttribute(TARGET_ATTRIBUTE);
+//        if (this.targetAttribute == null) {
+//            throw new XFormsBindingException("missing target attribute at " + this, this.target, null);
+//        }
+     // two ways to get value one is with value attribute ohter <node>text<node>
+        
+        /*
         this.valueAttribute = getXFormsAttribute(VALUE_ATTRIBUTE);
         if (this.valueAttribute == null) {
             Node child = this.element.getFirstChild();
@@ -42,10 +44,15 @@ public class SetErrorAction extends AbstractBoundAction{
                 this.nodeValue = "";
             }
         }
+        */
     }        
 
 	public void perform() throws XFormsException {
 	    super.perform();
+	    
+	    System.out.println("context:");
+	    System.out.println(eventContextInfo);
+	    
 	    // create perform of new action
 	    // ref have to show into error instance  
 	    Instance instance = this.model.getInstance(getInstanceId());

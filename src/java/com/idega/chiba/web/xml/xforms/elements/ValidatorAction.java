@@ -98,24 +98,28 @@ package com.idega.chiba.web.xml.xforms.elements;
 
 import java.util.HashMap;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.chiba.xml.events.ChibaEventNames;
-import org.chiba.xml.xforms.XFormsConstants;
+import org.chiba.xml.dom.DOMUtil;
+import org.chiba.xml.xforms.Container;
+import org.chiba.xml.xforms.XFormsElement;
 import org.chiba.xml.xforms.action.AbstractBoundAction;
+import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
+import org.chiba.xml.xforms.core.ModelItem;
 import org.chiba.xml.xforms.exception.XFormsException;
-import org.chiba.xml.xforms.exception.XFormsLinkError;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.events.EventTarget;
+
+import com.idega.util.CoreConstants;
 
 /**
  * Implements the action as defined in <code>10.1.12 The message
  * Element</code>.
  *
  * @author Ulrich Nicolas Liss&eacute;
- * @version $Id: ValidatorAction.java,v 1.1 2008/09/22 18:59:47 civilis Exp $
+ * @version $Id: ValidatorAction.java,v 1.2 2008/09/24 11:56:24 civilis Exp $
  */
 public class ValidatorAction extends AbstractBoundAction {
     protected static Log LOGGER = LogFactory.getLog(ValidatorAction.class);
@@ -140,20 +144,22 @@ public class ValidatorAction extends AbstractBoundAction {
     public void init() throws XFormsException {
         super.init();
 
-        this.levelAttribute = getXFormsAttribute(LEVEL_ATTRIBUTE);
-        if (this.levelAttribute == null) {
-            getLogger().warn(this + " init: required level attribute missing, assuming 'modal'");
-            this.levelAttribute = "modal";
-        }
-
-        Node child = this.element.getFirstChild();
-
-        if ((child != null) && (child.getNodeType() == Node.TEXT_NODE)) {
-            this.textContent = child.getNodeValue();
-        }
-        else {
-            this.textContent = "";
-        }
+        
+//        getContainerObject()
+//        this.levelAttribute = getXFormsAttribute(LEVEL_ATTRIBUTE);
+//        if (this.levelAttribute == null) {
+//            getLogger().warn(this + " init: required level attribute missing, assuming 'modal'");
+//            this.levelAttribute = "modal";
+//        }
+//
+//        Node child = this.element.getFirstChild();
+//
+//        if ((child != null) && (child.getNodeType() == Node.TEXT_NODE)) {
+//            this.textContent = child.getNodeValue();
+//        }
+//        else {
+//            this.textContent = "";
+//        }
     }
 
     // implementation of 'org.chiba.xml.xforms.action.XFormsAction'
@@ -166,7 +172,44 @@ public class ValidatorAction extends AbstractBoundAction {
      */
     public void perform() throws XFormsException {
         super.perform();
+
+        XFormsElement parent = getParentObject();
         
+        System.out.println("_______parent____");
+        DOMUtil.prettyPrintDOM(parent.getElement());
+        
+        Container container = getContainerObject();
+        
+        Instance instance = this.model.getInstance(getInstanceId());
+        String pathExpression = getLocationPath();
+        ModelItem modelItem = instance.getModelItem(pathExpression);
+        
+        if(modelItem.isRequired()) {
+        
+        	String val = modelItem.getValue();
+        	
+        	if(val == null || val.length() == 0) {
+        		
+        		System.out.println("REQUIRED ERROR, post msg");
+        		
+        		getErrorMessageHandler().send(ErrorType.required, modelItem, container, this.target);
+        	}
+        }
+        
+        Node n = (Node)modelItem.getNode();
+        
+        DOMUtil.prettyPrintDOM(n);
+        
+        getModel().getValidator().validate(modelItem);
+        
+        System.out.println("is datatype valid= "+modelItem.getLocalUpdateView().isDatatypeValid());
+        System.out.println("is constraint valid= "+modelItem.getLocalUpdateView().isConstraintValid());
+        
+        //validate(instance, "/", this.model.isReady() ? this.mode : new DefaultValidatorMode());
+        //get
+        
+        
+        /*
         String bindAttribute = getXFormsAttribute(BIND_ATTRIBUTE);
         String refAttribute = getXFormsAttribute(REF_ATTRIBUTE);
         String srcAttribute = getXFormsAttribute(XFormsConstants.SRC_ATTRIBUTE);
@@ -204,8 +247,41 @@ public class ValidatorAction extends AbstractBoundAction {
         map.put("message", message);
         map.put("level", this.levelAttribute);
         this.container.dispatch(this.target, ChibaEventNames.RENDER_MESSAGE, map);
+        */
     }
+    
+    interface ErrorMessageHandler {
+    	
+    	abstract void send(ErrorType et, ModelItem mi, Container container, EventTarget target);
+	}
+    
+    enum ErrorType {
+    	required,
+    	validation,
+    	constraint,
+    	custom
+    }
+    
+    protected ErrorMessageHandler getErrorMessageHandler() {
+    	
+    	return new ErrorMessageHandler() {
 
+			public void send(ErrorType et, ModelItem mi, Container container, EventTarget target) {
+
+				HashMap<String, Object> map = new HashMap<String, Object>(2);
+		        map.put("message", "wuaha");
+		        map.put("level", "uhu");
+		        
+		        //String targetId = mi.getId();
+		        
+		        try {
+		        	System.out.println("_______DISPATHCING EVENT");
+		        	container.dispatch(target, "idega-validation-error", map);
+					
+				} catch (XFormsException e) {
+					e.printStackTrace();
+				}
+			}
+    	};
+    }
 }
-
-// end of class
