@@ -1,6 +1,5 @@
 package com.idega.chiba.web.xml.xforms.elements;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.chiba.xml.dom.DOMUtil;
@@ -8,7 +7,6 @@ import org.chiba.xml.xforms.action.AbstractBoundAction;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.exception.XFormsBindingException;
-import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
