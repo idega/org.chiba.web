@@ -1,6 +1,8 @@
 package com.idega.chiba.web.xml.xforms.elements;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +18,7 @@ import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
 import com.idega.core.localisation.business.ICLocaleBusiness;
@@ -26,9 +29,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/09/25 12:31:52 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/25 14:03:01 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -37,8 +40,8 @@ public class ValidatorAction extends AbstractBoundAction {
 	private ErrorMessageHandler errorMessageHandler;
 	
 	private String validateIf;
-	private String messageValue;
 	private Locale formLocale;
+	private Map<ErrorType, String> messageValuesByType;
 	
 	private static XPathUtil messageXPUT;
 	
@@ -50,40 +53,45 @@ public class ValidatorAction extends AbstractBoundAction {
 	}
 	
 	public static final String VALIDATEIF_ATT = "validateif";
+	public static final String ERRORTYPE_ATT = "errorType";
+	public static final String VALUE_ATT = "value";
 	
-    /**
-     * Creates a message action implementation.
-     *
-     * @param element the element.
-     * @param model the context model.
-     */
     public ValidatorAction(Element element, Model model) {
         super(element, model);
     }
 
-    // lifecycle methods
-
-    /**
-     * Performs element init.
-     */
     public void init() throws XFormsException {
         super.init();
         
         String validateIf = getXFormsAttribute(VALIDATEIF_ATT);
         setValidateIf(validateIf);
         
-        Element message = messageXPUT.getNode(getElement());
+        NodeList messages = messageXPUT.getNodeset(getElement());
         
-        String messageValue = message == null ? null : message.getAttribute("value");
-        setMessageValue(messageValue);
+        if(messages != null && messages.getLength() != 0) {
+        	
+        	messageValuesByType = new HashMap<ErrorType, String>(messages.getLength());
+        
+        	for (int i = 0; i < messages.getLength(); i++) {
+			
+        		Element msgEle = (Element)messages.item(i);
+        		
+        		String messageType = msgEle.getAttribute(ERRORTYPE_ATT);
+        		String messageValue = msgEle.getAttribute(VALUE_ATT);
+        		
+        		final ErrorType errType;
+        		
+        		if(messageType == null || messageType.length() == 0) {
+        			errType = ErrorType.custom;
+        		} else {
+        			errType = ErrorType.getByStringRepresentation(messageType);
+        		}
+        		
+        		messageValuesByType.put(errType, messageValue);
+			}
+        }
     }
 
-    /**
-     * Performs the <code>message</code> action.
-     *
-     * @throws XFormsException if an error occurred during <code>message</code>
-     * processing.
-     */
     public void perform() throws XFormsException {
         super.perform();
         
@@ -109,7 +117,7 @@ public class ValidatorAction extends AbstractBoundAction {
             	
             	if(val == null || val.length() == 0) {
             		
-            		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), errType);
+            		String message = getErrorMessage(errType);
             		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, errType);
             	} else {
             		getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, errType);
@@ -120,7 +128,7 @@ public class ValidatorAction extends AbstractBoundAction {
         	
         	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
         		
-        		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), ErrorType.validation);
+        		String message = getErrorMessage(ErrorType.validation);
         		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.validation);
         		
         	} else {
@@ -129,7 +137,7 @@ public class ValidatorAction extends AbstractBoundAction {
         	
         	if(!modelItem.getLocalUpdateView().isConstraintValid()) {
         		
-        		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), ErrorType.constraint);
+        		String message = getErrorMessage(ErrorType.constraint);
         		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.constraint);
         		
         	} else {
@@ -148,7 +156,7 @@ public class ValidatorAction extends AbstractBoundAction {
     			
     		} else {
     			
-    			String message = getInlineErrorMessage();
+    			String message = getErrorMessage(ErrorType.custom);
     			getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.custom);
     		}
     	}
@@ -182,20 +190,25 @@ public class ValidatorAction extends AbstractBoundAction {
     	return formLocale;
 	}
     
-    protected String getInlineErrorMessage() {
-		
-    	String messageValue = getMessageValue();
-    	String message = null;
+    protected String getErrorMessage(ErrorType errType) {
     	
-    	try {
-    		Object val = computeValueAttribute(messageValue);
-    		
-    		if(val != null)
-    			message = val.toString();
-    		
-		} catch (XFormsException e) {
-			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while resolving message from message value expression = "+messageValue, e);
-		}
+    	String message = null;
+		
+    	if(messageValuesByType != null && messageValuesByType.containsKey(errType)) {
+    	
+    		try {
+        		Object val = computeValueAttribute(messageValuesByType.get(errType));
+        		
+        		if(val != null)
+        			message = val.toString();
+        		
+    		} catch (XFormsException e) {
+    			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while resolving message from message value expression = "+messageValuesByType.get(errType), e);
+    		}
+    	}
+    	
+    	if(message == null)
+    		message = errType.getDefaultErrorMessage(getFormLocale());
     	
     	return message;
 	}
@@ -262,13 +275,5 @@ public class ValidatorAction extends AbstractBoundAction {
 
 	public void setValidateIf(String validateIf) {
 		this.validateIf = validateIf;
-	}
-
-	public String getMessageValue() {
-		return messageValue;
-	}
-
-	public void setMessageValue(String messageValue) {
-		this.messageValue = messageValue;
 	}
 }

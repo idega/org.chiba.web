@@ -1,7 +1,6 @@
 package com.idega.chiba.web.xml.xforms.elements;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,9 +13,9 @@ import org.w3c.dom.events.EventTarget;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  * 
- *          Last modified: $Date: 2008/09/25 09:23:45 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/25 14:03:01 $ by $Author: civilis $
  * 
  */
 @Scope("singleton")
@@ -29,36 +28,12 @@ public class ErrorMessageHandlerImpl implements ErrorMessageHandler {
 		map.put(messageContextAtt, message);
 		map.put(targetContextAtt, componentId);
 		map.put(errorTypeContextAtt, errType);
-
+		
 		try {
 			container.dispatch(target, validationErrorType, map);
 
 		} catch (XFormsException e) {
 			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while dispatching "+validationErrorType+" event", e);
 		}
-	}
-	
-	public String getDefaultErrorMessage(Locale locale, ErrorType errType) {
-		
-		final String message;
-	
-		switch (errType) {
-		case required:
-			message = "Required field is empty";
-			break;
-			
-		case validation:
-			message = "Value provided is not valid";
-			break;
-			
-		case constraint:
-			message = "The constraint was not met";
-			break;
-			
-		default:
-			message = "Incorrect field";
-			break;
-		}
-		return message;
 	}
 }
