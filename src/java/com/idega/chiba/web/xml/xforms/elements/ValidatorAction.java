@@ -28,10 +28,12 @@ import com.idega.util.xml.NamespaceContextImpl;
 import com.idega.util.xml.XPathUtil;
 
 /**
+ * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
+ * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/09/25 14:03:01 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/25 16:12:48 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
