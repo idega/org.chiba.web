@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- *          Last modified: $Date: 2008/09/25 18:09:50 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/25 18:40:54 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -75,7 +75,7 @@ public class SetErrorAction extends AbstractBoundAction {
 		System.out.println("______message=" + errorMsg + ", id=" + targetAtt);
 
 		ModelItem errMi = instance.getModelItem(
-				new StringBuilder(pathExpression).append("[@id='")
+				new StringBuilder(pathExpression).append("[@for='")
 				.append(targetAtt).append("']").toString());
 
 		if (errMi == null) {
@@ -98,7 +98,7 @@ public class SetErrorAction extends AbstractBoundAction {
 			errMi = instance.getModelItem(after);
 
 			Element el = (Element) errMi.getNode();
-			el.setAttribute("id", targetAtt);
+			el.setAttribute("for", targetAtt);
 		}
 		
 		errMi.setValue(errorMsg != null ? errorMsg : CoreConstants.EMPTY);
