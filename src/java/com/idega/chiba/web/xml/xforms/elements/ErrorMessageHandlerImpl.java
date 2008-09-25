@@ -14,25 +14,23 @@ import org.w3c.dom.events.EventTarget;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- *          Last modified: $Date: 2008/09/24 13:46:12 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/25 09:23:45 $ by $Author: civilis $
  * 
  */
 @Scope("singleton")
 @Service
 public class ErrorMessageHandlerImpl implements ErrorMessageHandler {
 	
-	public void send(ModelItem mi, Container container, EventTarget target, String componentId, String message) {
+	public void send(ModelItem mi, Container container, EventTarget target, String componentId, String message, ErrorType errType) {
 		
-		System.out.println("WILL SEND MESSAGE ERROR="+message);
-
-		HashMap<String, Object> map = new HashMap<String, Object>(2);
+		HashMap<String, Object> map = new HashMap<String, Object>(3);
 		map.put(messageContextAtt, message);
 		map.put(targetContextAtt, componentId);
+		map.put(errorTypeContextAtt, errType);
 
 		try {
-			System.out.println("_______DISPATHCING EVENT");
 			container.dispatch(target, validationErrorType, map);
 
 		} catch (XFormsException e) {
