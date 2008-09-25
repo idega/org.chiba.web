@@ -51,10 +51,9 @@ public class SetErrorAction extends AbstractBoundAction {
 
 		int contextSize = instance.countNodeset(pathExpression);
 		String origin;
-		Element nodeErrorElem;
 
 		if (eventContextInfo instanceof Map) {
-
+			
 			Map<String, Object> errorMsgs = (Map<String, Object>) eventContextInfo;
 
 			String errorMsg = errorMsgs.get(ErrorMessageHandler.messageContextAtt).toString();
@@ -64,44 +63,46 @@ public class SetErrorAction extends AbstractBoundAction {
 
 			errorNodeXPUT = new XPathUtil(".//error[@id='" + targetAtt + "'][@type='test']");
 
-			nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
+			Element nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
 
-			if (nodeErrorElem != null) {
+			if (nodeErrorElem == null) {
+				
+//				errorNodeXPUT = new XPathUtil(".//error[@id=''][@type='']");
+				//
+				// nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
 
-				origin = new StringBuffer(pathExpression).append("[@id='").append(targetAtt).append("']").append("[@type='").append("test").append("']").toString();
-
-				instance.setNodeValue(origin, errorMsg != null ? errorMsg : "");
-
-			} else {
-
-				errorNodeXPUT = new XPathUtil(".//error[@id=''][@type='']");
-
-				nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
+				nodeErrorElem = instanceElem.getOwnerDocument().createElement("error");
+				nodeErrorElem = (Element) instanceElem
+						.appendChild(nodeErrorElem);
 
 				nodeErrorElem.setTextContent(errorMsg);
 				nodeErrorElem.setAttribute("type", "test");
 				nodeErrorElem.setAttribute("id", targetAtt);
 
+				/*
 				DOMUtil.prettyPrintDOM(nodeErrorElem);
 
-				origin = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
+				origin = new StringBuffer(pathExpression).append('[').append(
+						contextSize).append(']').toString();
 
-			
 				Document instanceDoc = instance.getInstanceDocument();
-				 
-				Node imported	= instanceDoc.importNode((Node)nodeErrorElem, true);
-				
-				DOMUtil.prettyPrintDOM(instanceDoc);
-					
-				ModelItem item = instance.getModelItem(pathExpression);
-					
-				((Element)item.getNode()).appendChild(imported);
-					  
-			    model.addChanged((NodeImpl)item.getNode());
 
-			
+				Node imported = instanceDoc.importNode((Node) nodeErrorElem,
+						true);
+
+				DOMUtil.prettyPrintDOM(instanceDoc);
+
+				ModelItem item = instance.getModelItem(pathExpression);
+
+				((Element) item.getNode()).appendChild(imported);
+
+				model.addChanged((NodeImpl) item.getNode());
+				*/
 
 			}
+			
+			origin = new StringBuffer(pathExpression).append("[@id='").append(targetAtt).append("']").append("[@type='").append("test").append("']").toString();
+			instance.setNodeValue(origin, errorMsg != null ? errorMsg : "");
 		
 		}
 

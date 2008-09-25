@@ -5,7 +5,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.jxpath.JXPathContext;
-import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.XFormsElement;
 import org.chiba.xml.xforms.action.AbstractBoundAction;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
+import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.xml.NamespaceContextImpl;
@@ -26,9 +26,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2008/09/25 09:23:45 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/25 12:31:52 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -38,6 +38,16 @@ public class ValidatorAction extends AbstractBoundAction {
 	
 	private String validateIf;
 	private String messageValue;
+	private Locale formLocale;
+	
+	private static XPathUtil messageXPUT;
+	
+	static {
+		
+		NamespaceContextImpl nmspcContext = new NamespaceContextImpl();
+        nmspcContext.addPrefix("idega", "http://idega.com/xforms");
+        messageXPUT = new XPathUtil(".//idega:message", nmspcContext);
+	}
 	
 	public static final String VALIDATEIF_ATT = "validateif";
 	
@@ -62,31 +72,11 @@ public class ValidatorAction extends AbstractBoundAction {
         String validateIf = getXFormsAttribute(VALIDATEIF_ATT);
         setValidateIf(validateIf);
         
-        DOMUtil.prettyPrintDOM(getElement());
+        Element message = messageXPUT.getNode(getElement());
         
-        NamespaceContextImpl nmspcContext = new NamespaceContextImpl();
-        nmspcContext.addPrefix("idega", "http://idega.com/xforms");
-        XPathUtil xput = new XPathUtil(".//idega:message", nmspcContext);
-        
-        Element message = xput.getNode(getElement());
-        
-//        TODO: get ref, and eval exp (take from output)
         String messageValue = message == null ? null : message.getAttribute("value");
         setMessageValue(messageValue);
-        
-//        if (errorIf == null) {
-//            Node child = this.element.getFirstChild();
-//
-//            if ((child != null) && (child.getNodeType() == Node.TEXT_NODE)) {
-//                this.nodeValue = child.getNodeValue();
-//            }
-//            else {
-//                this.nodeValue = "";
-//            }
-//        }
     }
-
-    // implementation of 'org.chiba.xml.xforms.action.XFormsAction'
 
     /**
      * Performs the <code>message</code> action.
@@ -105,7 +95,6 @@ public class ValidatorAction extends AbstractBoundAction {
         
         XFormsElement parent = getParentObject();
     	String componentId = parent.getId();
-    	Locale locale = new Locale("en");
     	
     	String validateIf = getValidateIf();
     	
@@ -120,7 +109,7 @@ public class ValidatorAction extends AbstractBoundAction {
             	
             	if(val == null || val.length() == 0) {
             		
-            		String message = getErrorMessageHandler().getDefaultErrorMessage(locale, errType);
+            		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), errType);
             		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, errType);
             	} else {
             		getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, errType);
@@ -131,7 +120,7 @@ public class ValidatorAction extends AbstractBoundAction {
         	
         	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
         		
-        		String message = getErrorMessageHandler().getDefaultErrorMessage(locale, ErrorType.validation);
+        		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), ErrorType.validation);
         		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.validation);
         		
         	} else {
@@ -140,7 +129,7 @@ public class ValidatorAction extends AbstractBoundAction {
         	
         	if(!modelItem.getLocalUpdateView().isConstraintValid()) {
         		
-        		String message = getErrorMessageHandler().getDefaultErrorMessage(locale, ErrorType.constraint);
+        		String message = getErrorMessageHandler().getDefaultErrorMessage(getFormLocale(), ErrorType.constraint);
         		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.constraint);
         		
         	} else {
@@ -164,6 +153,34 @@ public class ValidatorAction extends AbstractBoundAction {
     		}
     	}
     }
+    
+    protected Locale getFormLocale() {
+		
+    	if(formLocale == null) {
+    	
+        	try {
+        		Model dataModel = getContainerObject().getModel("data_model");
+            	Instance instance = dataModel.getInstance("localized_strings");
+        		String localeStr = instance.getNodeValue("instance('localized_strings')/current_language");
+        		
+        		if(localeStr != null && localeStr.length() != 0) {
+        			
+        			formLocale = ICLocaleBusiness.getLocaleFromLocaleString(localeStr);
+        			
+        		} else {
+        		
+        			formLocale = new Locale("is", "IS");
+        		}
+    			
+    		} catch (XFormsException e) {
+
+    			formLocale = new Locale("is", "IS");
+    			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while resolving current form language, using default = "+formLocale.toString(), e);
+    		}
+    	}
+    	
+    	return formLocale;
+	}
     
     protected String getInlineErrorMessage() {
 		
