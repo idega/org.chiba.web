@@ -1,4 +1,4 @@
-package com.idega.chiba.web.xml.xforms.elements;
+package com.idega.chiba.web.xml.xforms.elements.action;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler;
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.CoreConstants;
@@ -31,9 +32,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.1 $
  *
- * Last modified: $Date: 2008/09/25 16:12:48 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/25 18:09:50 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -108,6 +109,8 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	String validateIf = getValidateIf();
     	
+    	String errMsg = null;
+    	
     	if(validateIf == null || validateIf.length() == 0) {
     		
 //    		doing standard validation
@@ -119,49 +122,37 @@ public class ValidatorAction extends AbstractBoundAction {
             	
             	if(val == null || val.length() == 0) {
             		
-            		String message = getErrorMessage(errType);
-            		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, errType);
-            	} else {
-            		getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, errType);
+            		errMsg = getErrorMessage(errType);
             	}
             }
             
-    		getModel().getValidator().validate(modelItem);
-        	
-        	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
-        		
-        		String message = getErrorMessage(ErrorType.validation);
-        		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.validation);
-        		
-        	} else {
-        		getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, ErrorType.validation);
-        	}
-        	
-        	if(!modelItem.getLocalUpdateView().isConstraintValid()) {
-        		
-        		String message = getErrorMessage(ErrorType.constraint);
-        		getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.constraint);
-        		
-        	} else {
-        		getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, ErrorType.constraint);
-        	}
+    		if(errMsg == null) {
+    		
+    			getModel().getValidator().validate(modelItem);
+            	
+            	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
+            		
+            		errMsg = getErrorMessage(ErrorType.validation);
+            		
+            	} else if(!modelItem.getLocalUpdateView().isConstraintValid()) {
+            		
+            		errMsg = getErrorMessage(ErrorType.constraint);
+            	}
+    		}
+    		
     		
     	} else {
     		
 //    		doing custom validation
     		boolean validates = evalCondition(getElement(), validateIf);
     		
-    		if(validates) {
-    			
-//    			TODO: support more than one custom validation, that means, we need to somehow identify each custom validator
-    			getErrorMessageHandler().send(modelItem, container, this.target, componentId, CoreConstants.EMPTY, ErrorType.custom);
-    			
-    		} else {
-    			
-    			String message = getErrorMessage(ErrorType.custom);
-    			getErrorMessageHandler().send(modelItem, container, this.target, componentId, message, ErrorType.custom);
+    		if(!validates) {
+    			errMsg = getErrorMessage(ErrorType.custom);
     		}
     	}
+
+//    	sending error msg, or empty, if everything is valid
+    	getErrorMessageHandler().send(modelItem, container, this.target, componentId, errMsg != null ? errMsg : CoreConstants.EMPTY);
     }
     
     protected Locale getFormLocale() {

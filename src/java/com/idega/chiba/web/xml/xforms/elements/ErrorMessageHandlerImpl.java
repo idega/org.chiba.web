@@ -13,21 +13,20 @@ import org.w3c.dom.events.EventTarget;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
- *          Last modified: $Date: 2008/09/25 14:03:01 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/25 18:09:46 $ by $Author: civilis $
  * 
  */
 @Scope("singleton")
 @Service
 public class ErrorMessageHandlerImpl implements ErrorMessageHandler {
 	
-	public void send(ModelItem mi, Container container, EventTarget target, String componentId, String message, ErrorType errType) {
+	public void send(ModelItem mi, Container container, EventTarget target, String componentId, String message) {
 		
-		HashMap<String, Object> map = new HashMap<String, Object>(3);
+		HashMap<String, Object> map = new HashMap<String, Object>(2);
 		map.put(messageContextAtt, message);
 		map.put(targetContextAtt, componentId);
-		map.put(errorTypeContextAtt, errType);
 		
 		try {
 			container.dispatch(target, validationErrorType, map);

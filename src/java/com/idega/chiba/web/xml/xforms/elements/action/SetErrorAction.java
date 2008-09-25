@@ -1,4 +1,4 @@
-package com.idega.chiba.web.xml.xforms.elements;
+package com.idega.chiba.web.xml.xforms.elements.action;
 
 import java.util.Map;
 import java.util.logging.Level;
@@ -11,14 +11,14 @@ import org.chiba.xml.xforms.core.ModelItem;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Element;
 
-import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
+import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler;
 import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.1 $
  * 
- *          Last modified: $Date: 2008/09/25 16:12:48 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/25 18:09:50 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -39,7 +39,7 @@ public class SetErrorAction extends AbstractBoundAction {
 	 * Before testing create and instance (in head area of xforms)
 	 * 
 	 * <xf:bind id="errors" nodeset="instance('error-instance')/error"/>
-	 * <xf:instance id="error-instance" xmlns=""> <data> <error id="" type=""/>
+	 * <xf:instance id="error-instance" xmlns=""> <data> <error id=""/>
 	 * </data> </xf:instance> And counter nodes in xform and repeat output (in
 	 * body area of xforms):
 	 * 
@@ -71,13 +71,12 @@ public class SetErrorAction extends AbstractBoundAction {
 
 		String errorMsg = (String) errorCtx.get(ErrorMessageHandler.messageContextAtt);
 		String targetAtt = (String) errorCtx.get(ErrorMessageHandler.targetContextAtt);
-		ErrorType errType = (ErrorType) errorCtx.get(ErrorMessageHandler.errorTypeContextAtt);
 
-		System.out.println("______message= " + errorMsg + "  " + "id " + targetAtt);
+		System.out.println("______message=" + errorMsg + ", id=" + targetAtt);
 
 		ModelItem errMi = instance.getModelItem(
 				new StringBuilder(pathExpression).append("[@id='")
-				.append(targetAtt).append("'][@type='").append(errType.toString()).append("']").toString());
+				.append(targetAtt).append("']").toString());
 
 		if (errMi == null) {
 
@@ -99,7 +98,6 @@ public class SetErrorAction extends AbstractBoundAction {
 			errMi = instance.getModelItem(after);
 
 			Element el = (Element) errMi.getNode();
-			el.setAttribute("type", "test");
 			el.setAttribute("id", targetAtt);
 		}
 		
