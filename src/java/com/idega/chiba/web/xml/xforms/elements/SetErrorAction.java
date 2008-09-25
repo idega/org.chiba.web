@@ -32,6 +32,30 @@ public class SetErrorAction extends AbstractBoundAction {
 
 	}
 
+	
+	/*
+	 * (non-Javadoc)
+	 * @see org.chiba.xml.xforms.action.AbstractBoundAction#perform()
+	 * 
+	 * Before testing create and instance (in head area of xforms)
+	 * 
+	 * 	<xf:instance id="error-instance" xmlns="">
+			<data>
+				<error id="" type=""/>
+			</data>
+		</xf:instance>
+	 * And counter nodes in xform and repeat output (in body area of xforms):
+	 * 
+	 * <xf:output value="count(instance('error-instance')/error)">
+			<xf:label>Counter : </xf:label>
+		</xf:output>
+		
+		<xf:repeat bind="errors">
+			<xf:output ref="."/>
+		</xf:repeat>
+	 * 
+	 * 
+	 */
 	@SuppressWarnings("unchecked")
 	public void perform() throws XFormsException {
 		super.perform();
@@ -40,17 +64,16 @@ public class SetErrorAction extends AbstractBoundAction {
 		System.out.println(eventContextInfo);
 
 		Instance instance = this.model.getInstance(getInstanceId());
-		Element instanceElem = instance.getElement();
-
+		
 		String pathExpression = getLocationPath();
+		
 
 		if (!instance.existsNode(pathExpression)) {
 			getLogger().warn(this + " perform: nodeset '" + pathExpression + "' is empty");
 			return;
 		}
 
-		int contextSize = instance.countNodeset(pathExpression);
-		String origin;
+		Element instanceElem = instance.getElement();
 
 		if (eventContextInfo instanceof Map) {
 			
@@ -64,44 +87,43 @@ public class SetErrorAction extends AbstractBoundAction {
 			errorNodeXPUT = new XPathUtil(".//error[@id='" + targetAtt + "'][@type='test']");
 
 			Element nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
-
+		
 			if (nodeErrorElem == null) {
-				
-//				errorNodeXPUT = new XPathUtil(".//error[@id=''][@type='']");
-				//
-				// nodeErrorElem = errorNodeXPUT.getNode(instanceElem);
-
+								
+			
 				nodeErrorElem = instanceElem.getOwnerDocument().createElement("error");
-				nodeErrorElem = (Element) instanceElem
+				Element data = DOMUtil.getChildElement(instanceElem, "data");
+				nodeErrorElem = (Element) data
 						.appendChild(nodeErrorElem);
 
 				nodeErrorElem.setTextContent(errorMsg);
 				nodeErrorElem.setAttribute("type", "test");
 				nodeErrorElem.setAttribute("id", targetAtt);
-
-				/*
-				DOMUtil.prettyPrintDOM(nodeErrorElem);
-
-				origin = new StringBuffer(pathExpression).append('[').append(
-						contextSize).append(']').toString();
-
+				
 				Document instanceDoc = instance.getInstanceDocument();
 
 				Node imported = instanceDoc.importNode((Node) nodeErrorElem,
 						true);
-
-				DOMUtil.prettyPrintDOM(instanceDoc);
 
 				ModelItem item = instance.getModelItem(pathExpression);
 
 				((Element) item.getNode()).appendChild(imported);
 
 				model.addChanged((NodeImpl) item.getNode());
-				*/
+				System.out.println();
+				String origin = new StringBuffer(pathExpression).append("[@id='").append(targetAtt).append("']").append("[@type='").append("test").append("']").toString();
+
+				System.out.println(instance.existsNode(origin));
+				
+				//model view
+				
+				DOMUtil.prettyPrintDOM(instanceElem);
+				
+
 
 			}
 			
-			origin = new StringBuffer(pathExpression).append("[@id='").append(targetAtt).append("']").append("[@type='").append("test").append("']").toString();
+			String origin = new StringBuffer(pathExpression).append("[@id='").append(targetAtt).append("']").append("[@type='").append("test").append("']").toString();
 			instance.setNodeValue(origin, errorMsg != null ? errorMsg : "");
 		
 		}
