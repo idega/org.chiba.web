@@ -16,9 +16,9 @@ import org.chiba.xml.xforms.xpath.ExtensionFunctionsHelper;
 import org.apache.commons.jxpath.JXPathContext;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/09/22 13:51:08 $ by $Author: arunas $
+ * Last modified: $Date: 2008/09/26 15:53:48 $ by $Author: civilis $
  */
 public class IdegaExtensionFunctions {
 
@@ -27,8 +27,6 @@ public class IdegaExtensionFunctions {
 
     public static boolean userNameAlreadyExists(String userName) {
    
-    	System.out.println("__called usernamealreadyexists="+userName);
-    	
     	return LoginDBHandler.isLoginInUse(userName);
     }
     

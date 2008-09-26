@@ -83,3 +83,38 @@
         <xf:alert ref="instance('error-instance')/error[@for='fbc_8']"/>
         </xf:input>
       </form control example>
+      
+      
+      <matching emails>
+      
+      
+      <xf:group>
+<xf:group>
+<xf:input bind="bind.fbc_16" id="fbc_16">
+<xf:label model="data_model" ref="instance('localized_strings')/fbc_16.title[@lang=instance('localized_strings')/current_language]"/>
+<xf:alert ref="instance('error-instance')/error[@for='fbc_16']"/>
+<xf:dispatch
+ev:event="idega-xforms-ready"
+name="idega-validate" target="fbc_16"/>
+<xf:action ev:event="xforms-value-changed">
+<xf:dispatch name="idega-validate" target="fbc_16"/>
+<xf:dispatch name="idega-validate" target="fbc_15"/>
+</xf:action>
+<idega:validator
+ev:event="idega-validate" validateif="instance('data-instance')/Matching_emails_2_fbc_15 = instance('data-instance')/Matching_emails_1_fbc_16"/>
+</xf:input>
+<xf:input bind="bind.fbc_15" id="fbc_15">
+<xf:label model="data_model" ref="instance('localized_strings')/fbc_15.title[@lang=instance('localized_strings')/current_language]"/>
+<xf:alert ref="instance('error-instance')/error[@for='fbc_15']"/>
+<xf:dispatch
+ev:event="idega-xforms-ready"
+name="idega-validate" target="fbc_15"/>
+<xf:action ev:event="xforms-value-changed">
+<xf:dispatch name="idega-validate" target="fbc_16"/>
+<xf:dispatch name="idega-validate" target="fbc_15"/>
+</xf:action>
+<idega:validator ev:event="idega-validate"/>
+</xf:input>
+</xf:group>
+      
+      </matching emails>
