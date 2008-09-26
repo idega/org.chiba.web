@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.21 2008/09/25 18:09:12 civilis Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.22 2008/09/26 10:27:08 civilis Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -183,6 +183,7 @@
         <!--element namespace="http://yourdomain.com/path" name="yourcontrol" class="com.yourdomain.yourpackage.YourClass"/-->
         <element type="action" namespace="http://idega.com/xforms" name="validator" class="com.idega.chiba.web.xml.xforms.elements.action.ValidatorAction" />
         <element type="action" namespace="http://idega.com/xforms" name="setError" class="com.idega.chiba.web.xml.xforms.elements.action.SetErrorAction" />
+        <element type="action" namespace="http://idega.com/xforms" name="dispatch" class="com.idega.chiba.web.xml.xforms.elements.action.DispatchToMultipleAction" />
         
     </custom-elements>
 
