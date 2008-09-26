@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  * 
- *          Last modified: $Date: 2008/09/26 13:20:57 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/26 13:21:28 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -31,7 +31,6 @@ public class SetErrorAction extends AbstractBoundAction {
 		super.init();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void perform() throws XFormsException {
 		super.perform();
 
@@ -46,6 +45,7 @@ public class SetErrorAction extends AbstractBoundAction {
 			return;
 		}
 
+		@SuppressWarnings("unchecked")
 		Map<String, Object> errorCtx = (Map<String, Object>) eventContextInfo;
 
 		String errorMsg = (String) errorCtx
