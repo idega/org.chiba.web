@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  * 
- *          Last modified: $Date: 2008/09/26 09:31:17 $ by $Author: arunas $
+ *          Last modified: $Date: 2008/09/26 10:31:41 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -40,14 +40,16 @@ public class SetErrorAction extends AbstractBoundAction {
 	 * 
 	 * <xf:bind id="errors" nodeset="instance('error-instance')/error"/>
 	 * 
-	 * <xf:instance id="error-instance" xmlns=""> <data> <error for=""/>
-	 * </data> </xf:instance>
+	 * <xf:instance id="error-instance" xmlns=""> <data> <error for=""/> </data>
+	 * </xf:instance>
 	 * 
-	 *  
-	 *  Add counter in xform and repeat output (in
-	 * body area of xforms before all case):
 	 * 
-	 * <xf:output value=" if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"/>
+	 * Add counter in xform and repeat output (in body area of xforms before all
+	 * case):
+	 * 
+	 * <xf:outputvalue=
+	 * " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
+	 * />
 	 * 
 	 * <xf:repeat bind="errors"> <xf:output ref="."/> </xf:repeat>
 	 * 
@@ -59,33 +61,38 @@ public class SetErrorAction extends AbstractBoundAction {
 	 * 
 	 * submission action
 	 * 
-	 * <xf:action ev:event="DOMActivate" if="count-non-empty(instance('error-instance')/error)=0">
-			<xf:send submission="submit_data_submission"/>
-		</xf:action>
-		
-		
-		component example
-		
-		<xf:group appearence="full">
-			<xf:output class="alert" value="instance('error-instance')/error[@for='fbc_5']"/>
-			<xf:input bind="bind.fbc_5" id="fbc_5">
-				<xf:label model="data_model" ref="instance('localized_strings')/fbc_5.title[@lang=instance('localized_strings')/current_language]"/>
-			</xf:input>
-		</xf:group>
-		
-		error group 
-		
-		<xf:group appearance="full" relevant="if(count-non-empty(instance('error-instance')/error)!=0, 'true','false')">
-			<xf:output value=" if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"/>
-			
-			<xf:repeat bind="errors">
-				<xf:output ref=".">
-					<xf:label ref=""/>
-				</xf:output>
-			</xf:repeat>
-		</xf:group>
-		
-		
+	 * <xf:action ev:event="DOMActivate"
+	 * if="count-non-empty(instance('error-instance')/error)=0"> <xf:send
+	 * submission="submit_data_submission"/> </xf:action>
+	 * 
+	 * 
+	 * component example
+	 * 
+	 * <xf:group appearence="full"> <xf:output class="alert"
+	 * value="instance('error-instance')/error[@for='fbc_5']"/> <xf:input
+	 * bind="bind.fbc_5" id="fbc_5"> <xf:label model="data_model"ref=
+	 * "instance('localized_strings')/fbc_5.title[@lang=instance('localized_strings')/current_language]"
+	 * /> </xf:input> </xf:group>
+	 * 
+	 * error group
+	 * 
+	 * <xf:group appearance="full"relevant=
+	 * "if(count-non-empty(instance('error-instance')/error)!=0, 'true','false')"
+	 * > <xf:outputvalue=
+	 * " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
+	 * />
+	 * 
+	 * <xf:repeat bind="errors"> <xf:output ref="."> <xf:label ref=""/>
+	 * </xf:output> </xf:repeat> </xf:group>
+	 * 
+	 * dispatching idega-xforms-ready to validators
+	 * 
+	 * <xf:action ev:event="xforms-ready"> <idega:dispatch
+	 * name="idega-xforms-ready"
+	 * target="//h:body//*[starts-with(@id, 'fbc_')]"/> <xf:setvalue
+	 * model="data_model" ref="instance('localized_strings')/current_language"
+	 * value="instance('locale-instance')/fb-afk-loginSession.currentLocale"/>
+	 * </xf:action>
 	 */
 
 	@SuppressWarnings("unchecked")
@@ -105,21 +112,26 @@ public class SetErrorAction extends AbstractBoundAction {
 
 		Map<String, Object> errorCtx = (Map<String, Object>) eventContextInfo;
 
-		String errorMsg = (String) errorCtx.get(ErrorMessageHandler.messageContextAtt);
-		String targetAtt = (String) errorCtx.get(ErrorMessageHandler.targetContextAtt);
+		String errorMsg = (String) errorCtx
+				.get(ErrorMessageHandler.messageContextAtt);
+		String targetAtt = (String) errorCtx
+				.get(ErrorMessageHandler.targetContextAtt);
 
 		System.out.println("______message=" + errorMsg + ", id=" + targetAtt);
 
-		ModelItem errMi = instance.getModelItem(
-				new StringBuilder(pathExpression).append("[@for='")
-				.append(targetAtt).append("']").toString());
+//		find existing error for the target id
+		ModelItem errMi = instance.getModelItem(new StringBuilder(
+				pathExpression).append("[@for='").append(targetAtt)
+				.append("']").toString());
+		
 		if (errMi == null) {
+			
+//			if not found, creating new error (copying from template, @see InsertAction)
 
 			int contextSize = instance.countNodeset(pathExpression);
 			if (contextSize == 0) {
 				Logger.getLogger(getClass().getName()).log(Level.WARNING,
-						"perform: nodeset '" + pathExpression
-								+ "' is empty");
+						"perform: nodeset '" + pathExpression + "' is empty");
 				return;
 			}
 
@@ -135,7 +147,7 @@ public class SetErrorAction extends AbstractBoundAction {
 			Element el = (Element) errMi.getNode();
 			el.setAttribute("for", targetAtt);
 		}
-		
+
 		errMi.setValue(errorMsg != null ? errorMsg : CoreConstants.EMPTY);
 
 		doRebuild(true);
