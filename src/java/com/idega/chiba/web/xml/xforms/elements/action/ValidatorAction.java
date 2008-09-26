@@ -32,9 +32,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/09/25 18:09:50 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/26 13:20:57 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -111,44 +111,48 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	String errMsg = null;
     	
-    	if(validateIf == null || validateIf.length() == 0) {
-    		
-//    		doing standard validation
-    		
-    		if(modelItem.isRequired()) {
-            	
-            	String val = modelItem.getValue();
-            	ErrorType errType = ErrorType.required;
-            	
-            	if(val == null || val.length() == 0) {
-            		
-            		errMsg = getErrorMessage(errType);
-            	}
-            }
-            
-    		if(errMsg == null) {
-    		
-    			getModel().getValidator().validate(modelItem);
-            	
-            	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
-            		
-            		errMsg = getErrorMessage(ErrorType.validation);
-            		
-            	} else if(!modelItem.getLocalUpdateView().isConstraintValid()) {
-            		
-            		errMsg = getErrorMessage(ErrorType.constraint);
-            	}
-    		}
-    		
-    		
-    	} else {
-    		
+//		doing standard validation
+		
+		if(modelItem.isRequired()) {
+        	
+        	String val = modelItem.getValue();
+        	ErrorType errType = ErrorType.required;
+        	
+        	if(val == null || val.length() == 0) {
+        		
+        		errMsg = getErrorMessage(errType);
+        	}
+        }
+        
+		if(errMsg == null) {
+		
+			getModel().getValidator().validate(modelItem);
+        	
+        	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
+        		
+        		errMsg = getErrorMessage(ErrorType.validation);
+        		
+        	} else if(!modelItem.getLocalUpdateView().isConstraintValid()) {
+        		
+        		errMsg = getErrorMessage(ErrorType.constraint);
+        	}
+		}
+    	
+    	if(errMsg == null && validateIf != null && validateIf.length() != 0) {
+
 //    		doing custom validation
     		boolean validates = evalCondition(getElement(), validateIf);
     		
     		if(!validates) {
     			errMsg = getErrorMessage(ErrorType.custom);
     		}
+    	}
+    	
+    	if(errMsg != null) {
+    		
+    		modelItem.getLocalUpdateView().setDatatypeValid(false);
+    	} else {
+    		modelItem.getLocalUpdateView().setDatatypeValid(true);
     	}
 
 //    	sending error msg, or empty, if everything is valid

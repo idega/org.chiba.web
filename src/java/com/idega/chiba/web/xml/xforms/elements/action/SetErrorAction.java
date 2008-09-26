@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
- *          Last modified: $Date: 2008/09/26 10:31:41 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/26 13:20:57 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -30,70 +30,6 @@ public class SetErrorAction extends AbstractBoundAction {
 	public void init() throws XFormsException {
 		super.init();
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.chiba.xml.xforms.action.AbstractBoundAction#perform()
-	 * 
-	 * Before testing add instance, bind (in data_model of xforms)
-	 * 
-	 * <xf:bind id="errors" nodeset="instance('error-instance')/error"/>
-	 * 
-	 * <xf:instance id="error-instance" xmlns=""> <data> <error for=""/> </data>
-	 * </xf:instance>
-	 * 
-	 * 
-	 * Add counter in xform and repeat output (in body area of xforms before all
-	 * case):
-	 * 
-	 * <xf:outputvalue=
-	 * " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
-	 * />
-	 * 
-	 * <xf:repeat bind="errors"> <xf:output ref="."/> </xf:repeat>
-	 * 
-	 * 
-	 * Catcher and add namespace
-	 * 
-	 * <idega:setError ev:event="idega-validation-error"
-	 * ref="instance('error-instance')/error"/>
-	 * 
-	 * submission action
-	 * 
-	 * <xf:action ev:event="DOMActivate"
-	 * if="count-non-empty(instance('error-instance')/error)=0"> <xf:send
-	 * submission="submit_data_submission"/> </xf:action>
-	 * 
-	 * 
-	 * component example
-	 * 
-	 * <xf:group appearence="full"> <xf:output class="alert"
-	 * value="instance('error-instance')/error[@for='fbc_5']"/> <xf:input
-	 * bind="bind.fbc_5" id="fbc_5"> <xf:label model="data_model"ref=
-	 * "instance('localized_strings')/fbc_5.title[@lang=instance('localized_strings')/current_language]"
-	 * /> </xf:input> </xf:group>
-	 * 
-	 * error group
-	 * 
-	 * <xf:group appearance="full"relevant=
-	 * "if(count-non-empty(instance('error-instance')/error)!=0, 'true','false')"
-	 * > <xf:outputvalue=
-	 * " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
-	 * />
-	 * 
-	 * <xf:repeat bind="errors"> <xf:output ref="."> <xf:label ref=""/>
-	 * </xf:output> </xf:repeat> </xf:group>
-	 * 
-	 * dispatching idega-xforms-ready to validators
-	 * 
-	 * <xf:action ev:event="xforms-ready"> <idega:dispatch
-	 * name="idega-xforms-ready"
-	 * target="//h:body//*[starts-with(@id, 'fbc_')]"/> <xf:setvalue
-	 * model="data_model" ref="instance('localized_strings')/current_language"
-	 * value="instance('locale-instance')/fb-afk-loginSession.currentLocale"/>
-	 * </xf:action>
-	 */
 
 	@SuppressWarnings("unchecked")
 	public void perform() throws XFormsException {

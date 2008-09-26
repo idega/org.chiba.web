@@ -1,0 +1,85 @@
+      
+      Before testing add instance, bind (in data_model of xforms)
+      
+      <xf:bind id="errors" nodeset="instance('error-instance')/error"/>
+      
+      <xf:instance id="error-instance" xmlns=""> <data> <error for=""/> </data>
+      </xf:instance>
+      
+      
+      Add counter in xform and repeat output (in body area of xforms before all
+      case):
+      
+      <xf:outputvalue=
+      " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
+      />
+      
+      <xf:repeat bind="errors"> <xf:output ref="."/> </xf:repeat>
+      
+      
+      Catcher and add namespace
+      
+      <idega:setError ev:event="idega-validation-error"
+      ref="instance('error-instance')/error"/>
+      
+      submission action
+      
+      <xf:action ev:event="DOMActivate"
+      if="count-non-empty(instance('error-instance')/error)=0"> <xf:send
+      submission="submit_data_submission"/> </xf:action>
+      
+      
+      component example
+      
+      <xf:group appearence="full"> 
+      <xf:output class="alert"
+      value="instance('error-instance')/error[@for='fbc_5']"/> 
+      <xf:input
+      bind="bind.fbc_5" id="fbc_5"> <xf:label model="data_model"ref=
+      "instance('localized_strings')/fbc_5.title[@lang=instance('localized_strings')/current_language]"
+      /> </xf:input> </xf:group>
+      
+      error group
+      
+      <xf:group appearance="full"relevant=
+      "if(count-non-empty(instance('error-instance')/error)!=0, 'true','false')"
+      > <xf:outputvalue=
+      " if(count-non-empty(instance('error-instance')/error)!=0,concat('Your form has - ',count-non-empty(instance('error-instance')/error), ' ', if(count-non-empty(instance('error-instance')/error)=1, 'error', 'errors')), '')"
+      />
+      
+      <xf:repeat bind="errors"> <xf:output ref="."> <xf:label ref=""/>
+      </xf:output> </xf:repeat> </xf:group>
+      
+      dispatching idega-xforms-ready to validators
+      
+      <xf:action ev:event="xforms-ready"> 
+      <idega:dispatch
+      name="idega-xforms-ready"
+      target="//h:body//[starts-with(@id, 'fbc_')]"/> 
+      </xf:action>
+      
+      only alert is sufficient now, no need for custom outputs and groups
+      <xf:alert ref="instance('error-instance')/error[@for='fbc_8']"/>
+      
+      <input element validator description>
+          <xf:dispatch ev:event="idega-xforms-ready" name="idega-validate" target="fbc_8"/>
+          <xf:dispatch ev:event="xforms-value-changed" name="idega-validate" target="fbc_8"/>
+          <idega:validator ev:event="idega-validate" validateif="false()">
+            <idega:message errorType="required" model="data_model" value="instance('localized_strings')/mymsg1[@lang=instance('localized_strings')/current_language]"/>
+          </idega:validator>
+      </input element validator description>
+      
+      <form control example>
+      <xf:input bind="bind.fbc_8" id="fbc_8">
+        <xf:dispatch ev:event="idega-xforms-ready"
+        name="idega-validate" target="fbc_8"/>
+        <xf:dispatch ev:event="xforms-value-changed"
+        name="idega-validate" target="fbc_8"/>
+        <idega:validator ev:event="idega-validate" validateif="false()">
+        <idega:message errorType="required"
+        model="data_model" value="instance('localized_strings')/mymsg1[@lang=instance('localized_strings')/current_language]"/>
+        </idega:validator>
+        <xf:label model="data_model" ref="instance('localized_strings')/fbc_8.title[@lang=instance('localized_strings')/current_language]"/>
+        <xf:alert ref="instance('error-instance')/error[@for='fbc_8']"/>
+        </xf:input>
+      </form control example>
