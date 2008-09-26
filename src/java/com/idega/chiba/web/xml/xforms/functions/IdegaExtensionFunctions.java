@@ -2,23 +2,20 @@ package com.idega.chiba.web.xml.xforms.functions;
 
 import java.util.Iterator;
 
-import com.idega.core.accesscontrol.business.LoginDBHandler;
-
-
 import org.apache.commons.jxpath.ExpressionContext;
 import org.apache.commons.jxpath.Pointer;
 import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.ModelItem;
-import org.chiba.xml.xforms.core.Validator;
 import org.chiba.xml.xforms.xpath.ExtensionFunctionsHelper;
-import org.apache.commons.jxpath.JXPathContext;
+
+import com.idega.core.accesscontrol.business.LoginDBHandler;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/09/26 15:53:48 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/26 16:57:52 $ by $Author: civilis $
  */
 public class IdegaExtensionFunctions {
 
