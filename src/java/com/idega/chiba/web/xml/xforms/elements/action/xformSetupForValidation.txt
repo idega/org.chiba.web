@@ -118,3 +118,21 @@ name="idega-validate" target="fbc_15"/>
 </xf:group>
       
       </matching emails>
+      
+      <submit button>
+      <xf:action ev:event="DOMActivate">
+        <xf:setvalue
+        ref="instance('control-instance')/submission" value="'true'"/>
+        <idega:dispatch name="idega-validate" target="//h:body//*[starts-with(@id, 'fbc_')]"/>
+        <xf:action ev:event="DOMActivate" if="count-non-empty(instance('error-instance')/error)=0">
+        <xf:setvalue
+        ref="instance('control-instance')/validation" value="'false'"/>
+        <xf:send submission="submit_data_submission"/>
+        </xf:action>
+        
+        </xf:action>
+
+</submit button>
+
+<xf:bind id="errors"
+nodeset="instance('error-instance')/error" relevant="idega:instance('submission_model', 'control-instance')/submission"/>

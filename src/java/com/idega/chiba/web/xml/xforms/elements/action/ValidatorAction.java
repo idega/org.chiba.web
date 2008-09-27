@@ -32,9 +32,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/09/26 13:20:57 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/27 18:04:46 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -111,9 +111,17 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	String errMsg = null;
     	
-//		doing standard validation
+    	boolean doRequiredValidation = false;
+    	
+    	Model dataModel = getContainerObject().getModel("submission_model");
+    	Instance controlInstance = dataModel.getInstance("control-instance");
+		String submissionPhase = controlInstance.getNodeValue("instance('control-instance')/submission");
 		
-		if(modelItem.isRequired()) {
+		doRequiredValidation = "true".equals(submissionPhase);
+    	
+		if(doRequiredValidation && modelItem.isRequired()) {
+			
+//			validating required only after submit button was pressed
         	
         	String val = modelItem.getValue();
         	ErrorType errType = ErrorType.required;
@@ -125,6 +133,8 @@ public class ValidatorAction extends AbstractBoundAction {
         }
         
 		if(errMsg == null) {
+			
+//			doing standard validation - datatype and constraint
 		
 			getModel().getValidator().validate(modelItem);
         	
