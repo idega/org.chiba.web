@@ -172,19 +172,19 @@ fieldset > fieldset > fieldset {
 */
 
 .disabled label{
-    display:none;
+    display:none !important;
 }
 .disabled .value{
-    display:none;
+    display:none !important;
 }
 .disabled {
-    display:none;
+    display:none !important;
 }
 .disabled .alert{
-    display:none;
+    display:none !important;
 }
 .disabled .progressbar{
-    display:none;
+    display:none !important;
 }
 
 /*********** styles character used for signaling 'required' (normally '*') ***********/
