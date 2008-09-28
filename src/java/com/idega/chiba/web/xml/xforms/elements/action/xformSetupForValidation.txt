@@ -1,7 +1,7 @@
       
       Before testing add instance, bind (in data_model of xforms)
       
-      <xf:bind id="errors" nodeset="instance('error-instance')/error"/>
+      <xf:bind id="errors" nodeset="instance('error-instance')/error[. != '']"/>
       
       <xf:instance id="error-instance" xmlns=""> <data> <error for=""/> </data>
       </xf:instance>
@@ -120,19 +120,33 @@ name="idega-validate" target="fbc_15"/>
       </matching emails>
       
       <submit button>
-      <xf:action ev:event="DOMActivate">
-        <xf:setvalue
-        ref="instance('control-instance')/submission" value="'true'"/>
-        <idega:dispatch name="idega-validate" target="//h:body//*[starts-with(@id, 'fbc_')]"/>
-        <xf:action ev:event="DOMActivate" if="count-non-empty(instance('error-instance')/error)=0">
-        <xf:setvalue
-        ref="instance('control-instance')/validation" value="'false'"/>
-        <xf:send submission="submit_data_submission"/>
-        </xf:action>
-        
-        </xf:action>
+      
+      <div class="fbc_button_area" id="fbc_2" name="fbc_button_area">
+<xf:trigger bind="bind.readonlyHideButton"
+class="fbc_button_submit" id="fbc_3" name="fbc_button_submit">
+<xf:label model="data_model" ref="instance('localized_strings')/page-1-submit.label[@lang=instance('localized_strings')/current_language]"/>
+<xf:action ev:event="DOMActivate">
+<xf:setvalue
+ref="instance('control-instance')/submission" value="'true'"/>
+<idega:dispatch
+name="idega-validate" target="//h:body//*[starts-with(@id, 'fbc_')]"/>
+<xf:dispatch name="xforms-rebuild" target="data_model"/>
+<xf:dispatch
+name="xforms-recalculate" target="data_model"/>
+<xf:dispatch
+name="xforms-revalidate" target="data_model"/>
+<xf:dispatch name="xforms-refresh" target="data_model"/>
+<xf:action if="count-non-empty(instance('error-instance')/error)=0">
+<xf:setvalue
+ref="instance('control-instance')/validation" value="'false'"/>
+<xf:send submission="submit_data_submission"/>
+</xf:action>
+</xf:action>
+</xf:trigger>
+</div>
 
 </submit button>
 
-<xf:bind id="errors"
-nodeset="instance('error-instance')/error" relevant="idega:instance('submission_model', 'control-instance')/submission"/>
+<xf:bind id="errorsGroup"
+nodeset="instance('error-instance')/error" relevant="idega:instance('submission_model', 'control-instance')/submission = 'true'"/>
+<xf:bind id="errors" nodeset="instance('error-instance')/error[. != '']"/>
