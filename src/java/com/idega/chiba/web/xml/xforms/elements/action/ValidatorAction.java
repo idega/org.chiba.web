@@ -6,15 +6,12 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.XFormsElement;
 import org.chiba.xml.xforms.action.AbstractBoundAction;
-import org.chiba.xml.xforms.core.BindingResolver;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.core.ModelItem;
-import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
@@ -22,6 +19,7 @@ import org.w3c.dom.NodeList;
 
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler;
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
+import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
@@ -32,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/09/27 18:04:46 $ by $Author: civilis $
+ * Last modified: $Date: 2008/09/30 20:28:05 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -204,7 +202,7 @@ public class ValidatorAction extends AbstractBoundAction {
     	if(messageValuesByType != null && messageValuesByType.containsKey(errType)) {
     	
     		try {
-        		Object val = computeValueAttribute(messageValuesByType.get(errType));
+        		Object val = XFormsUtil.getValueFromExpression(messageValuesByType.get(errType), this);
         		
         		if(val != null)
         			message = val.toString();
@@ -219,50 +217,6 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	return message;
 	}
-    
-    /**
-     * copied from Output, whereas it was copied from SetValueAction
-     * @param valueAttribute
-     * @return
-     * @throws XFormsException
-     */
-    protected Object computeValueAttribute(String valueAttribute) throws XFormsException {
-        String pathExpression = BindingResolver.getExpressionPath(this, this.repeatItemId);
-        Instance instance = this.model.getInstance(this.model.computeInstanceId(pathExpression));
-        if (!instance.existsNode(pathExpression)) {
-            return null;
-        }
-
-        // todo: implement XPathProcessor abstraction, this code is copied from SetValueAction
-        // since jxpath doesn't provide a means for evaluating an expression
-        // in a certain context, we use a trick here: the expression will be
-        // evaluated during getPointer and the result stored as a variable
-        JXPathContext context = instance.getInstanceContext();
-
-        String currentPath = getParentContextPath(this.element);
-        context.getVariables().declareVariable("currentContextPath", currentPath);
-        context.getVariables().declareVariable("contextmodel", getModelId());
-        try {
-            context.getPointer(pathExpression + "[chiba:declare('output-value', " + valueAttribute + ")]");
-        }
-        catch (Exception e) {
-            throw new XFormsComputeException("invalid value expression at " + this, e, this.target, valueAttribute);
-        }
-        Object value = context.getValue("chiba:undeclare('output-value')");
-        context.getVariables().undeclareVariable("currentContextPath");
-        context.getVariables().undeclareVariable("contextmodel");
-
-        // check for string conversion to prevent sth. like "5 + 0" to be evaluated to "5.0"
-        if (value instanceof Double) {
-            // additionaly check for special cases
-            double doubleValue = ((Double) value).doubleValue();
-            if (!(Double.isNaN(doubleValue) || Double.isInfinite(doubleValue))) {
-                value = context.getValue("string(" + value + ")");
-            }
-        }
-
-        return value;
-    }
     
     public ErrorMessageHandler getErrorMessageHandler() {
 
