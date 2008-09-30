@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  * 
- *          Last modified: $Date: 2008/09/26 13:21:28 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/09/30 20:25:34 $ by $Author: civilis $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -52,8 +52,6 @@ public class SetErrorAction extends AbstractBoundAction {
 				.get(ErrorMessageHandler.messageContextAtt);
 		String targetAtt = (String) errorCtx
 				.get(ErrorMessageHandler.targetContextAtt);
-
-		System.out.println("______message=" + errorMsg + ", id=" + targetAtt);
 
 //		find existing error for the target id
 		ModelItem errMi = instance.getModelItem(new StringBuilder(
