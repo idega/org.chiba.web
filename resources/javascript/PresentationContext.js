@@ -34,7 +34,7 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         alert(message);
     }
     else {
-        var ni = dojo.byId('messagePane');
+       /* var ni = dojo.byId('messagePane');
         if(PresentationContext.COUNTER > 0){ dojo.dom.removeChildren(ni); }
         var newdiv = document.createElement('div');
         PresentationContext.COUNTER++;
@@ -42,7 +42,7 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         newdiv.setAttribute('id',divIdName);
         newdiv.setAttribute('style',"display:none");
         newdiv.innerHTML = 'message';
-        ni.appendChild(newdiv);
+        ni.appendChild(newdiv); */
         
         // @author= Arunas :
         // changed rendered message into humman msg.

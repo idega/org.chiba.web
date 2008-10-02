@@ -4,6 +4,7 @@
     xmlns:xforms="http://www.w3.org/2002/xforms"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
+    xmlns:idega="http://idega.com/xforms"
     exclude-result-prefixes="chiba xforms xlink xsl">
     <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 
@@ -65,7 +66,7 @@
     <xsl:template match="xforms:model"/>
 
     <xsl:template match="xforms:group[@id='group-tabsheet']">
-        <xsl:variable name="selected-case" select="xforms:switch/xforms:case[@xforms:selected='true']"/>
+        <xsl:variable name="selected-case" select="xforms:switch/xforms:case[@xforms:selected='true'] | idega:switch/xforms:case[@xforms:selected='true']"/>
         <table>
             <tr>
                 <xsl:for-each select="xforms:trigger">

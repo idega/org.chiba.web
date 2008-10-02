@@ -4,6 +4,7 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xforms="http://www.w3.org/2002/xforms"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
     <!-- Copyright 2001-2007 ChibaXForms GmbH -->
@@ -330,7 +331,7 @@
     match outermost group of XForms markup. An outermost group is necessary to allow standard HTML forms
     to coexist with XForms markup and still produce non-nested form tags in the output.
     -->
-    <xsl:template match="xforms:group[not(ancestor::xforms:*)][1] | xforms:repeat[not(ancestor::xforms:*)][1] | xforms:switch[not(ancestor::xforms:*)][1]" mode="inline">
+    <xsl:template match="xforms:group[not(ancestor::xforms:*)][1] | xforms:repeat[not(ancestor::xforms:*)][1] | xforms:switch[not(ancestor::xforms:*)][1] | idega:switch[not(ancestor::xforms:*)][1]" mode="inline">
         <xsl:element name="form">
             <xsl:attribute name="name">
                 <xsl:value-of select="$form-id"/>

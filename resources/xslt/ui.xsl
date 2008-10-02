@@ -4,9 +4,10 @@
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xforms="http://www.w3.org/2002/xforms"
     xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.5 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.6 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -541,18 +542,18 @@
         easier to maintain the switch cause all relevant markup is kept under the
         same root element.
     -->
-    <xsl:template match="xforms:switch[@appearance='full']" name="full-switch">
+    <xsl:template match="xforms:switch[@appearance='full'] | idega:switch[@appearance='full']" name="full-switch">
         <xsl:variable name="switch-id" select="@id"/>
         <xsl:variable name="switch-classes">
             <xsl:call-template name="assemble-compound-classes">
                 <xsl:with-param name="appearance" select="'full'"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="selected-id" select="xforms:case[chiba:data/@chiba:selected='true']/@id"/>
+        <xsl:variable name="selected-id" select="xforms:case[chiba:data/@chiba:selected='true']/@id | idega:case[chiba:data/@chiba:selected='true']/@id"/>
 
         <table id="{$switch-id}" class="{$switch-classes}">
             <tr>
-                <xsl:for-each select="xforms:case[@id='switch-toggles']/xforms:trigger">
+                <xsl:for-each select="xforms:case[@id='switch-toggles']/xforms:trigger | idega:case[@id='switch-toggles']/xforms:trigger">
                     <xsl:variable name="case-id" select=".//xforms:toggle/@xforms:case | .//xforms:toggle/@case"/>
                     <xsl:choose>
                         <xsl:when test="$case-id=$selected-id">
@@ -572,15 +573,15 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="{count(xforms:case[@id='switch-toggles']/xforms:trigger) + 1}" class="full-switch-body">
-                    <xsl:apply-templates select="xforms:case[not(@id='switch-toggles')]"/>
+                <td colspan="{count(xforms:case[@id='switch-toggles']/xforms:trigger) + 1} | {count(idega:case[@id='switch-toggles']/xforms:trigger) + 1}" class="full-switch-body">
+                    <xsl:apply-templates select="xforms:case[not(@id='switch-toggles')] | idega:case[not(@id='switch-toggles')]"/>
                 </td>
             </tr>
         </table>
     </xsl:template>
 
     <!-- ### DEFAULT SWITCH ### -->
-    <xsl:template match="xforms:switch">
+    <xsl:template match="xforms:switch | idega:switch">
         <xsl:variable name="switch-id" select="@id"/>
         <xsl:variable name="switch-classes">
             <xsl:call-template name="assemble-compound-classes">
@@ -594,7 +595,7 @@
     </xsl:template>
 
     <!-- ### SELECTED CASE ### -->
-    <xsl:template match="xforms:case[chiba:data/@chiba:selected='true']" name="selected-case">
+    <xsl:template match="xforms:case[chiba:data/@chiba:selected='true'] | idega:case[chiba:data/@chiba:selected='true']" name="selected-case">
         <xsl:variable name="case-id" select="@id"/>
         <xsl:variable name="case-classes" select="'case selected-case'"/>
 
@@ -604,7 +605,7 @@
     </xsl:template>
 
     <!-- ### DE-SELECTED/NON-SELECTED CASE ### -->
-    <xsl:template match="xforms:case" name="deselected-case">
+    <xsl:template match="xforms:case | idega:case" name="deselected-case">
         <!-- render only in scripted environment -->
         <xsl:if test="$scripted='true'">
             <xsl:variable name="case-id" select="@id"/>
