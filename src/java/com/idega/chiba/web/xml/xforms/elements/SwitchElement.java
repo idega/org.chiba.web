@@ -17,9 +17,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/10/02 08:52:33 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/02 13:14:43 $ by $Author: arunas $
  *
  */
 
@@ -126,10 +126,13 @@ public class SwitchElement extends BindingElement{
 	        
 	        Node node;
 	        CaseElement caseElement;
-	        String selectedAttribute, generatePdfPhase;
+	        String selectedAttribute;
 	        int selection = -1;
-	        Model dataModel;
-	        Instance controlInstance;
+	       
+	        Model dataModel = getContainerObject().getModel("submission_model");
+	        Instance controlInstance = dataModel.getInstance("control-instance");
+    		String generatePdfPhase = controlInstance.getNodeValue("instance('control-instance')/generatePdf");
+
 
 	        for (int index = 0; index < childNodes.getLength(); index++) {
 	            node = childNodes.item(index);
@@ -138,11 +141,7 @@ public class SwitchElement extends BindingElement{
 	            	
 	                caseElement = (CaseElement) ((NodeImpl) node).getUserData();
 	                cases.add(caseElement);
-	                
-	                dataModel = getContainerObject().getModel("submission_model");
-                	controlInstance = dataModel.getInstance("control-instance");
-            		generatePdfPhase = controlInstance.getNodeValue("instance('control-instance')/generatePdf");
-
+	                            
 	                selectedAttribute = caseElement.getXFormsAttribute(SELECTED_ATTRIBUTE);
 	                
 	                if (("true").equals(selectedAttribute) && ("true").equals(generatePdfPhase)) {
