@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  *
- * Last modified: $Date: 2008/09/30 20:28:05 $ by $Author: civilis $
+ * Last modified: $Date: 2008/10/02 13:42:05 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -42,6 +42,8 @@ public class ValidatorAction extends AbstractBoundAction {
 	
 	private String validateIf;
 	private Locale formLocale;
+	private String setErrorId;
+	private String submissionExp;
 	private Map<ErrorType, String> messageValuesByType;
 	
 	private static XPathUtil messageXPUT;
@@ -64,6 +66,17 @@ public class ValidatorAction extends AbstractBoundAction {
     public void init() throws XFormsException {
         super.init();
         
+        String setErrorId = getXFormsAttribute("seterror");
+        
+        if(setErrorId == null || setErrorId.length() == 0)
+        	setErrorId = "formSetErrorHandler";
+        
+        setSetErrorId(setErrorId);
+        
+    	String submissionExp = getXFormsAttribute("submission");
+    	
+    	setSubmissionExp(submissionExp);
+    	
         String validateIf = getXFormsAttribute(VALIDATEIF_ATT);
         setValidateIf(validateIf);
         
@@ -111,9 +124,23 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	boolean doRequiredValidation = false;
     	
-    	Model dataModel = getContainerObject().getModel("submission_model");
-    	Instance controlInstance = dataModel.getInstance("control-instance");
-		String submissionPhase = controlInstance.getNodeValue("instance('control-instance')/submission");
+    	String submissionExp = getSubmissionExp();
+    	
+    	Model submissionModel = getContainerObject().getModel("submission_model");
+    	
+    	String instanceId;
+    	
+    	if(submissionExp == null || submissionExp.length() == 0) {
+    		
+    		instanceId = "control-instance";
+    		submissionExp = "instance('control-instance')/submission";
+    		
+    	} else {
+    		instanceId = submissionModel.computeInstanceId(submissionExp);
+    	}
+    	
+    	Instance controlInstance = submissionModel.getInstance(instanceId);
+		String submissionPhase = controlInstance.getNodeValue(submissionExp);
 		
 		doRequiredValidation = "true".equals(submissionPhase);
     	
@@ -162,9 +189,9 @@ public class ValidatorAction extends AbstractBoundAction {
     	} else {
     		modelItem.getLocalUpdateView().setDatatypeValid(true);
     	}
-
+    	
 //    	sending error msg, or empty, if everything is valid
-    	getErrorMessageHandler().send(modelItem, container, this.target, componentId, errMsg != null ? errMsg : CoreConstants.EMPTY);
+    	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg != null ? errMsg : CoreConstants.EMPTY);
     }
     
     protected Locale getFormLocale() {
@@ -236,5 +263,21 @@ public class ValidatorAction extends AbstractBoundAction {
 
 	public void setValidateIf(String validateIf) {
 		this.validateIf = validateIf;
+	}
+
+	String getSetErrorId() {
+		return setErrorId;
+	}
+
+	void setSetErrorId(String setErrorId) {
+		this.setErrorId = setErrorId;
+	}
+
+	String getSubmissionExp() {
+		return submissionExp;
+	}
+
+	void setSubmissionExp(String submissionExp) {
+		this.submissionExp = submissionExp;
 	}
 }
