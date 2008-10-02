@@ -7,7 +7,6 @@ import java.util.Map;
 import org.chiba.web.IWBundleStarter;
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.core.ModelItem;
-import org.w3c.dom.events.EventTarget;
 
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
@@ -16,9 +15,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  * 
- *          Last modified: $Date: 2008/09/25 18:09:50 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/10/02 13:37:24 $ by $Author: civilis $
  * 
  */
 public interface ErrorMessageHandler {
@@ -80,5 +79,5 @@ public interface ErrorMessageHandler {
 	}
 
 	public abstract void send(ModelItem mi, Container container,
-			EventTarget target, String componentId, String message);
+			String targetId, String componentId, String message);
 }
