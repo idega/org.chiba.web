@@ -665,3 +665,165 @@ html>body div.phases ul li.current {
 .selector-item {
 	width: 300px				!important;
 }
+
+div.textarea {
+	margin-bottom: 12px;
+	width: 870px;
+	overflow: hidden;
+}
+
+div.textarea label {
+	float: left;
+}
+
+div.textarea textarea {
+	float: left;
+	width: 300px !important;
+}
+
+div.input {
+	width: 870px;
+	overflow: hidden;
+}
+
+table div.input {
+	width: auto;
+}
+
+div.input input {
+	float: left;
+}
+
+.invalid .alert {
+	float: left;
+	clear: both;
+	margin-left: 180px;
+	top: 0;
+	margin-top: 3px;
+}
+
+div.input.invalid input.value, div.textarea.invalid textarea.value {
+	background-color: #faa !important;
+	border-color: #f00 !important;
+}
+
+div.select1.invalid span {
+	background-color: #faa;
+	border: 1px #f00 solid;
+	padding: 8px;
+}
+
+div.select1.invalid span span, div.select1.invalid label span, div.select1.invalid span.alert {
+	border: 0;
+	padding: 0;
+}
+
+div.select1.invalid label span {
+	background-color: #fff;
+}
+
+div.select1.invalid span.alert {
+	margin-bottom: 12px;
+}
+
+.help-text {
+	left: 0;
+	float: right;
+	width: 350px;
+	position: relative;
+}
+
+div.input .help-text {
+	width: 410px;
+}
+
+.help-text .helpIcon {
+	display: none;
+}
+
+.help-text span.output {
+	float: right;
+	display: block !important;
+}
+
+.help-text span.output span {
+	font-size: 11px;
+	padding: 0;
+	display: block !important;
+}
+
+.help-text span.output label {
+	display: none;
+}
+
+fieldset.readwrite.optional {
+	position: relative;
+	clear: both;
+}
+
+fieldset.readwrite.optional legend {
+	font-weight: bold;
+	padding-top: 18px;
+}
+
+fieldset.readwrite.optional span.trigger {
+	position: absolute;
+	right: 0;
+	top: -28px;
+}
+
+fieldset.readwrite.optional table span.trigger {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+fieldset.readwrite.optional table {
+	width: 100%;
+}
+
+fieldset.readwrite.optional table td {
+	border: 1px #a8a8a8 solid;
+	background-color: #efefef;
+	width: 100%;
+	padding: 10px;
+	position: relative;
+}
+
+fieldset.readwrite.optional table tr.repeat-header {
+	display: none;
+}
+
+fieldset.readwrite.optional table span label {
+	padding: 0 !important;
+}
+
+fieldset.readwrite.optional table span span {
+	padding: 0 !important;
+margin-bottom: 4px;
+}
+
+fieldset.readwrite.optional table div.upload {
+	margin-top: 4px;
+}
+
+fieldset.readwrite.optional table div.input {
+	margin-bottom: 4px;
+}
+
+div.xformErrors {
+	margin-top: 8px;
+	border: 2px #c00 solid;
+	background-color: #faa;
+	padding: 8px;
+}
+
+div.xformErrors table {
+	margin-top: 0;
+}
+
+div.xformErrors td {
+	display: list-item;
+	margin-left: 20px;
+	font-weight: bold;
+}
