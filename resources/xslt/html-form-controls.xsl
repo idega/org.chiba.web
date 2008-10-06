@@ -1115,7 +1115,10 @@
 	              		<xsl:attribute name="title" select="xforms:copy/@id"/>
     	          	</xsl:when>
         	      	<xsl:otherwise>
-            	   		<xsl:attribute name="value" select="xforms:value"/>
+        	      		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
+            	   		<xsl:attribute name="value">
+            	   		  <xsl:value-of select="xforms:value"/>
+            	   		</xsl:attribute>
               			<xsl:attribute name="title" select="xforms:hint"/>
                 	</xsl:otherwise>
 				</xsl:choose>
@@ -1205,7 +1208,10 @@
            				<xsl:attribute name="value" select="xforms:copy/@id"/>
 	            	</xsl:when>
     	        	<xsl:otherwise>
-	    	    		<xsl:attribute name="value" select="xforms:value"/>
+	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
+	    	    		<xsl:attribute name="value">
+	    	    		    <xsl:value-of select="xforms:value"/>
+	    	    		</xsl:attribute>
     	    		</xsl:otherwise>
         	    </xsl:choose>
                 <xsl:choose>
@@ -1363,7 +1369,10 @@
            				<xsl:attribute name="value" select="xforms:copy/@id"/>
 	            	</xsl:when>
     	        	<xsl:otherwise>
-	    	    		<xsl:attribute name="value" select="xforms:value"/>
+	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
+	    	    		<xsl:attribute name="value">
+	    	    		    <xsl:value-of select="xforms:value"/>
+	    	    		</xsl:attribute>
     	    		</xsl:otherwise>
         	    </xsl:choose>
                 <xsl:choose>
@@ -1413,7 +1422,10 @@
    						<xsl:attribute name="value" select="xforms:copy/@id"/>
 	            	</xsl:when>
     	        	<xsl:otherwise>
-	    	    		<xsl:attribute name="value" select="xforms:value"/>
+	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
+	    	    		<xsl:attribute name="value">
+	    	    		    <xsl:value-of select="xforms:value"/>
+	    	    		</xsl:attribute>
     	    		</xsl:otherwise>
         	    </xsl:choose>
                 <xsl:choose>
