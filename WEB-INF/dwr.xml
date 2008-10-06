@@ -4,7 +4,7 @@
     <allow>
         <create creator="jsf" javascript="Flux" scope="request">
         	<param name="managedBeanName" value="fluxexhand" />
-            <param name="class" value="com.idega.chiba.facade.FluxExceptionHandler"/>
+            <param name="class" value="com.idega.chiba.facade.IdegaFluxFacade" />
         </create>
     </allow>
 </dwr>
