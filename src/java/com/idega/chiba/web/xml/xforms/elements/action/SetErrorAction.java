@@ -16,9 +16,9 @@ import com.idega.util.CoreConstants;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  * 
- *          Last modified: $Date: 2008/09/30 20:25:34 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/10/06 15:55:16 $ by $Author: arunas $
  * 
  */
 public class SetErrorAction extends AbstractBoundAction {
@@ -34,8 +34,7 @@ public class SetErrorAction extends AbstractBoundAction {
 	public void perform() throws XFormsException {
 		super.perform();
 
-		Model dataModel = getContainerObject().getModel("data_model");
-		Instance instance = dataModel.getInstance("error-instance");
+        Instance instance = this.model.getInstance(getInstanceId());
 
 		String pathExpression = getLocationPath();
 
@@ -88,5 +87,6 @@ public class SetErrorAction extends AbstractBoundAction {
 		doRecalculate(true);
 		doRevalidate(true);
 		doRefresh(true);
+		
 	}
 }
