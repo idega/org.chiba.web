@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.xerces.dom.NodeImpl;
 import org.chiba.xml.events.ChibaEventNames;
-import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.ui.BindingElement;
@@ -15,17 +14,20 @@ import org.chiba.xml.xforms.ui.state.BoundElementState;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/10/02 13:14:43 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/07 12:30:18 $ by $Author: arunas $
  *
  */
 
 public class SwitchElement extends BindingElement{
 	    private CaseElement selected = null;
 	    private boolean initAfterReady = false;
+	    public static String showAtt = "show";
 
 	    /**
 	     * Creates a new switch element handler.
@@ -122,18 +124,14 @@ public class SwitchElement extends BindingElement{
 	        NodeList childNodes = getElement().getChildNodes();
 	        List<CaseElement> cases = new ArrayList<CaseElement>(childNodes.getLength());
 	        List<Integer> selectedList = new ArrayList<Integer>(childNodes.getLength());
-
 	        
 	        Node node;
 	        CaseElement caseElement;
-	        String selectedAttribute;
+	        String showAttribute;
+	        Boolean showValue;
+	        
 	        int selection = -1;
 	       
-	        Model dataModel = getContainerObject().getModel("submission_model");
-	        Instance controlInstance = dataModel.getInstance("control-instance");
-    		String generatePdfPhase = controlInstance.getNodeValue("instance('control-instance')/generatePdf");
-
-
 	        for (int index = 0; index < childNodes.getLength(); index++) {
 	            node = childNodes.item(index);
 	            
@@ -142,13 +140,19 @@ public class SwitchElement extends BindingElement{
 	                caseElement = (CaseElement) ((NodeImpl) node).getUserData();
 	                cases.add(caseElement);
 	                            
-	                selectedAttribute = caseElement.getXFormsAttribute(SELECTED_ATTRIBUTE);
+	                showAttribute = caseElement.getXFormsAttribute(showAtt);
 	                
-	                if (("true").equals(selectedAttribute) && ("true").equals(generatePdfPhase)) {
-	                    // keep *first* selected case position
-	                    selection = cases.size() - 1;
-	                    selectedList.add(selection);
+	                if (showAttribute != null) {
+	                	
+	                	 showValue = (Boolean)XFormsUtil.getValueFromExpression(showAttribute, this);
+	                	 
+	                	 if (showValue) {
+	 	                    // keep *first* selected case position
+	 	                    selection = cases.size() - 1;
+	 	                    selectedList.add(selection);
+	 	                }
 	                }
+	                
 	            }
 	        }
 
@@ -196,7 +200,7 @@ public class SwitchElement extends BindingElement{
 	        // selection state
 	        if (this.initAfterReady) {
 	            // dispatch internal chiba event
-	            HashMap map = new HashMap();
+	            HashMap<String, String> map = new HashMap<String, String>();
 	            map.put("selected", this.selected.getId());
 	            this.container.dispatch(this.target, ChibaEventNames.SWITCH_TOGGLED, map);
 

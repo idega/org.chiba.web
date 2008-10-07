@@ -9,16 +9,16 @@ import org.chiba.xml.xforms.core.BindingResolver;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
-import org.chiba.xml.xforms.ui.AbstractFormControl;
+import org.chiba.xml.xforms.ui.AbstractUIElement;
 import org.chiba.xml.xforms.ui.BindingElement;
 import org.w3c.dom.Node;
 
 /**
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/10/06 11:21:23 $ by $Author: civilis $
+ * Last modified: $Date: 2008/10/07 12:30:18 $ by $Author: arunas $
  *
  */
 public class XFormsUtil {
@@ -69,9 +69,9 @@ public class XFormsUtil {
         return value;
     }
 	
-	public static Object getValueFromExpression(String valueAttribute, AbstractFormControl formControl) throws XFormsException {
-        String pathExpression = BindingResolver.getExpressionPath(formControl, formControl.getRepeatItemId());
-        Instance instance = formControl.getModel().getInstance(formControl.getModel().computeInstanceId(pathExpression));
+	public static Object getValueFromExpression(String valueAttribute, AbstractUIElement uiElement) throws XFormsException {
+        String pathExpression = BindingResolver.getExpressionPath(uiElement, uiElement.getRepeatItemId());
+        Instance instance = uiElement.getModel().getInstance(uiElement.getModel().computeInstanceId(pathExpression));
         if (!instance.existsNode(pathExpression)) {
             return null;
         }
@@ -82,14 +82,14 @@ public class XFormsUtil {
         // evaluated during getPointer and the result stored as a variable
         JXPathContext context = instance.getInstanceContext();
 
-        String currentPath = getParentContextPath(formControl.getElement());
+        String currentPath = getParentContextPath(uiElement.getElement());
         context.getVariables().declareVariable("currentContextPath", currentPath);
-        context.getVariables().declareVariable("contextmodel", formControl.getModel().getId());
+        context.getVariables().declareVariable("contextmodel", uiElement.getModel().getId());
         try {
             context.getPointer(pathExpression + "[chiba:declare('output-value', " + valueAttribute + ")]");
         }
         catch (Exception e) {
-        	throw new XFormsComputeException("invalid value expression at " + formControl, e, formControl.getTarget(), valueAttribute);
+        	throw new XFormsComputeException("invalid value expression at " + uiElement, e, uiElement.getTarget(), valueAttribute);
         }
         Object value = context.getValue("chiba:undeclare('output-value')");
         context.getVariables().undeclareVariable("currentContextPath");
