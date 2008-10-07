@@ -18,8 +18,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler;
-import com.idega.chiba.web.xml.xforms.elements.ErrorMessageHandler.ErrorType;
 import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
+import com.idega.chiba.web.xml.xforms.validation.ErrorType;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  *
- * Last modified: $Date: 2008/10/02 13:42:05 $ by $Author: civilis $
+ * Last modified: $Date: 2008/10/07 13:10:27 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
