@@ -148,7 +148,8 @@
                         Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
                     }
                 
-                    showLoadingMessage(Localization.LOADING_MSG);
+                    if(!IE)
+                        showLoadingMessage(Localization.LOADING_MSG);
                 
                     var djConfig = {
                     debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
