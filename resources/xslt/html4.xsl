@@ -29,7 +29,8 @@
     <xsl:param name="uriToMootoolsLib" select="''"/>
     <xsl:param name="uriTojQueryLib" select="''"/>
 	
-	<xsl:param name="localization" select="''"/>
+	<xsl:param name="standardLayerMsg" select="''"/>
+	<xsl:param name="loadingLayerMsg" select="''"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -141,23 +142,22 @@
 				<xsl:text>
 </xsl:text>
                 <script type="text/javascript">
+                    if(Localization == null) {
+                        var Localization = {};
+                        Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$standardLayerMsg" />';
+                        Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
+                    }
+                
+                    showLoadingMessage(Localization.LOADING_MSG);
+                
                     var djConfig = {
                     debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
                     isDebug: <xsl:value-of select="$debug-enabled"/> };
                 </script>
                 <xsl:text>
 </xsl:text>
-
-
     		<!-- Chiba localization -->
-				<xsl:text>
-</xsl:text>
-			   	<script type="text/javascript">
-					if(Localization == null) {
-						var Localization = {};
-						Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$localization" />';
-					}
-				</script>
+				
 				<xsl:text>
 </xsl:text>
 		  <script type="text/javascript">
