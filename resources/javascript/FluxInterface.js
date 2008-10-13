@@ -18,6 +18,7 @@ var confirmMsg = "There are changed data. Really exit?";
 if(Localization == null) {
 	var Localization = {};
 	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
+	Localization.LOADING_MSG                = 'Loading...';
 }
 
 /******************************************************************************
@@ -33,9 +34,15 @@ function initXForms(){
 	    chibaXFormsInited = true;
 	    dojo.event.connect("before",window,"onunload","close");
 	    // Added @ 2008 09 01 by Arunas 
-	    //closeAllLoadingMessages();              	    
+	    //closeAllLoadingMessages();   
 	}
 }
+
+window.onload = function() {
+    
+    //showLoadingMessage("asdasd");
+};
+//window.addEvent('load', );
 
 /******************************************************************************
  SESSION HANDLING AND PAGE UNLOADING
