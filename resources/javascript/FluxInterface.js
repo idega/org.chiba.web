@@ -33,7 +33,7 @@ function initXForms(){
 	    chibaXFormsInited = true;
 	    dojo.event.connect("before",window,"onunload","close");
 	    // Added @ 2008 09 01 by Arunas 
-	    closeAllLoadingMessages();              	    
+	    //closeAllLoadingMessages();              	    
 	}
 }
 
@@ -382,7 +382,7 @@ function updateUI(data) {
         var context = new PresentationContext();
         _handleServerEvent(context, type, targetId, targetName, properties);
         /*---------Anton---user interface was updated after buton press*/
-        closeLoadingMessage();
+        //closeLoadingMessage();
     }
 }
 
