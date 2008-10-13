@@ -1,4 +1,5 @@
 chiba.standard_layer_message=Processing data
+chiba.loading_layer_message=Loading...
 xforms.validation.requiredEmpty=Required field is empty
 xforms.validation.invalid=Value provided is not valid
 xforms.validation.constraintBroken=The constraint was not met
