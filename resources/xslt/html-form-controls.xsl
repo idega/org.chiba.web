@@ -1111,15 +1111,21 @@
             <option id="{$item-id}-value" class="selector-prototype">
 	           	<xsl:choose>
     	       		<xsl:when test="xforms:copy">
-	    	   			<xsl:attribute name="value" select="xforms:copy/@id"/>
-	              		<xsl:attribute name="title" select="xforms:copy/@id"/>
+	    	   			<xsl:attribute name="value">
+	    	   			    <xsl:value-of select="xforms:copy/@id"/>
+	    	   			</xsl:attribute>
+	              		<xsl:attribute name="title">
+	              		   <xsl:value-of select="xforms:copy/@id"/>
+	              		</xsl:attribute>
     	          	</xsl:when>
         	      	<xsl:otherwise>
         	      		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
             	   		<xsl:attribute name="value">
             	   		  <xsl:value-of select="xforms:value"/>
             	   		</xsl:attribute>
-              			<xsl:attribute name="title" select="xforms:hint"/>
+              			<xsl:attribute name="title">
+              			    <xsl:value-of select="xforms:hint"/>
+              			</xsl:attribute>
                 	</xsl:otherwise>
 				</xsl:choose>
                 <xsl:if test="@selected='true'">
@@ -1205,7 +1211,9 @@
                 </xsl:if>
                 <xsl:choose>
         			<xsl:when test="xforms:copy">
-           				<xsl:attribute name="value" select="xforms:copy/@id"/>
+           				<xsl:attribute name="value">
+           				     <xsl:value-of select="xforms:copy/@id"/>
+           				</xsl:attribute>
 	            	</xsl:when>
     	        	<xsl:otherwise>
 	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
@@ -1366,7 +1374,9 @@
                 </xsl:if>
                 <xsl:choose>
         			<xsl:when test="xforms:copy">
-           				<xsl:attribute name="value" select="xforms:copy/@id"/>
+           				<xsl:attribute name="value">
+           				     <xsl:value-of select="xforms:copy/@id"/>
+           				</xsl:attribute>
 	            	</xsl:when>
     	        	<xsl:otherwise>
 	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
@@ -1419,7 +1429,9 @@
                 
                 <xsl:choose>
 					<xsl:when test="xforms:copy">
-   						<xsl:attribute name="value" select="xforms:copy/@id"/>
+   						<xsl:attribute name="value">
+   						   <xsl:value-of select="xforms:copy/@id"/>
+   						</xsl:attribute>
 	            	</xsl:when>
     	        	<xsl:otherwise>
 	    	    		<!--idega changes: using element xsl:attribute name="value" select="xforms:value" didn't work-->
