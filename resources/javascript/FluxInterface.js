@@ -108,7 +108,8 @@ function ignoreExceptions(msg){
 /******************************************************************************
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
-
+ // commented 2008-10-13 @Arunas
+/*
 function useLoadingMessage() {
     DWREngine.setPreHook(function() {
         document.getElementById('indicator').className = 'enabled';
@@ -117,7 +118,7 @@ function useLoadingMessage() {
     DWREngine.setPostHook(function() {
         document.getElementById('indicator').className = 'disabled';
     });
-}
+}*/
 
 /*
 just a starter.
@@ -162,8 +163,9 @@ function chibaActivate(target) {
     }
 
     dojo.debug("Flux.activate: " + id);
-    useLoadingMessage();
-    /*---------Aton---action button is pressed---*/
+     // commented 2008-10-13 @Arunas
+ //   useLoadingMessage();
+    /*---------Anton---action button is pressed---*/
     showLoadingMessage(Localization.STANDARD_LAYER_MSG);
     
     DWREngine.setErrorHandler(handleExceptions);
@@ -249,7 +251,8 @@ function setXFormsValue(control, forceControl) {
     }
 
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
-    useLoadingMessage();
+     // commented 2008-10-13 @Arunas
+ //   useLoadingMessage();
 
     //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
@@ -534,7 +537,8 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     var repeatId = target.id;
 
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
-    useLoadingMessage();
+     // commented 2008-10-13 @Arunas
+  //  useLoadingMessage();
     DWREngine.setErrorHandler(handleExceptions);
     //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
