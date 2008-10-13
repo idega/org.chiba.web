@@ -7,7 +7,7 @@
     xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.6 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.7 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -71,8 +71,8 @@
         </div>
     </xsl:template>
 
-    <!-- this template is used for all groups with an appearance -->
-    <xsl:template match="xforms:group[@appearance]" name="group">
+    <!-- this template is used for compact, group, full groups. Changed 2008-10-13 @Arunas -->
+    <xsl:template match="xforms:group[@appearance='compact'] | xforms:group[@appearance='full'] | xforms:group[@appearance='group']" name="group">
         <xsl:variable name="group-id" select="@id"/>
         <xsl:variable name="group-classes">
             <xsl:call-template name="assemble-compound-classes">
@@ -112,6 +112,49 @@
             <xsl:apply-templates select="*[not(self::xforms:label)]"/>
         </fieldset>
     </xsl:template>
+      
+    <!-- this template is used for minimal group. Added 2008-10-13 @Arunas -->
+    <xsl:template match="xforms:group[@appearance='minimal']">
+        <xsl:variable name="group-id" select="@id"/>
+        <xsl:variable name="group-classes">
+            <xsl:call-template name="assemble-compound-classes">
+                <xsl:with-param name="appearance" select="@appearance"/>
+            </xsl:call-template>
+        </xsl:variable>
+
+        <xsl:call-template name="group-body-span">
+            <xsl:with-param name="group-id" select="$group-id"/>
+            <xsl:with-param name="group-classes" select="$group-classes"/>
+        </xsl:call-template>
+    </xsl:template>
+
+    <xsl:template name="group-body-span">
+        <xsl:param name="group-id"/>
+        <xsl:param name="group-classes"/>
+        <xsl:param name="group-label" select="true()"/>
+
+        <span id="{$group-id}" class="{$group-classes}">
+            <span>
+                <xsl:choose>
+                    <xsl:when test="$group-label and xforms:label">
+                        <xsl:attribute name="id">
+                            <xsl:value-of select="concat($group-id, '-label')"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="class">
+                            <xsl:call-template name="assemble-label-classes"/>
+                        </xsl:attribute>
+                        <xsl:apply-templates select="xforms:label"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:attribute name="style">display:none;</xsl:attribute>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </span>
+
+            <xsl:apply-templates select="*[not(self::xforms:label)]"/>
+        </span>
+    </xsl:template>
+    
 
     <!-- ######################################################################################################## -->
     <!-- ####################################### REPEAT ######################################################### -->
