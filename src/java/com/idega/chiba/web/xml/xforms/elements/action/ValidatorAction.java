@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/10/07 13:10:27 $ by $Author: civilis $
+ * Last modified: $Date: 2008/10/15 13:59:53 $ by $Author: arunas $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -44,9 +44,11 @@ public class ValidatorAction extends AbstractBoundAction {
 	private Locale formLocale;
 	private String setErrorId;
 	private String submissionExp;
+	private String componentId;
 	private Map<ErrorType, String> messageValuesByType;
 	
 	private static XPathUtil messageXPUT;
+
 	
 	static {
 		
@@ -58,6 +60,7 @@ public class ValidatorAction extends AbstractBoundAction {
 	public static final String VALIDATEIF_ATT = "validateif";
 	public static final String ERRORTYPE_ATT = "errorType";
 	public static final String VALUE_ATT = "value";
+	public static final String COMPONENT_ID_ATT = "componentId";
 	
     public ValidatorAction(Element element, Model model) {
         super(element, model);
@@ -79,6 +82,23 @@ public class ValidatorAction extends AbstractBoundAction {
     	
         String validateIf = getXFormsAttribute(VALIDATEIF_ATT);
         setValidateIf(validateIf);
+        
+        String componentId = getXFormsAttribute(COMPONENT_ID_ATT);
+        
+        if (componentId == null) {
+        	
+        	XFormsElement parent = getParentObject();
+
+        	componentId = parent.getId();
+			
+		}
+        
+        if (!componentId.startsWith(XFormsUtil.CTID)) {
+        	String xformId = XFormsUtil.getFormId(container.getDocument());
+        	Logger.getLogger(ValidatorAction.class.getName()).log(Level.WARNING, "Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
+        }
+        
+        setComponentId(componentId);
         
         NodeList messages = messageXPUT.getNodeset(getElement());
         
@@ -115,9 +135,8 @@ public class ValidatorAction extends AbstractBoundAction {
         String pathExpression = getLocationPath();
         ModelItem modelItem = instance.getModelItem(pathExpression);
         
-        XFormsElement parent = getParentObject();
-    	String componentId = parent.getId();
-    	
+        String componentId = getComponentId();
+        
     	String validateIf = getValidateIf();
     	
     	String errMsg = null;
@@ -257,6 +276,14 @@ public class ValidatorAction extends AbstractBoundAction {
 		this.errorMessageHandler = errorMessageHandler;
 	}
 
+	public String getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(String componentId) {
+		this.componentId = componentId;
+	}
+
 	public String getValidateIf() {
 		return validateIf;
 	}
@@ -272,6 +299,8 @@ public class ValidatorAction extends AbstractBoundAction {
 	void setSetErrorId(String setErrorId) {
 		this.setErrorId = setErrorId;
 	}
+	
+	
 
 	String getSubmissionExp() {
 		return submissionExp;
