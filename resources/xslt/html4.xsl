@@ -293,10 +293,7 @@
     <xsl:template match="xhtml:body">
         <div id="chiba-body">
             <xsl:copy-of select="@*"/>
-            <div id="loading">
-            	<img src="{concat($contextroot, $imagesPath, 'indicator.gif')}" class="disabled" id="indicator" alt="loading" />
-            </div>
-
+       
             <xsl:variable name="outermostNodeset"
                 select=".//xforms:*[not(xforms:model)][not(ancestor::xforms:*)]"/>
 
