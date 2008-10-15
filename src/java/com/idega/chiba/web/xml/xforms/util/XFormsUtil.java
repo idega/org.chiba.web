@@ -11,17 +11,25 @@ import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.ui.AbstractUIElement;
 import org.chiba.xml.xforms.ui.BindingElement;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
+import com.idega.util.xml.XPathUtil;
 
 /**
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  *
- * Last modified: $Date: 2008/10/07 12:30:18 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/15 13:58:51 $ by $Author: arunas $
  *
  */
 public class XFormsUtil {
+
+	public static final String CTID = "fbc_";
+	
+	private static XPathUtil formIdElementXPath = new XPathUtil(".//data/form_id");
 
 	/**
 	 * copied from chiba Output implementation
@@ -157,4 +165,18 @@ public class XFormsUtil {
         }
         return result;
     }
+	
+	public static String getFormId(Node xformsDoc) {
+		Element formIdEl = getFormIdElement(xformsDoc);
+		return formIdEl == null ? null : formIdEl.getTextContent();
+	}
+	
+	public static void setFormId(Document xformsDoc, String formId) {
+		getFormIdElement(xformsDoc).setTextContent(formId);
+	}
+	
+	private static Element getFormIdElement(Node context) {
+		
+		return formIdElementXPath.getNode(context);
+	}
 }
