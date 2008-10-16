@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
- * Last modified: $Date: 2008/10/16 07:55:03 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/16 19:18:15 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -211,6 +211,12 @@ public class ValidatorAction extends AbstractBoundAction {
     	
 //    	sending error msg, or empty, if everything is valid
     	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg != null ? errMsg : CoreConstants.EMPTY);
+    	
+    	if(errMsg != null) {
+
+    		getEvent().preventDefault();
+    		getEvent().stopPropagation();
+    	}
     }
     
     protected Locale getFormLocale() {
