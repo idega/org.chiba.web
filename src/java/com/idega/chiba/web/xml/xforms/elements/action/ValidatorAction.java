@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  *
- * Last modified: $Date: 2008/10/15 13:59:53 $ by $Author: arunas $
+ * Last modified: $Date: 2008/10/16 07:55:03 $ by $Author: arunas $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -94,7 +94,7 @@ public class ValidatorAction extends AbstractBoundAction {
 		}
         
         if (!componentId.startsWith(XFormsUtil.CTID)) {
-        	String xformId = XFormsUtil.getFormId(container.getDocument());
+        	String xformId = XFormsUtil.getFormId(getContainerObject().getDocument());
         	Logger.getLogger(ValidatorAction.class.getName()).log(Level.WARNING, "Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
         }
         
