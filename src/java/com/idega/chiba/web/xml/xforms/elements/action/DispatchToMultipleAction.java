@@ -14,9 +14,9 @@ import com.idega.util.xml.XPathUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/09/26 10:26:51 $ by $Author: civilis $
+ * Last modified: $Date: 2008/10/16 19:17:55 $ by $Author: civilis $
  *
  */
 public class DispatchToMultipleAction extends AbstractAction {
@@ -25,6 +25,7 @@ public class DispatchToMultipleAction extends AbstractAction {
     private String targetAttribute;
     private boolean bubbles = false;
     private boolean cancelable = true;
+    private boolean stopOnError = false;
 
     public DispatchToMultipleAction(Element element, Model model) {
         super(element, model);
@@ -52,14 +53,18 @@ public class DispatchToMultipleAction extends AbstractAction {
         if (cancelableAttribute != null) {
             this.cancelable = Boolean.valueOf(cancelableAttribute).booleanValue();
         }
+        
+        String stopOnErrorAttribute = getXFormsAttribute("stopOnError");
+        
+        if(stopOnErrorAttribute != null && "true".equals(stopOnErrorAttribute)) {
+        	this.stopOnError = true;
+        }
     }
 
     public void perform() throws XFormsException {
     	
     	Document xform = getContainerObject().getDocument();
     	
-//    	xpath = "//h:body//*[starts-with(@id, 'fbc_')]";
-//    	
     	XPathUtil ut = new XPathUtil(targetAttribute);
     	
     	NodeList components = ut.getNodeset(xform);
@@ -71,8 +76,15 @@ public class DispatchToMultipleAction extends AbstractAction {
     		for (int i = 0; i < components.getLength(); i++) {
 				
     			EventTarget targ = (EventTarget)components.item(i);
-    			container.dispatch(targ, nameAttribute, null, bubbles, cancelable);
+    			boolean cancelled = container.dispatch(targ, nameAttribute, null, bubbles, cancelable);
+    			
+    			if(isStopOnError() && cancelled)
+    				break;
 			}
     	}
     }
+
+	boolean isStopOnError() {
+		return stopOnError;
+	}
 }
