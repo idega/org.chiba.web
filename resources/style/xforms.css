@@ -53,7 +53,7 @@ fieldset{
     padding-top:5px;
 }
 
-.minimal-group div{
+.minimal-group span{
     display:inline;
     margin-right:3px;
 }
@@ -766,18 +766,6 @@ fieldset.readwrite.optional legend {
 	padding-top: 18px;
 }
 
-fieldset.readwrite.optional span.trigger {
-	position: absolute;
-	right: 0;
-	top: -28px;
-}
-
-fieldset.readwrite.optional table span.trigger {
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-
 fieldset.readwrite.optional table {
 	width: 100%;
 }
@@ -820,6 +808,7 @@ div.xformErrors {
 
 div.xformErrors table {
 	margin-top: 0;
+	
 }
 
 div.xformErrors td {
