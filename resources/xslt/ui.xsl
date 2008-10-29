@@ -7,7 +7,7 @@
     xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.7 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.8 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -92,7 +92,7 @@
         <xsl:param name="group-label" select="true()"/>
 
         <fieldset id="{$group-id}" class="{$group-classes}">
-            <legend>
+            <div class="legend">
                 <xsl:choose>
                     <xsl:when test="$group-label and xforms:label">
                         <xsl:attribute name="id">
@@ -107,7 +107,7 @@
                         <xsl:attribute name="style">display:none;</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
-            </legend>
+            </div>
 
             <xsl:apply-templates select="*[not(self::xforms:label)]"/>
         </fieldset>
@@ -439,7 +439,7 @@
                     <xsl:when test="not($scripted='true')">
                         <xsl:variable name="outermost-id" select="ancestor-or-self::xforms:repeat/@id"/>
                         <fieldset id="{$repeat-item-id}" class="{$repeat-item-classes}">
-                            <legend id="{$repeat-item-id}-label" style="display:none;"/>
+                            <div class="legend" id="{$repeat-item-id}-label" style="display:none;"/>
                             <div class="repeat-selector">
                                 <input type="radio" name="{$selector-prefix}{$outermost-id}" value="{$repeat-id}:{position()}">
                                     <xsl:if test="string($outermost-id)=string($repeat-id) and string($repeat-index)=string(position())">
