@@ -30,9 +30,9 @@ import com.idega.util.xml.XPathUtil;
  * TODO: send events only for constraints, that exist (if it has constraint, or has validation rule etc)
  * 
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
- * Last modified: $Date: 2008/10/16 19:18:15 $ by $Author: civilis $
+ * Last modified: $Date: 2008/11/05 09:02:31 $ by $Author: civilis $
  *
  */
 public class ValidatorAction extends AbstractBoundAction {
@@ -113,13 +113,7 @@ public class ValidatorAction extends AbstractBoundAction {
         		String messageType = msgEle.getAttribute(ERRORTYPE_ATT);
         		String messageValue = msgEle.getAttribute(VALUE_ATT);
         		
-        		final ErrorType errType;
-        		
-        		if(messageType == null || messageType.length() == 0) {
-        			errType = ErrorType.custom;
-        		} else {
-        			errType = ErrorType.getByStringRepresentation(messageType);
-        		}
+        		final ErrorType errType = ErrorType.getByStringRepresentation(messageType);
         		
         		messageValuesByType.put(errType, messageValue);
 			}

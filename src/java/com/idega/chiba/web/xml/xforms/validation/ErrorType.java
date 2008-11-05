@@ -13,9 +13,9 @@ import com.idega.presentation.IWContext;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * 
- *          Last modified: $Date: 2008/10/07 13:10:11 $ by $Author: civilis $
+ *          Last modified: $Date: 2008/11/05 09:02:25 $ by $Author: civilis $
  * 
  */
 public enum ErrorType {
@@ -74,6 +74,10 @@ public enum ErrorType {
 	}
 
 	public static ErrorType getByStringRepresentation(String type) {
-		return allStringTypesEnumsMappings.get(type);
+		
+		if(type == null || type.length() == 0)
+			return ErrorType.custom;
+		else
+			return allStringTypesEnumsMappings.get(type);
 	}
 }
