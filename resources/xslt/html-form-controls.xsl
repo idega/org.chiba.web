@@ -521,11 +521,21 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	window.addEvent('load', function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                	});
-                	});
+                
+	                var funct = function() {
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                        });
+                    };
+	                
+	                if(IWCORE.windowLoaded) {
+	                
+	                    funct();
+	                    
+	                } else {
+	                
+	                    window.addEvent('load', funct);
+	                }
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -608,11 +618,21 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	window.addEvent('load', function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                	});
-	                });
+                
+	                var funct = function() {
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                        });
+                    };
+	                
+	                if(IWCORE.windowLoaded) {
+	                
+	                    funct();
+	                    
+	                } else {
+	                
+	                    window.addEvent('load', funct);
+	                }
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -693,11 +713,21 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	window.addEvent('load', function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                		initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                	});
-                	});
+                
+	                var funct = function() {
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                        });
+                    };
+	                
+	                if(IWCORE.windowLoaded) {
+	                
+	                    funct();
+	                    
+	                } else {
+	                
+	                    window.addEvent('load', funct);
+	                }
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -780,11 +810,21 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	window.addEvent('load', function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                        initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                	});
-	                });
+                
+	                var funct = function() {
+	                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                        });
+	                    };
+	                
+	                if(IWCORE.windowLoaded) {
+	                
+	                    funct();
+	                    
+	                } else {
+	                
+	                    window.addEvent('load', funct);
+	                }
                 </script>
             </xsl:otherwise>
         </xsl:choose>
