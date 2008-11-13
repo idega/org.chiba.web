@@ -7,7 +7,7 @@
     xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.8 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.9 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -263,14 +263,19 @@
 
         <table id="{$repeat-id}" class="{$repeat-classes}">
             <!-- build table header -->
-            <xsl:for-each select="xforms:group[@appearance='repeated'][1]">
-                <tr class="repeat-header">
-                    <xsl:if test="not($scripted ='true')">
-                        <td class="repeat-selector"><xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text></td>
-                    </xsl:if>
-                    <xsl:call-template name="processCompactHeader"/>
-                </tr>
-            </xsl:for-each>
+            
+            <!-- Idega changes: formbuilder variable used here, to hide irrelevant parts of multiupload component.
+            This may cause inconsistences in some other repeat usage places (untested), so watch out -->
+            <xsl:if test="not($formbuilder = 'true')">
+	            <xsl:for-each select="xforms:group[@appearance='repeated'][1]">
+	                <tr class="repeat-header">
+	                    <xsl:if test="not($scripted ='true')">
+	                        <td class="repeat-selector"><xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text></td>
+	                    </xsl:if>
+	                    <xsl:call-template name="processCompactHeader"/>
+	                </tr>
+	            </xsl:for-each>
+            </xsl:if>
 
             <!-- loop repeat entries -->
             <xsl:for-each select="xforms:group[@appearance='repeated']">
@@ -281,7 +286,7 @@
                 </xsl:variable>
 
                 <tr id="{@id}" class="{$repeat-item-classes}">
-                    <xsl:if test="not($scripted='true')">
+                    <xsl:if test="not($scripted='true') and not($formbuilder = 'true')">
                         <td class="repeat-selector">
                             <xsl:variable name="outermost-id" select="ancestor-or-self::xforms:repeat/@id"/>
                             <input type="radio" name="{$selector-prefix}{$outermost-id}" value="{$repeat-id}:{position()}">
