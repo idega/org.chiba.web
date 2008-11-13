@@ -1064,11 +1064,19 @@
 
         <xsl:if test="$scripted='true'">
             <script type="text/javascript">
-            	window.addEvent('load', function() {
-	            	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
-	                	dojo.require("chiba.widget.Upload");
-	                });
-                });
+                  var loadFunc = function() {
+                  
+                  		 LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                		dojo.require("chiba.widget.Upload");
+	                	});
+	                	
+                  	}
+                  
+                    if(IWCORE.windowLoaded) {
+	                	loadFunc();
+	                } else {
+	                    window.addEvent('load', loadFunc());
+	                }
             </script>
 
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
