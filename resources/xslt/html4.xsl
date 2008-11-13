@@ -23,6 +23,7 @@
     <!-- ####################################################################################################### -->
 
     <!-- ############################################ PARAMS ################################################### -->
+    <xsl:param name="formbuilder" select="'false'"/>
     <xsl:param name="contextroot" select="''"/>
     <xsl:param name="uriToPrototypeLib" select="''"/>
     <xsl:param name="uriToScriptaculousLib" select="''"/>
