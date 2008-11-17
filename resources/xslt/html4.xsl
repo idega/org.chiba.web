@@ -192,11 +192,18 @@
                     <xsl:text>
 </xsl:text>
                     <script type="text/javascript"><xsl:text>
-</xsl:text>window.addEvent('load', function() {
-							LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
-								_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
-							});
-						});<xsl:text>
+</xsl:text>
+    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+
+	    jQuery(window).load(
+	        function() {
+                            LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
+                                _setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
+                            });
+                        });
+    });
+
+<xsl:text>
 </xsl:text>
                     </script>
                 </xsl:if>
@@ -315,11 +322,14 @@
             </xsl:choose>
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
-	                window.addEvent('load', function() {
+                LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+
+                    jQuery(window).load(function() {
 	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
 	                    	dojo.require("dojo.debug.console");
 	                    });
                     });
+                 });
                 </script>
             </xsl:if>
             <div id="messagePane"/>

@@ -40,11 +40,14 @@
             <!--<xsl:when test="chiba:data[@chiba:type='date' or @chiba:type='dateTime']">-->
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
-               		window.addEvent('load', function() {
+               LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+
+                    jQuery(window).load(function() {
 	               		LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
 	                    	dojo.require("chiba.widget.DropdownDatePicker");
 	                    });
                     });
+               });
                 </script>
 				<xsl:variable name="controlType">
 
@@ -89,11 +92,14 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <script type="text/javascript">
-                        	window.addEvent('load', function() {
+                        LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+
+                            jQuery(window).load(function() {
                         		LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
                             		dojo.require("chiba.widget.Boolean");
                             	});
                             });
+                         });
                         </script>
                         <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
                             <xsl:if test="string-length($navindex) != 0">
@@ -233,11 +239,14 @@
                 <!-- SIDOC/CNAF : sidoc-infra-204, implementation de l'approche Dojo -->
                 <xsl:if test="$scripted='true'">
                     <script type="text/javascript">
-                    	window.addEvent('load', function() {
+                    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+
+                        jQuery(window).load(function() {
 	                    	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
 	                        	dojo.require("chiba.widget.Link");
 	                        });
 	                    });
+	                });
                     </script>
                 </xsl:if>
                 <xsl:element name="a">
@@ -534,7 +543,10 @@
 	                    
 	                } else {
 	                
-	                    window.addEvent('load', funct);
+		                LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+	
+	                        jQuery(window).load(funct);
+		                });
 	                }
                 </script>
             </xsl:when>
@@ -631,7 +643,10 @@
 	                    
 	                } else {
 	                
-	                    window.addEvent('load', funct);
+	                    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+    
+                            jQuery(window).load(funct);
+                        });
 	                }
                 </script>
             </xsl:otherwise>
@@ -726,7 +741,10 @@
 	                    
 	                } else {
 	                
-	                    window.addEvent('load', funct);
+	                    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+    
+                            jQuery(window).load(funct);
+                        });
 	                }
                 </script>
             </xsl:when>
@@ -823,7 +841,10 @@
 	                    
 	                } else {
 	                
-	                    window.addEvent('load', funct);
+	                    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+    
+                            jQuery(window).load(funct);
+                        });
 	                }
                 </script>
             </xsl:otherwise>
@@ -1076,7 +1097,11 @@
                     if(IWCORE.windowLoaded) {
 	                	loadFunc();
 	                } else {
-	                    window.addEvent('load', loadFunc);
+	                
+	                   LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
+    
+                            jQuery(window).load(loadFunc);
+                        });
 	                }
             </script>
 
