@@ -109,6 +109,7 @@
     </xsl:template>
 
     <xsl:template match="xhtml:head">
+        <a name="chibaform-head"/>
 		<div id="chiba-head">
             <!-- copy all meta tags except 'contenttype' -->
             <xsl:call-template name="getMeta" />
@@ -360,6 +361,7 @@
             <xsl:if test="$uses-upload">
                 <xsl:attribute name="enctype">multipart/form-data</xsl:attribute>
             </xsl:if>
+            
             <input type="hidden" id="chibaSessionKey" name="sessionKey" value="{$sessionKey}"/>
             <xsl:if test="$scripted != 'true'">
                 <input type="submit" value="refresh page" class="refresh-button"/>
@@ -397,6 +399,7 @@
                     <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"></iframe>
                 </xsl:if>
             </xsl:if>
+            
             <input type="hidden" id="chibaSessionKey" name="sessionKey" value="{$sessionKey}"/>
             <xsl:if test="$scripted != 'true'">
                 <input type="submit" value="refresh page" class="refresh-button"/>
@@ -409,6 +412,7 @@
             <xsl:if test="$scripted != 'true'">
                 <input type="submit" value="refresh page" class="refresh-button"/>
             </xsl:if>
+            
         </xsl:element>
     </xsl:template>
 
