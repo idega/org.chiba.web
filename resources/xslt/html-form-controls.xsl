@@ -1064,6 +1064,7 @@
 
         <xsl:if test="$scripted='true'">
             <script type="text/javascript">
+                
                   var loadFunc = function() {
                   
                   		 LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
@@ -1071,11 +1072,11 @@
 	                	});
 	                	
                   	}
-                  
+                  	
                     if(IWCORE.windowLoaded) {
 	                	loadFunc();
 	                } else {
-	                    window.addEvent('load', loadFunc());
+	                    window.addEvent('load', loadFunc);
 	                }
             </script>
 
