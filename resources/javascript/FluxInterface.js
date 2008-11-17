@@ -373,15 +373,15 @@ function updateUI(data) {
         var targetId = eventLog[i].getAttribute("targetId");
         var targetName = eventLog[i].getAttribute("targetName");
         var properties = new Array;
-        var name;
+        var nameAtt;
         for (var j = 0; j < eventLog[i].childNodes.length; j++) {
             if (eventLog[i].childNodes[j].nodeName == "property") {
-                name = eventLog[i].childNodes[j].getAttribute("name");
+                nameAtt = eventLog[i].childNodes[j].getAttribute("name");
                 if (eventLog[i].childNodes[j].childNodes.length > 0) {
-                    properties[name] = eventLog[i].childNodes[j].childNodes[0].nodeValue;
+                    properties[nameAtt] = eventLog[i].childNodes[j].childNodes[0].nodeValue;
                 }
                 else {
-                    properties[name] = "";
+                    properties[nameAtt] = "";
                 }
             }
         }
