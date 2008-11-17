@@ -429,6 +429,8 @@ PresentationContext.prototype.handleSwitchToggled = function(deselectedId, selec
         var active = document.getElementById(selectedId + "-tab");
         _replaceClass(active, "inactive-tab", "active-tab");
     }
+    
+    changeWindowLocationHrefAndCheckParameters("#chibaform-head", true);
 };
 
 // static utilities
