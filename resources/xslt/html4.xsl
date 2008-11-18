@@ -194,15 +194,12 @@
 </xsl:text>
                     <script type="text/javascript"><xsl:text>
 </xsl:text>
-    LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
-
-	    jQuery(window).load(
-	        function() {
+			        jQuery(window).load(
+			            function() {
                             LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
                                 _setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
                             });
                         });
-    });
 
 <xsl:text>
 </xsl:text>
@@ -323,14 +320,11 @@
             </xsl:choose>
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
-                LazyLoader.load("<xsl:value-of select="$uriTojQueryLib" />", function() {
-
                     jQuery(window).load(function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
-	                    	dojo.require("dojo.debug.console");
-	                    });
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                            dojo.require("dojo.debug.console");
+                        });
                     });
-                 });
                 </script>
             </xsl:if>
             <div id="messagePane"/>
@@ -344,6 +338,9 @@
     <xsl:template match="xforms:group[not(ancestor::xforms:*)][1] | xforms:repeat[not(ancestor::xforms:*)][1] | xforms:switch[not(ancestor::xforms:*)][1] | idega:switch[not(ancestor::xforms:*)][1]" mode="inline">
         <xsl:element name="form">
             <xsl:attribute name="name">
+                <xsl:value-of select="$form-id"/>
+            </xsl:attribute>
+            <xsl:attribute name="class">
                 <xsl:value-of select="$form-id"/>
             </xsl:attribute>
             <xsl:attribute name="action">
