@@ -3,11 +3,12 @@ package com.idega.chiba.web.xml.xforms.connector.context;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
@@ -18,9 +19,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  *
- * Last modified: $Date: 2008/07/06 12:36:19 $ by $Author: civilis $
+ * Last modified: $Date: 2008/11/22 09:22:55 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -29,15 +30,10 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	private static final String response_part2 = ">";
 	private static final String response_part3 = "</";
 	private static final String response_part4 = "></data>";
-	private static final String method_prefix = "get";
-	private static final String type_name = "string";
-	private static final String object_type = "collection";
-	private Class<?> cls;
-	private Method meth; 
-	private String methodName;
 	private String [] callprops;
-	private String exp;
+	private String methodName;
 	
+
 	/**
 	 * resolves object, which is configured in the faces-config.xml, method value
 	 */
@@ -51,7 +47,8 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             	return super.resolve();
             
             String key = xpath.substring(autofill_key_prefix.length());
-            if (key.indexOf(CoreConstants.MINUS)>0)
+            
+            if (key.startsWith(ConstantTypes.COLLECTION_TYPE.toString()))
                  key = modifyKey(key);
             
             Object value = ELUtil.getInstance().getBean(key);
@@ -82,28 +79,47 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
         
         InputStream stream = new ByteArrayInputStream(response_xml.getBytes(CoreConstants.ENCODING_UTF8));
         Document doc = XmlUtil.getDocumentBuilder().parse(stream);
+        DOMUtil.prettyPrintDOM(doc);
         stream.close();
         return doc;
 	}
     
-    protected String objectToString (Collection<?> object) {
+    private String objectToString (Collection<?> object) {
+    	
 	
 	String text = CoreConstants.EMPTY;
-	cls = object.iterator().next().getClass();
-	
+		
 	try {
-	   meth =  cls.getMethod(methodName, null);
-	  
-//	   collection-string 
-	   if (callprops[1].equals(type_name)) {
+		String typeProp = getCallprops()[1];
+		
+		
+ 
+	   if (typeProp.equals(ConstantTypes.STRING_TYPE.toString())) {
+		   //	collection-string
+		   String value;
+		   
 	       for (Iterator<?> it = object.iterator(); it.hasNext();)    {
-		   String value = meth.invoke(it.next(), null).toString();
-		   if (!CoreConstants.EMPTY.equals(value))
-		       text = text + value + CoreConstants.COMMA + CoreConstants.SPACE;
+	    	   
+		    	value = BeanUtils.getProperty(it.next(), getMethodName());
+		    	
+		    	 if (!CoreConstants.EMPTY.equals(value))
+				       text = text + value + CoreConstants.COMMA + CoreConstants.SPACE;
+		    	 
 	       }
+	       
 	       if (!CoreConstants.EMPTY.equals(text))
-	       	text = text.substring(0, text.length()-2);	
+	       		text = text.substring(0, text.lastIndexOf(CoreConstants.COMMA));	
+	       
+	   } else if (typeProp.equals(ConstantTypes.LIST_TYPE.toString())) {
+		   
+//		   TODO collection-list
+//		   MethodUtils.invokeMethod(object, text, );
+//			PropertyUtils.getProperty(bean, name);
+
+		   
 	   }
+	   
+	   
 	}catch (NoSuchMethodException e) {
 	    e.printStackTrace();  
 	} catch (IllegalArgumentException e) {
@@ -114,19 +130,35 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
 	    e.printStackTrace();
 	}      
 
-	return text;
+		return text;
     }
 
-    protected String modifyKey(String key) {
+    private String modifyKey(String key) {
 	
-	callprops = key.split(CoreConstants.MINUS);
-	exp = key.substring(key.lastIndexOf(CoreConstants.MINUS)+1);
-//	collection type
-	if (callprops[0].equals(object_type)){
-	    key = exp.substring(0, exp.lastIndexOf(CoreConstants.DOT));
-	    methodName = exp.substring(exp.lastIndexOf(CoreConstants.DOT)+1);
-	    methodName = method_prefix + methodName.substring(0,1).toUpperCase() + methodName.substring(1, methodName.length()) ;
-	}
-	return key;
+    	setCallprops(key.split(CoreConstants.MINUS));
+    	
+    	String beanExp = getCallprops()[2];
+    	key = beanExp.substring(0, beanExp.lastIndexOf(CoreConstants.DOT));
+    	
+    	setMethodName(beanExp.substring(beanExp.lastIndexOf(CoreConstants.DOT) + 1));
+    	
+    	return key;
+	
     }
+
+	private String[] getCallprops() {
+		return callprops;
+	}
+
+	private void setCallprops(String[] callprops) {
+		this.callprops = callprops;
+	}
+	
+	private String getMethodName() {
+		return methodName;
+	}
+
+	private void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
 }
