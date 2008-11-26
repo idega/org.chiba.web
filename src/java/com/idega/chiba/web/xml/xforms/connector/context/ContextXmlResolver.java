@@ -6,7 +6,7 @@ import org.w3c.dom.Document;
 
 import com.idega.chiba.web.xml.xforms.connector.context.beans.ChoiceListData;
 import com.idega.chiba.web.xml.xforms.connector.context.beans.LocalizedEntries;
-import com.idega.chiba.web.xml.xforms.connector.context.beans.Item;
+import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 
 import java.net.URI;
@@ -20,9 +20,9 @@ import javax.faces.context.FacesContext;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2008/04/24 21:24:41 $ by $Author: laddi $
+ * Last modified: $Date: 2008/11/26 08:49:40 $ by $Author: arunas $
  */
 public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 

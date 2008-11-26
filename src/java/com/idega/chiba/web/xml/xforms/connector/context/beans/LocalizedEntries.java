@@ -3,11 +3,13 @@ package com.idega.chiba.web.xml.xforms.connector.context.beans;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.idega.util.text.Item;
+
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2008/11/26 08:49:40 $ by $Author: arunas $
  */
 public class LocalizedEntries {
 	

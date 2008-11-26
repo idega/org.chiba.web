@@ -5,16 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.chiba.xml.dom.DOMUtil;
 import org.w3c.dom.Document;
 
+import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 import com.thoughtworks.xstream.XStream;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2007/11/16 13:53:11 $ by $Author: civilis $
+ * Last modified: $Date: 2008/11/26 08:49:40 $ by $Author: arunas $
  */
 public class ChoiceListData {
     
@@ -49,7 +51,7 @@ public class ChoiceListData {
     	
     	ByteArrayOutputStream output = new ByteArrayOutputStream();
     	xstream.toXML(this, output);
-    	
+    	DOMUtil.prettyPrintDOM(XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray())));
     	return XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray()));
 	}
 }

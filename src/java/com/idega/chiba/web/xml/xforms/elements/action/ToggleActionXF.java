@@ -17,9 +17,9 @@ import com.idega.chiba.web.xml.xforms.elements.SwitchElement;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2008/10/02 08:52:33 $ by $Author: arunas $
+ * Last modified: $Date: 2008/11/26 08:49:40 $ by $Author: arunas $
  *
  */
 public class ToggleActionXF  extends AbstractAction {
@@ -81,7 +81,7 @@ public class ToggleActionXF  extends AbstractAction {
 	        this.container.dispatch(toSelect.getTarget(), XFormsEventNames.SELECT, null);
 
 	        // dispatch internal chiba event
-	        HashMap map = new HashMap();
+	        HashMap<String, String> map = new HashMap<String, String>();
 	        map.put("selected", toSelect.getId());
 	        map.put("deselected", toDeselect.getId());
 	        this.container.dispatch(switchElement.getTarget(), ChibaEventNames.SWITCH_TOGGLED, map);
