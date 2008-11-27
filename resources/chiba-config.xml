@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.26 2008/10/28 10:36:20 civilis Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.27 2008/11/27 03:28:58 arunas Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -170,6 +170,7 @@
         <function namespace="http://chiba.sourceforge.net/xforms" name="calculate" class="org.chiba.xml.xforms.xpath.ChibaExtensionFunctions"/>
         <function namespace="http://idega.com/xforms" name="userNameAlreadyExists" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
         <function namespace="http://idega.com/xforms" name="instance" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+        <function namespace="http://idega.com/xforms" name="resolveBean" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
     </extension-functions>
 
     <custom-elements>
@@ -185,6 +186,7 @@
         <element type="action" namespace="http://idega.com/xforms" name="dispatch" class="com.idega.chiba.web.xml.xforms.elements.action.DispatchToMultipleAction" />
         <element type="action" namespace="http://idega.com/xforms" name="toggle" class="com.idega.chiba.web.xml.xforms.elements.action.ToggleActionXF" />
         <element type="action" namespace="http://idega.com/xforms" name="saveForm" class="com.idega.block.form.save.SaveFormAction" />
+        <element type="action" namespace="http://idega.com/xforms" name="setvalue" class="com.idega.chiba.web.xml.xforms.elements.action.IdegaSetValueAction" />
         
         <element namespace="http://idega.com/xforms" name="switch" class="com.idega.chiba.web.xml.xforms.elements.SwitchElement" />
         <element namespace="http://idega.com/xforms" name="case" class="com.idega.chiba.web.xml.xforms.elements.CaseElement" />
