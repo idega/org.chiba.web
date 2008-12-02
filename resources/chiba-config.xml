@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.27 2008/11/27 03:28:58 arunas Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.28 2008/12/02 10:58:20 arunas Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -171,6 +171,8 @@
         <function namespace="http://idega.com/xforms" name="userNameAlreadyExists" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
         <function namespace="http://idega.com/xforms" name="instance" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
         <function namespace="http://idega.com/xforms" name="resolveBean" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+		<function namespace="http://idega.com/xforms" name="currentLocale" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+		
     </extension-functions>
 
     <custom-elements>

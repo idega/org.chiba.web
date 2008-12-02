@@ -17,15 +17,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import com.idega.core.accesscontrol.business.LoginDBHandler;
+import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  *
- * Last modified: $Date: 2008/11/27 03:09:14 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/02 10:58:20 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -57,34 +58,35 @@ public class IdegaExtensionFunctions {
     private static final String item_node_label = "itemLabel";
     private static final String item_value_label = "itemValue";
     private static final String item_attribute_label = "lang";    
-    private static final String item_localizeEntries = "localizedEntries";    
-   
+    private static final String item_localizeEntries = "localizedEntries"; 
+    private static final String exp_start = "#{";
+    private static final String exp_end = "}";
+
+    
     @SuppressWarnings("unchecked")
-	public static Object resolveBean(String exp, String locale, String[] param)  throws XFormsException {
-//    	this will be removed after bean resolving from expression
-    	String beanExp = exp;
-    	exp = beanExp.substring(0, beanExp.lastIndexOf(CoreConstants.DOT));
-    	String methodName = beanExp.substring(beanExp.lastIndexOf(CoreConstants.DOT) + 1);
+	public static Object resolveBean(String exp, String locale, String[] params)  throws XFormsException {
+
     	
-//    	this will be using 
-    	String formatedExp = MessageFormat.format(exp, (Object[])param);
+    	String parameters = CoreConstants.EMPTY;
+    	for (String param : params) {
+    		parameters+="'" + param + "'"+ CoreConstants.SPACE; 
+		}
+    	exp = MessageFormat.format(exp, (Object[])parameters.split(CoreConstants.SPACE));
+    	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
     	try {
-    		DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
-    		Document document = documentBuilder.newDocument();
-
-//    	get data from bean epression is formatedExp
-    	Object value = ELUtil.getInstance().getBean(exp);
+    		
+    	Object value = ELUtil.getInstance().evaluateExpression(exp);
     	
     		if (value != null){
-    			
-    			value = PropertyUtils.getProperty(value, methodName);
     			
     			if (value instanceof Collection<?>) {
     				
 					Collection<Item> list = (Collection<Item>) value;
 					
-				
+					DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
+		    		Document document = documentBuilder.newDocument();
+		    		
 					Element localeElement = document.createElement(item_localizeEntries);
 					localeElement.setAttribute(item_attribute_label, locale);
 					Element itemElem = document.createElement(item_node);
@@ -119,7 +121,31 @@ public class IdegaExtensionFunctions {
 		}
     	
     }
-  
     
- 
+    public static Object resolveBean(String exp)  throws XFormsException {
+    	
+    	String beanExp = exp;
+    	exp = beanExp.substring(0, beanExp.lastIndexOf(CoreConstants.DOT));
+    	String methodName = beanExp.substring(beanExp.lastIndexOf(CoreConstants.DOT) + 1);
+    	
+    	Object value = ELUtil.getInstance().getBean(exp);
+
+    	try {
+    		if (value != null)
+    			value = PropertyUtils.getProperty(value, methodName);
+    		
+    		return value == null ? CoreConstants.EMPTY : value;
+    		
+		} catch (Exception e) {
+			throw new XFormsException(e);
+		}
+    }
+    
+    public static String currentLocale() throws XFormsException{
+    	String locale = IWContext.getInstance().getCurrentLocale().toString();
+    	System.out.println("test : "+locale);
+    		return locale;
+    }
+
+   
 }
