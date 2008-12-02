@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
@@ -19,9 +18,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.15 $
+ * @version $Revision: 1.16 $
  *
- * Last modified: $Date: 2008/12/02 05:08:09 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/02 05:09:04 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
