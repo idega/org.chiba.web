@@ -19,9 +19,9 @@ import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
- * Last modified: $Date: 2008/11/22 09:22:55 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/02 05:08:09 $ by $Author: arunas $
  */
 public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
@@ -79,7 +79,6 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
         
         InputStream stream = new ByteArrayInputStream(response_xml.getBytes(CoreConstants.ENCODING_UTF8));
         Document doc = XmlUtil.getDocumentBuilder().parse(stream);
-        DOMUtil.prettyPrintDOM(doc);
         stream.close();
         return doc;
 	}
