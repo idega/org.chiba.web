@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  *
- * Last modified: $Date: 2008/12/02 10:58:20 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/03 03:35:05 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -142,9 +142,10 @@ public class IdegaExtensionFunctions {
     }
     
     public static String currentLocale() throws XFormsException{
+    	
     	String locale = IWContext.getInstance().getCurrentLocale().toString();
-    	System.out.println("test : "+locale);
-    		return locale;
+    	
+    	return locale;
     }
 
    
