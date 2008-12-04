@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  *
- * Last modified: $Date: 2008/12/03 03:35:05 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/04 02:13:24 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -64,7 +64,7 @@ public class IdegaExtensionFunctions {
 
     
     @SuppressWarnings("unchecked")
-	public static Object resolveBean(String exp, String locale, String[] params)  throws XFormsException {
+	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
 
     	
     	String parameters = CoreConstants.EMPTY;
@@ -88,7 +88,7 @@ public class IdegaExtensionFunctions {
 		    		Document document = documentBuilder.newDocument();
 		    		
 					Element localeElement = document.createElement(item_localizeEntries);
-					localeElement.setAttribute(item_attribute_label, locale);
+					localeElement.setAttribute(item_attribute_label, currentLocale());
 					Element itemElem = document.createElement(item_node);
 					Element itemLabelElem = document.createElement(item_node_label);
 					Element	itemValueElem = document.createElement(item_value_label);
