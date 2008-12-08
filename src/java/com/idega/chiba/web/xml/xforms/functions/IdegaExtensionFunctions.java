@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  *
- * Last modified: $Date: 2008/12/08 07:59:58 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/08 11:38:24 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -65,7 +65,7 @@ public class IdegaExtensionFunctions {
 
     
     @SuppressWarnings("unchecked")
-	public static Object resolveBean(String exp, String... params)  throws XFormsException {
+	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
 
     	StringBuilder parametersExp = new StringBuilder(); 
     	
@@ -76,9 +76,6 @@ public class IdegaExtensionFunctions {
     	for (String param : params) 
     		parametersExp.append(apostrophe).append(param).append(apostrophe).append(CoreConstants.SPACE);
     		
-    	
-    		
-		
     	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(CoreConstants.SPACE));
     	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
