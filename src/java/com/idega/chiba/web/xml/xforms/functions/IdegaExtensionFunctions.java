@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  *
- * Last modified: $Date: 2008/12/04 02:13:24 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/08 01:10:05 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -61,17 +61,18 @@ public class IdegaExtensionFunctions {
     private static final String item_localizeEntries = "localizedEntries"; 
     private static final String exp_start = "#{";
     private static final String exp_end = "}";
+    private static final String apostrophe ="'";
 
     
     @SuppressWarnings("unchecked")
 	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
 
-    	
-    	String parameters = CoreConstants.EMPTY;
-    	for (String param : params) {
-    		parameters+="'" + param + "'"+ CoreConstants.SPACE; 
-		}
-    	exp = MessageFormat.format(exp, (Object[])parameters.split(CoreConstants.SPACE));
+    	StringBuilder parametersExp = new StringBuilder(); 
+    	for (String param : params) 
+    		parametersExp.append(apostrophe).append(param).append(apostrophe).append(CoreConstants.SPACE);
+    		
+		
+    	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(CoreConstants.SPACE));
     	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
     	try {
@@ -88,7 +89,9 @@ public class IdegaExtensionFunctions {
 		    		Document document = documentBuilder.newDocument();
 		    		
 					Element localeElement = document.createElement(item_localizeEntries);
+					
 					localeElement.setAttribute(item_attribute_label, currentLocale());
+					
 					Element itemElem = document.createElement(item_node);
 					Element itemLabelElem = document.createElement(item_node_label);
 					Element	itemValueElem = document.createElement(item_value_label);
