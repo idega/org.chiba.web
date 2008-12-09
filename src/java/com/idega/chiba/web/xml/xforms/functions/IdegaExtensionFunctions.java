@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  *
- * Last modified: $Date: 2008/12/08 11:38:24 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/09 02:58:44 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -73,14 +73,18 @@ public class IdegaExtensionFunctions {
     	if (params.length == 0 || params == null)
     		return CoreConstants.EMPTY;
     	
-    	for (String param : params) 
+    	for (String param : params) {
+    		if (CoreConstants.EMPTY.equals(param))
+    			return CoreConstants.EMPTY;
+    		
     		parametersExp.append(apostrophe).append(param).append(apostrophe).append(CoreConstants.SPACE);
+    	}
     		
     	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(CoreConstants.SPACE));
     	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
     	try {
-    		
+//    	TODO if empty string returns null .....	
     	Object value = ELUtil.getInstance().evaluateExpression(exp);
     	
     		if (value != null){
