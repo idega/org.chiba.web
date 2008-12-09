@@ -169,7 +169,6 @@
                 								"<xsl:value-of select="$uriToPrototypeLib" />",
 												"<xsl:value-of select="$uriToScriptaculousLib" />",
 				
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />",
 											
 												"<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />",
 												"<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />",
@@ -177,12 +176,14 @@
 											
 												"<xsl:value-of select="$uriToMootoolsLib" />",
 												"<xsl:value-of select="$uriTojQueryLib" />",
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />",
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />",
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />",
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />",
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />",
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
+												
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
 											], function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
