@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  *
- * Last modified: $Date: 2008/12/09 02:58:44 $ by $Author: arunas $
+ * Last modified: $Date: 2008/12/16 16:07:23 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -84,7 +84,7 @@ public class IdegaExtensionFunctions {
     	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
     	try {
-//    	TODO if empty string returns null .....	
+//    	TODO empty string .....	
     	Object value = ELUtil.getInstance().evaluateExpression(exp);
     	
     		if (value != null){
@@ -158,6 +158,18 @@ public class IdegaExtensionFunctions {
     	String locale = IWContext.getInstance().getCurrentLocale().toString();
     	
     	return locale;
+    }
+    
+    public static boolean hasItem(String list, String elem) throws XFormsException {
+    	
+    	String[] items = list.split(CoreConstants.SPACE);
+    	
+    	for (String item : items) 
+			if (item.equals(elem)) 
+					return true;
+			
+		
+    	return false;	
     }
 
    
