@@ -57,8 +57,11 @@ dojo.widget.defineWidget(
             }
         },
         updateProgress: function (value) {
+        	var progressBarContainerId = this.xformsId + '-progress';
+        	var progressBarId = progressBarContainerId + '-bg';
+
             if (value != 0) {
-            	jQuery('#' + this.xformsId + '-progress-bg').css('width', value + '%');
+            	document.getElementById(progressBarId).style.width = value + '%';
             }
 
             if (value == 100 || value < 0) {
@@ -74,13 +77,11 @@ dojo.widget.defineWidget(
                 }
 
                 // reset progress bar
-                var elemId = this.xformsId + "-progress-bg";
-
                 setTimeout(function() {
-                	document.getElementById(elemId).style.width = 0;
+                	document.getElementById(progressBarId).style.width = 0;
                 }, 2000);
                 setTimeout(function() {
-                	jQuery('#' + this.xformsId + '-progress').hide('slow');
+                	document.getElementById(progressBarContainerId).style.display = 'none';
                 }, 1500);
             }
         },
@@ -126,8 +127,11 @@ dojo.widget.defineWidget(
                     this.disabledNodes.push(trigControl);
                 }
             }
-
-            jQuery('#' + this.xformsId + '-progress').css('display', 'block');
+            
+			var progressBar = document.getElementById(this.xformsId + '-progress');
+			if (progressBar != null) {
+				progressBar.style.display = 'block';
+			}
 
             var path = this.inputNode.value;
             
