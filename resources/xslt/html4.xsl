@@ -165,7 +165,8 @@
 </xsl:text>
 		  <script type="text/javascript">
                 	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
-                	LazyLoader.loadMultiple([
+                	jQuery(window).load( function() {
+                LazyLoader.loadMultiple([
                 								"<xsl:value-of select="$uriToPrototypeLib" />",
 												"<xsl:value-of select="$uriToScriptaculousLib" />",
 				
@@ -187,6 +188,8 @@
 											
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
 											], function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
+            
+					});
                 </script>
                <xsl:text>
 </xsl:text>
