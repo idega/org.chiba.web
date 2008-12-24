@@ -45,7 +45,7 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         ni.appendChild(newdiv); */
         // @author Arunas :
         // added
-        changeWindowLocationHrefAndCheckParameters("#chibaform-head", true);
+       changeWindowLocationHrefAndCheckParameters("#chibaform-head", true);
         
         
         // @author= Arunas :

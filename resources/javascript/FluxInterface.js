@@ -153,8 +153,6 @@ function submitFunction(control) {
 function chibaActivate(target) {
     forceRepeatIndex(dojo.byId(target));
 
-
-
     // lookup value element
     while (target && ! _hasClass(target, "value")) {
         target = target.parentNode;
