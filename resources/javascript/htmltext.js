@@ -168,9 +168,8 @@ function _styledTextareaSetXFormsValue(textareaID) {
         dojo.debug("Flux.setXFormsValue: " + controlID + "='" + value + "'");
          // commented 2008-10-13 @Arunas
  		  //     useLoadingMessage();
-
-      //  DWREngine.setOrdered(true);
-        DWREngine.setOrdered(false);
+        DWREngine.setOrdered(true);
+      //  DWREngine.setOrdered(false);
         DWREngine.setErrorHandler(handleExceptions);
 
         var sessionKey = document.getElementById("chibaSessionKey").value;
