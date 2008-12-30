@@ -2032,6 +2032,8 @@ ctor.prototype.initializer=(ctor.prototype.initializer)||(init)||(function(){
 dojo.lang.setObjPathValue(_1f4,ctor,null,true);
 return ctor;
 };
+//@author Arunas added check for recursion
+var checkRecursion = false;
 dojo.lang.declare._makeConstructor=function(){
 return function(){
 var self=this._getPropContext();
@@ -2047,8 +2049,9 @@ var ms=(self.constructor.mixins)||([]);
 for(var i=0,m;(m=ms[i]);i++){
 (((m.prototype)&&(m.prototype.initializer))||(m)).apply(this,arguments);
 }
-if((!this.prototyping)&&(self.initializer)){
+if((!this.prototyping)&&(self.initializer)&&(!checkRecursion)){
 self.initializer.apply(this,arguments);
+checkRecursion = true;
 }
 };
 };
