@@ -174,13 +174,14 @@ function chibaActivate(target) {
     showLoadingMessage(Localization.STANDARD_LAYER_MSG);
     
     DWREngine.setErrorHandler(handleExceptions);
-    //DWREngine.setOrdered(true);
-    DWREngine.setOrdered(false);
+   // DWREngine.setOrdered(false);
+    DWREngine.setOrdered(true);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.fireAction(id, sessionKey, {
     	callback: function(data) {
     		updateUI(data);
-    		manageHelpTextIconsForForm();
+    	//@author=Arunas crash at this point then setOrdered(true)
+    	//	manageHelpTextIconsForForm();
     	}
     });
     //Flux.fireAction(updateUI, id, sessionKey);
@@ -254,17 +255,17 @@ function setXFormsValue(control, forceControl) {
         default:
             break;
     }
-
+    
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
      // commented 2008-10-13 @Arunas
  //   useLoadingMessage();
 
-    //DWREngine.setOrdered(true);
-    DWREngine.setOrdered(false);
-    DWREngine.setErrorHandler(handleExceptions);
+	 //DWREngine.setOrdered(true);
+     DWREngine.setOrdered(false);
+   	 DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
-    isDirty = true;                                    
+    isDirty = true;             
 }
 
 /******************************************************************************
