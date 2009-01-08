@@ -5,6 +5,11 @@
 
 /*********** GENERAL STUFF ***********/
 
+form {
+    padding: 0;
+    margin: 0;
+}
+
 #loading{
     position:absolute;
     top:2px;
@@ -34,12 +39,16 @@
 are styleable via this matcher or more specifically by their
 appearance class 'minimal-group|compact-group|full-group'. */
 
-* > fieldset {
-    margin-bottom:5px;
-}
-/* IE */
 fieldset{
-    margin-bottom:5px;
+	margin: 0;
+	margin-bottom:5px;
+	padding: 0;
+	position: relative;
+}
+
+fieldset legend {
+	margin-bottom: 12px;
+	display: block;
 }
 
 
@@ -53,17 +62,13 @@ fieldset{
     padding-top:5px;
 }
 
-.minimal-group span{
+.minimal-group div{
     display:inline;
     margin-right:3px;
 }
 
 .compact-group div{
     display:block;
-    margin-top:3px;
-
-    /*float:left;*/
-    /* Safari doesn't like the float. Firefox renders this correctly.*/
 }
 
 .compact-group div label{
@@ -78,7 +83,6 @@ fieldset{
 
 .full-group div{
     display:block;
-    margin-top:3px;
     clear:both;
 }
 .full-group label{
@@ -93,27 +97,9 @@ fieldset{
     display:inline;
 }
 
-/*********** used to render group labels ***********/
-fieldset > legend {
-    /*padding: 3px;
-    
-    margin-top:5px;
-    margin-bottom:5px;*/
-}
-
-/* IE */
-fieldset legend{
-    /*padding: 3px;
-    border: thin solid rgb( 188, 216, 132 );
-    color: rgb( 85, 96, 63 );
-    margin-top:5px;
-    margin-bottom:5px;*/
-}
 
 /*********** use to render group labels ***********/
 .legend{
-    color:#888888;
-    text-align:center;
     }
 
 /*********** nested group ***********/
@@ -152,7 +138,7 @@ fieldset > fieldset > fieldset {
 }
 
 .invalid .value{
-    color:black;
+    color:white;
     font-style:italic;
     /*background:#A42322;*/
 }
@@ -208,12 +194,13 @@ fieldset > fieldset > fieldset {
 
 .help-text{
     position:absolute;
-    /* @author=Arunas help text display changed*/
-  /*  display:block;
+      /* @author=Arunas help text display changed*/
+  /*display:none;
     width:300px;
     border:thin solid gray;
     background:azure;
-    padding:10px;*/
+    padding:10px;
+	*/
 }
 
 .help-symbol{
@@ -381,9 +368,10 @@ fieldset > fieldset > fieldset {
 }
 
 .selected-case span.output{
-	display: block !important;
+	display: block;
 	clear: both !important;
-	/*overflow: hidden;*/
+	width: 100%;
+	overflow: hidden;
 	/*width: auto !important;*/
 }
 
@@ -415,64 +403,76 @@ fieldset > fieldset > fieldset {
 	position: relative;
 	line-height: 13px;
 }*/
-div.info {
-	height: 54px;
-	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/info_tiler.gif) repeat-x #ABBAC3;
-	padding: 13px 15px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 12px;
-	text-shadow: #fff 2px 2px 1px;
-	line-height: 18px;
-	border-bottom: 1px #788892 solid;
+#chiba-head div.info {
+	padding: 0;
+	background: none;
+	height: auto;
 }
-div.info h1 {
+
+#chiba-head div.info h1 {
 	margin: 0;
+	padding: 0;
 	font-size: 22px;
 }
 
 div.fbc_header_text{
-	border-top: 1px #a4a4a4 solid;
-	border-bottom: 1px #a4a4a4 solid;
-	anton--background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/sub_header_tiler.gif) repeat-x #d6d6d6;
-	height: 18px;
-	color: #222222;
-	font-size: 12px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	padding-left: 15px;
-	padding-top: 4px;
+	border: 1px #a4a4a4 solid;
+	padding: 0 6px !important;
+	background: #ccc;
+	line-height: 24px;
+	padding: 0;
 	margin: 0;
 	clear: both;
 	font-weight: bold;
+	margin-bottom: 8px;
+	margin-top: 16px;
+	font-size: 13px;
 }
+
+div.fbc_header_text span {
+	float: none !important;
+	padding: 0 !important;
+}
+
 span.required-symbol{
 	color: #ff2700;
 	font-size: 1.4em;
 }
-.invalid .alert{
+
+.error {
+	font-weight: bold;
+	color: #FF2700;
+}
+
+.invalid .alert {
 	border-width: 0 !important;
 	background: transparent !important;
 	color: #ff2700;
 	position: relative;
 	top: -4px;
 }
+
 .invalid input.value{
 	background: #ffe2ca !important;
 	color: #000;
 }
-/*select.value{
-width: auto !important;
-min-width: 128px;
-}*/
+
 select.value option{
 	padding: 2px;
 
 }
+
 fieldset.group.full-group {
-	padding-left: 0px			!important;
-	padding-right: 0px			!important;
-	margin-left: 0px			!important;
-	margin-right:0px			!important;
+	padding: 0px !important;
 }
+
+div.input, div.textarea, div.select, div.select1 {
+	width: 100%;
+	overflow: hidden;
+	margin-bottom: 12px;
+	position: relative;
+}
+
 div.input input.value, 
 div.textarea textarea.value,
 div.secret input.value,
@@ -480,143 +480,158 @@ div.upload input.value,
 div.select select.value,
 div.select1 select.value {
 	background: #ffffff !important;
-	width: 166px;
+	width: 350px;
 	margin-right: 20px;
-	margin-bottom: 8px;
-	border: 2px solid;
-	border-bottom-color: LightGrey;
-	border-left-color: Black;
-	border-top-color: Black;
-	border-right-color: LightGrey;
+	border: 1px #a8a8a8 solid;
+	font-size: 13px !important;
+	font-family: inherit !important;
 }
+
+div.input input.value:focus, 
+div.textarea textarea.value:focus,
+div.secret input.value:focus,
+div.upload input.value:focus,
+div.select select.value:focus,
+div.select1 select.value:focus {
+	border-color: #333;
+	background-color: #efefef !important;
+}
+
+div.input input.value, 
+div.textarea textarea.value {
+	padding: 3px;
+}
+
 label.label{
-    float: left;
-	width: 160px 				!important;
-	font-size: 11px;
+	float: left;
+	width: 160px !important;
 	font-weight: bold;
-	padding-top: 4px;
 	color: #222222;
-	margin-left: 13px;
+	line-height: 16px;
+	margin-right: 20px;
 }
+
 div.select1 > span, div.select > span {
 	position: relative;
-margin-left: 175px;
-display: block;
-	top: -12px;
+	float: left;
+	width: 358px;
+	margin-right: 20px;
 }
+
+div.select1 > span.help-text, div.select > span.help-text {
+	width: 310px;
+	margin-right: 0;
+	float: right;
+}
+
 div.select1 > span > span.selector-item, div.select > span > span.selector-item {
 	display: block;
 }
+
 span.selector-item > input.value {
 	margin-top: 0px;
 }
+
 span.selector-item > span.label {
 	position: relative;
 	top: -5px;
 }
-/*div.select1 > span > span.selector-item {
-	display: inline;
-	border: 2px solid Red;
-}
-div.select1 > span.alert {
-	border: none;
-	background-color: Red;
-	display: none;
-}*/
+
 /*@author=Arunas help text always visible*/
 .helperText {
 	visibility: visible;
 }
+
 div.select1 > span.selector-prototype {
 	border: none;
 }
+
 fieldset.group textarea {
 	width: 352px 			!important;
 	height: 80px			!important;
 }
+
 .fbc_simple_text {
 	clear: both;
 	margin-top: 16px;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
+
 .trigger > input {
-	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/button_next.png) no-repeat;
-	filter: none;
-	width: 86px;
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	color: #21262D;
-	text-align: center;
-	font-size: 18px;
-	font-weight: bold;
-	height: 35px;
-	border: 0;
+	border: 2px #a8a8a8 solid;
+	padding: 2px 4px;
+	margin-left: 5px;
+	font-size: 10px;
 }
+
 .trigger > input:hover {
-	color: #571900;
-	background-image: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/button_next_hover.png);
-	filter: none;	
 }
+
+div.group {
+	margin-bottom: 12px;
+}
+
+div.group table {
+	clear: both;
+	margin-top: 5px;
+}
+
+div.group table .input {
+	margin-bottom: 0 !important;
+}
+
+div.group table input {
+	width: 150px !important;
+}
+
 div.fbc_button_area {
-	padding-right: 17px;
-	padding-left: 17px;
-	padding-top: 16px;
 	text-align: right;
-	height: 49px;
-	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/bottom_tiler.gif) repeat-x #AEBCC5;
+	margin-top: 32px;
+	margin-bottom: 12px;
+	clear: both;
 }
+
+div.fbc_button_area .trigger {
+	float: none !important;
+	margin-left: 8px;
+}
+
+div.fbc_button_area .trigger input {
+	border: 2px #a8a8a8 solid;
+	padding: 5px 8px;
+	font-weight: bold;
+	margin: 0 !important;
+	font-size: 12px !important;
+}
+
+div.fbc_button_area .trigger input:hover {
+	color: #fff;
+	background-color: #a8a8a8;
+	border-color: #666;
+}
+
 div.label {
 	clear: both;
 	position: relative;
-	border-top: 1px #fff solid;
-	border-bottom: 1px #B2B6B8 solid;
-	height: 28px;
-	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/header_tiler.gif) repeat-x #fff;
-}
-div.label h1 {
-	float: left;
-	color: #002243;
-	font-size: 13px;
-	text-transform: uppercase;
-	margin: 0;
-	padding: 7px 0 0 14px;
+	font-weight: bold;
+	border-bottom: 1px #a8a8a8 solid;
+	padding: 4px 0;
+	margin-bottom: 8px;
 }
 
-/* .case.selected-case{
-	overflow-y: auto 			!important;
-	top: 25px;
-	bottom: 0px 				!important;
-	position: absolute;
-	left: 0;
-	right: 0px;
-}
-fieldset.group{
-	overflow: auto 			!important;
-	top: 45px;
-	bottom: 23px 			!important;
-	position: absolute;
-	left: 0;
-	right: 0px;
-}
-fieldset.group fieldset.group{
-	overflow: auto 			!important;
-	top: 0px;
-	bottom: auto 			!important;
-	position: relative 		!important;
-	left: 0;
-	right: 0px;
-} */
 span.selector-item{
 	clear: both 			!important;
-	//float: left;
 }
+
 span.selector-item span.label{
 	margin-left: 5px;
 }
+
 fieldset.group .trigger{
 	float: right;
 }
+
 div.phases {
 	position: absolute;
 	top: -7px;
@@ -645,7 +660,7 @@ div.phases ul li {
 }
 
 html>body div.phases ul li {
-	background: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/blue_orb.png) no-repeat top center;
+	background: url(images/blue_orb.png) no-repeat top center;
 	filter: none;
 }
 
@@ -659,16 +674,15 @@ div.phases ul li.current {
 }
 
 html>body div.phases ul li.current {
-	background-image: url(/idegaweb/bundles/org.chiba.web.bundle/resources/images/orange_orb.png);
+	background-image: url(images/orange_orb.png);
 	filter: none;
 }
+
 .selector-item {
-	width: 300px				!important;
 }
 
 div.textarea {
 	margin-bottom: 12px;
-	width: 870px;
 	overflow: hidden;
 }
 
@@ -678,11 +692,11 @@ div.textarea label {
 
 div.textarea textarea {
 	float: left;
-	width: 300px !important;
+	height: 100px !important;
+	width: 350px !important;
 }
 
 div.input {
-	width: 870px;
 	overflow: hidden;
 }
 
@@ -695,11 +709,12 @@ div.input input {
 }
 
 .invalid .alert {
-	float: left;
-	clear: both;
+	float: none;
+	clear: both !important;
 	margin-left: 180px;
 	top: 0;
 	margin-top: 3px;
+	display: block;
 }
 
 div.input.invalid input.value, div.textarea.invalid textarea.value {
@@ -707,34 +722,51 @@ div.input.invalid input.value, div.textarea.invalid textarea.value {
 	border-color: #f00 !important;
 }
 
-div.select1.invalid span {
+div.select1.invalid span,
+div.select.invalid span {
 	background-color: #faa;
 	border: 1px #f00 solid;
 	padding: 8px;
+	width: 340px !important;
 }
 
-div.select1.invalid span span, div.select1.invalid label span, div.select1.invalid span.alert {
+div.select1.invalid span span,
+div.select1.invalid label span,
+div.select1.invalid span.alert,
+div.select1.invalid span.help-text,
+div.select.invalid span span,
+div.select.invalid label span,
+div.select.invalid span.alert,
+div.select.invalid span.help-text {
 	border: 0;
 	padding: 0;
 }
 
-div.select1.invalid label span {
+div.select1.invalid label span,
+div.select1.invalid span.help-text,
+div.select.invalid label span,
+div.select.invalid span.help-text {
 	background-color: #fff;
 }
 
-div.select1.invalid span.alert {
+div.select1.invalid span.alert,
+div.select.invalid span.alert {
 	margin-bottom: 12px;
+}
+
+div.select1.invalid span.help-text,
+div.select1.invalid span.help-text span,
+div.select.invalid span.help-text,
+div.select.invalid span.help-text span {
+	width: 310px !important;
+	background-color: #fff !important;
 }
 
 .help-text {
 	left: 0;
 	float: right;
-	width: 350px;
+	width: 310px !important;
 	position: relative;
-}
-
-div.input .help-text {
-	width: 410px;
 }
 
 .help-text .helpIcon {
@@ -766,7 +798,18 @@ fieldset.readwrite.optional legend {
 	padding-top: 18px;
 }
 
+fieldset.readwrite.optional span.trigger {
+	margin-bottom: 4px;
+}
+
+fieldset.readwrite.optional table span.trigger {
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
 fieldset.readwrite.optional table {
+	clear: both !important;
 	width: 100%;
 }
 
@@ -788,7 +831,7 @@ fieldset.readwrite.optional table span label {
 
 fieldset.readwrite.optional table span span {
 	padding: 0 !important;
-margin-bottom: 4px;
+	margin-bottom: 4px;
 }
 
 fieldset.readwrite.optional table div.upload {
@@ -808,11 +851,115 @@ div.xformErrors {
 
 div.xformErrors table {
 	margin-top: 0;
-	
 }
 
 div.xformErrors td {
-	display: list-item;
-	margin-left: 20px;
 	font-weight: bold;
+}
+
+div.formInfo {
+	margin-bottom: 18px;
+	margin-top: 12px;
+	padding: 0;
+}
+
+div.formInfo span {
+	padding: 0 !important;
+}
+
+div.select1 span.selector-item, div.select span.selector-item {
+	margin-bottom: 4px;
+}
+
+div.select1 span.selector-item input, div.select span.selector-item input {
+	margin: 0 !important;
+	vertical-align: middle;
+}
+
+div.select1 span.selector-item span, div.select span.selector-item span {
+	margin: 0;
+	top: 2px;
+	margin-left: 4px;
+}
+
+div.incremental input {
+	text-align: right;
+}
+
+span.total span {
+	width: 150px;
+	text-align: right;
+	font-weight: bold;
+}
+
+.paragraphAlert {
+	border: 1px #EFD585 solid;
+	font-weight: bold;
+	padding: 8px;
+	margin-bottom: 12px;
+	background: url(/content/files/public/style/attention_background.gif);
+}
+
+.paragraphAlert span.output {
+	background: url(/content/files/public/style/attention_icon.png) top left no-repeat;
+	height: 30px;
+}
+
+html>body .paragraphAlert span.output {
+	height: auto;
+	min-height: 30px;
+}
+
+.paragraphAlert span.output span {
+	padding: 0;
+	margin-left: 34px;
+}
+
+.helpBlock {
+	margin-bottom: 12px;
+}
+
+.noLabel {
+	margin-top: 8px;
+}
+
+.noLabel label {
+	width: auto !important;
+	margin-right: 3px;
+}
+
+span.trigger.link {
+	float: none;
+	display: block;
+	clear: none;
+	padding: 0 4px;
+	margin-bottom: 16px;
+	font-weight: bold;
+}
+
+@media print {
+	.fbc_button_area, .alert, .xformErrors, .trigger {
+		display: none !important;
+	}
+}
+
+.casesBPMAssets .actions {
+	margin-bottom: 0;
+	margin-top: 4px;
+}
+
+.casesBPMAssets .formView {
+	margin-top: 0 !important;
+}
+
+.formView .info {
+	margin-bottom: 12px;
+}
+
+.formView table div.input input.value {
+	width: 290px;
+}
+
+td div.required input.value {
+	background-color: #fee !important;
 }
