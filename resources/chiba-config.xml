@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- $Id: chiba-config.xml,v 1.29 2008/12/16 16:07:23 arunas Exp $ -->
+<!-- $Id: chiba-config.xml,v 1.30 2009/01/16 15:43:26 anton Exp $ -->
 <!-- Copyright 2001-2007 ChibaXForms GmbH -->
 <chiba-config>
 
@@ -28,7 +28,7 @@
         XFormsSession unavailable.
         -->
         <property name="sessionChecking" value="120000" description="the amount of time (in millis) between runs of wipe() method checking for expired XForms sessions"/>
-        <property name="sessionTimeout" value="3600000" description="the amount of time of inactivity before XFormsSession expires"/>
+        <property name="sessionTimeout" value="7200000" description="the amount of time of inactivity before XFormsSession expires"/>
         <property name="sessionManager" value="com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl" description="fully qualified classname of XFormsSessionManager implementation"/>
         <!--<property name="sessionClass" value="org.chiba.web.session.impl.DefaultChibaSession" description="fully qualified classname of XFormsSession implementation"/>-->
 
