@@ -59,7 +59,7 @@ dojo.widget.defineWidget(
         updateProgress: function (value) {
         	var progressBarContainerId = this.xformsId + '-progress';
         	var progressBarId = progressBarContainerId + '-bg';
-
+        	
             if (value != 0) {
             	document.getElementById(progressBarId).style.width = value + '%';
             }
@@ -140,8 +140,12 @@ dojo.widget.defineWidget(
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
-            progressUpdate = setInterval("Flux.fetchProgress('" + this.xformsId + "','" + filename + "','" + sessionKey + "', updateUI)", 1000);
-        
+            //@author=Arunas changed calling method 
+            var xfomsId = this.xformsId;
+            progressUpdate = setInterval(function() {
+            		Flux.fetchProgress(xfomsId, filename, sessionKey, {callback: function(data) { updateUI(data);} });
+            	}, 1000);
+
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
          
