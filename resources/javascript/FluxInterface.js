@@ -177,15 +177,8 @@ function chibaActivate(target) {
    // DWREngine.setOrdered(false);
     DWREngine.setOrdered(true);
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    Flux.fireAction(id, sessionKey, {
-    	callback: function(data) {
-    		updateUI(data);
-    	//@author=Arunas crash at this point then setOrdered(true)
-    	//	manageHelpTextIconsForForm();
-    	}
-    });
-    //Flux.fireAction(updateUI, id, sessionKey);
-  
+ 
+    Flux.fireAction(id, sessionKey, updateUI);
     return false;
 }
 
@@ -333,7 +326,7 @@ Unconditionally forces the repeat index if a trigger in a repeat-item is clicked
 function forceRepeatIndex(control) {
     // get event target
     var target = control;
-
+    
     // lookup repeat item
     while (target && ! _hasClass(target, "repeat-item")) {
         target = target.parentNode;
@@ -360,10 +353,7 @@ function _getEventTarget(event) {
 
 // callback for updating any control
 function updateUI(data) {
-	closeAllLoadingMessages();
     dojo.debug("updateUI: " + data);
-    
-    //showLoadingMessage("Saving data");
     
     var eventLog = data.documentElement.childNodes;
 
@@ -387,8 +377,7 @@ function updateUI(data) {
 
         var context = new PresentationContext();
         _handleServerEvent(context, type, targetId, targetName, properties);
-        /*---------Anton---user interface was updated after buton press*/
-        //closeLoadingMessage();
+        
     }
 }
 
@@ -405,6 +394,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             break;
         case "chiba-render-message":
             context.handleRenderMessage(properties["message"], properties["level"]);
+            closeAllLoadingMessages();
             break;
         case "chiba-replace-all":
             isDirty = false;
@@ -431,15 +421,18 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             break;
         case "chiba-item-inserted":
             context.handleItemInserted(targetId, targetName, properties["originalId"], properties["position"]);
+            closeAllLoadingMessages();          
             break;
         case "chiba-item-deleted":
             context.handleItemDeleted(targetId, targetName, properties["originalId"], properties["position"]);
+            closeAllLoadingMessages();     
             break;
         case "chiba-index-changed":
             context.handleIndexChanged(targetId, properties["originalId"], properties["index"]);
             break;
         case "chiba-switch-toggled":
             context.handleSwitchToggled(properties["deselected"], properties["selected"]);
+            closeAllLoadingMessages();
             break;
         case "upload-progress-event":
         //            _updateProgress(targetId,properties["progress"])
