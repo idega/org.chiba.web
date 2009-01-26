@@ -150,30 +150,19 @@
                         Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
                     }
                 
-                    if(!IE)
-                        showLoadingMessage(Localization.LOADING_MSG);
-                
+              
                     var djConfig = {
                     debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
                     isDebug: <xsl:value-of select="$debug-enabled"/> };
-                </script>
-                <xsl:text>
-</xsl:text>
-    		<!-- Chiba localization -->
-				
-				<xsl:text>
-</xsl:text>
-		  <script type="text/javascript">
-                	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
-                	jQuery(window).load( function() {
-                LazyLoader.loadMultiple([
-                								"<xsl:value-of select="$uriToPrototypeLib" />",
+                    
+                    var chibaXformScripts = ["<xsl:value-of select="$uriToPrototypeLib" />",
 												"<xsl:value-of select="$uriToScriptaculousLib" />",
 				
 											
 												"<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />",
 												"<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />",
 												"<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />",
+												
 											
 												"<xsl:value-of select="$uriToMootoolsLib" />",
 												"<xsl:value-of select="$uriTojQueryLib" />",
@@ -186,8 +175,24 @@
 												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
 												
 											
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"
-											], function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
+												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"];
+												
+				function checkLoadedScript(callback) 
+					{
+						LazyLoader.loadMultiple(chibaXformScripts, callback);
+					}								
+                </script>
+                <xsl:text>
+</xsl:text>
+    		<!-- Chiba localization -->
+				
+				<xsl:text>
+</xsl:text>
+		  <script type="text/javascript">
+                	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
+                	jQuery(window).load( function() {
+             	                        showLoadingMessage(Localization.LOADING_MSG);
+                	checkLoadedScript(function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
             
 					});
                 </script>

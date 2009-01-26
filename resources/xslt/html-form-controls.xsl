@@ -871,7 +871,7 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <xsl:attribute name="type">button</xsl:attribute>
-                        <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
+                        <xsl:attribute name="onclick">checkLoadedScript(xformScripts, function() {chibaActivate(this);}); </xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="type">submit</xsl:attribute>
@@ -964,7 +964,7 @@
                             </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
-                            <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
+                            <xsl:attribute name="onclick">checkLoadedScript(function(){chibaActivate(this)});</xsl:attribute>
                             
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
@@ -1039,8 +1039,9 @@
                   		 LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
 	                		dojo.require("chiba.widget.Upload");
 	                	});
+	                	
                   	}
-                  	
+                   	
                     jQuery(window).load(loadFunc);
             </script>
 
