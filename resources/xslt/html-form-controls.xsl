@@ -871,7 +871,7 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <xsl:attribute name="type">button</xsl:attribute>
-                        <xsl:attribute name="onclick">checkLoadedScript(xformScripts, function() {chibaActivate(this);}); </xsl:attribute>
+                        <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="type">submit</xsl:attribute>
@@ -917,7 +917,7 @@
                         </xsl:attribute>
                         <xsl:attribute name="href">#</xsl:attribute>
                         <xsl:if test="not(chiba:data/@chiba:readonly='true')">
-                            <xsl:attribute name="onclick">return chibaActivate(this);</xsl:attribute>
+                            <xsl:attribute name="onclick">return chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
                         <xsl:apply-templates select="xforms:label"/>
@@ -964,7 +964,7 @@
                             </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
-                            <xsl:attribute name="onclick">checkLoadedScript(function(){chibaActivate(this)});</xsl:attribute>
+                            <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
                             
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
@@ -1009,7 +1009,7 @@
             <xsl:attribute name="value"/>
             <xsl:choose>
                 <xsl:when test="$scripted='true'">
-                    <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
+                    <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
                 </xsl:when>
             </xsl:choose>
             <xsl:if test="chiba:data/@chiba:readonly='true'">

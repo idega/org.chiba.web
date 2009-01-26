@@ -2032,7 +2032,6 @@ ctor.prototype.initializer=(ctor.prototype.initializer)||(init)||(function(){
 dojo.lang.setObjPathValue(_1f4,ctor,null,true);
 return ctor;
 };
-//@author Arunas added check for recursion
 var checkRecursion = false;
 dojo.lang.declare._makeConstructor=function(){
 return function(){

@@ -21,6 +21,8 @@ if(Localization == null) {
 	Localization.LOADING_MSG                = 'Loading...';
 }
 
+if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
+
 /******************************************************************************
  PAGE init
  ******************************************************************************/
@@ -151,34 +153,43 @@ function submitFunction(control) {
 
 // call processor to execute a trigger
 function chibaActivate(target) {
-    forceRepeatIndex(dojo.byId(target));
-
-    // lookup value element
-    while (target && ! _hasClass(target, "value")) {
-        target = target.parentNode;
-    }
-	if (!target) {
-		return false;
+	console.log(target);
+	
+	if (typeof(target) == 'string') {
+		target = document.getElementById(target);
 	}
+	
+	checkIfLoadedScriptsForChibaXForm(function() {
+		forceRepeatIndex(dojo.byId(target));
 
-    var id = target.id;
-    if (id.substring(id.length - 6, id.length) == "-value") {
-        // cut off "-value"
-        id = id.substring(0, id.length - 6);
-    }
+	    // lookup value element
+	    while (target && ! _hasClass(target, "value")) {
+	        target = target.parentNode;
+	    }
+		if (!target) {
+			return false;
+		}
+	
+	    var id = target.id;
+	    if (id.substring(id.length - 6, id.length) == "-value") {
+	        // cut off "-value"
+	        id = id.substring(0, id.length - 6);
+	    }
 
-    dojo.debug("Flux.activate: " + id);
-     // commented 2008-10-13 @Arunas
- //   useLoadingMessage();
-    /*---------Anton---action button is pressed---*/
-    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-    
-    DWREngine.setErrorHandler(handleExceptions);
-   // DWREngine.setOrdered(false);
-    DWREngine.setOrdered(true);
-    var sessionKey = document.getElementById("chibaSessionKey").value;
- 
-    Flux.fireAction(id, sessionKey, updateUI);
+	    /*---------Anton---action button is pressed---*/
+	    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+	    
+	    DWREngine.setErrorHandler(handleExceptions);
+	    DWREngine.setOrdered(true);
+	    var sessionKey = document.getElementById("chibaSessionKey").value;
+	    console.log(sessionKey)
+	    Flux.fireAction(id, sessionKey, {
+	    	callback: function(data) {
+	    		updateUI(data);
+	    	}
+	    });
+	});
+  
     return false;
 }
 
@@ -558,4 +569,10 @@ function activateChibaFileUploaders() {
 			chibaActivate(uploadElements[i]);
 		}
 	}
+}
+
+FluxInterfaceHelper.startUsingXForm = function() {
+	closeAllLoadingMessages();
+	activateChibaFileUploaders();
+	manageHelpTextIconsForForm();
 }

@@ -150,37 +150,31 @@
                         Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
                     }
                 
-              
                     var djConfig = {
-                    debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
-                    isDebug: <xsl:value-of select="$debug-enabled"/> };
+                    	debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
+                    	isDebug: <xsl:value-of select="$debug-enabled"/>
+                    };
                     
-                    var chibaXformScripts = ["<xsl:value-of select="$uriToPrototypeLib" />",
-												"<xsl:value-of select="$uriToScriptaculousLib" />",
-				
-											
-												"<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />",
-												"<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />",
-												"<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />",
+                    <!-- DO NOT change order of scripts! IE is very "fragile" on this -->
+                    var chibaXformScripts = ['<xsl:value-of select="$uriToPrototypeLib" />',
+                    						'<xsl:value-of select="$uriToScriptaculousLib" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />',
+                    						'<xsl:value-of select="$uriToMootoolsLib" />',
+                    						'<xsl:value-of select="$uriTojQueryLib" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />'
+                    						];
 												
-											
-												"<xsl:value-of select="$uriToMootoolsLib" />",
-												"<xsl:value-of select="$uriTojQueryLib" />",
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />",
-											
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />",
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />",
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />",
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />",
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />",
-												
-											
-												"<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />"];
-												
-				function checkLoadedScript(callback) 
-					{
-						LazyLoader.loadMultiple(chibaXformScripts, callback);
-					}								
+					function checkIfLoadedScriptsForChibaXForm(callback) {
+						LazyLoader.loadMultiple(chibaXformScripts, callback, null);
+					}
                 </script>
                 <xsl:text>
 </xsl:text>
@@ -189,11 +183,11 @@
 				<xsl:text>
 </xsl:text>
 		  <script type="text/javascript">
-                	<!-- DO NOT change order of scripts! IE is very "fragile" on this -->
-                	jQuery(window).load( function() {
-             	                        showLoadingMessage(Localization.LOADING_MSG);
-                	checkLoadedScript(function() {closeAllLoadingMessages(); activateChibaFileUploaders(); manageHelpTextIconsForForm();});
-            
+                	jQuery(window).load(function() {
+                		showLoadingMessage(Localization.LOADING_MSG);
+                		checkIfLoadedScriptsForChibaXForm(function() {
+                			FluxInterfaceHelper.startUsingXForm();
+                		});
 					});
                 </script>
                <xsl:text>
