@@ -153,8 +153,6 @@ function submitFunction(control) {
 
 // call processor to execute a trigger
 function chibaActivate(target) {
-	console.log(target);
-	
 	if (typeof(target) == 'string') {
 		target = document.getElementById(target);
 	}
@@ -182,7 +180,6 @@ function chibaActivate(target) {
 	    DWREngine.setErrorHandler(handleExceptions);
 	    DWREngine.setOrdered(true);
 	    var sessionKey = document.getElementById("chibaSessionKey").value;
-	    console.log(sessionKey)
 	    Flux.fireAction(id, sessionKey, {
 	    	callback: function(data) {
 	    		updateUI(data);
