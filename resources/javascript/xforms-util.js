@@ -17,9 +17,7 @@
 //  }
 //}
 
-function _setElementText (element, text) {            	
-  
-//	Changed @ 2008 08 27 by Arunas xforms translations in IE
+function _setElementText (element, text) {
      if (element.firstChild) {
             element.firstChild.data = text;
         }

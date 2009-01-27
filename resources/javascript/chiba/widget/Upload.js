@@ -113,11 +113,8 @@ dojo.widget.defineWidget(
                 }
             }
             
-            /*
-            * @author <a href="mailto:arunas@idega.com">Arunas Vasmanas</a>	
-            * added script: 	
-            * disable all triggers in xform when uploading file is in process 
-            */
+
+            //	disable all triggers in xform when uploading file is in process
             var trigContainers = document.getElementsByClassName("trigger", "chibaform");
             for (var trig = 0; trig < trigContainers.length; trig++) {
                 var trigControl = dojo.byId(trigContainers[trig].id + "-value");
@@ -140,7 +137,6 @@ dojo.widget.defineWidget(
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
-            //@author=Arunas changed calling method 
             var xfomsId = this.xformsId;
             progressUpdate = setInterval(function() {
             		Flux.fetchProgress(xfomsId, filename, sessionKey, {callback: function(data) { updateUI(data);} });
