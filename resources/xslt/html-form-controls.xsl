@@ -40,11 +40,11 @@
             <!--<xsl:when test="chiba:data[@chiba:type='date' or @chiba:type='dateTime']">-->
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
-               jQuery(window).load(function() {
-                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
-                            dojo.require("chiba.widget.DropdownDatePicker");
-                        });
-                    });
+				jQuery(window).load(function() {
+					LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                    	dojo.require("chiba.widget.DropdownDatePicker");
+                    }, null);
+				});
                 </script>
 				<xsl:variable name="controlType">
 
@@ -92,7 +92,7 @@
                             jQuery(window).load(function() {
                                 LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
                                     dojo.require("chiba.widget.Boolean");
-                                });
+                                }, null);
                             });
                         </script>
                         <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
@@ -236,7 +236,7 @@
                         jQuery(window).load(function() {
                             LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
                                 dojo.require("chiba.widget.Link");
-                            });
+                            }, null);
                         });
                     </script>
                 </xsl:if>
@@ -521,14 +521,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                
-	                var funct = function() {
+	                jQuery(window).load(function() {
                         LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
                             initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        });
-                    };
-	                
-	                jQuery(window).load(funct);
+                        }, null);
+                    });
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -611,13 +608,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                var funct = function() {
+	                jQuery(window).load(function() {
                         LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
                             initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        });
-                    };
-                    
-                    jQuery(window).load(funct);
+                        }, null);
+                    });
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -698,14 +693,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                
-	                var funct = function() {
+	                jQuery(window).load(function() {
                         LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
                             initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        });
-                    };
-	                
-	                jQuery(window).load(funct);
+                        }, null);
+                    });
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -788,14 +780,11 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                
-	                var funct = function() {
-	                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                        });
-	                    };
-	                
-	                jQuery(window).load(funct);
+                	jQuery(window).load(function() {
+	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
+	                    	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+	                    }, null);
+	             	});
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -1035,16 +1024,12 @@
 
         <xsl:if test="$scripted='true'">
             <script type="text/javascript">
-                  var loadFunc = function() {
-                  		 LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
-	                		dojo.require("chiba.widget.Upload");
-	                	});
-	                	
-                  	}
-                   	
-                    jQuery(window).load(loadFunc);
+				jQuery(window).load(function() {
+                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+	                	dojo.require("chiba.widget.Upload");
+	                }, null);
+				});
             </script>
-
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
             <div class="progressbar" style="display:none;" id="{$id}-progress">
                 <div class="border">

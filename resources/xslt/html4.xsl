@@ -197,12 +197,11 @@
 </xsl:text>
                     <script type="text/javascript"><xsl:text>
 </xsl:text>
-			        jQuery(window).load(
-			            function() {
-                            LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
-                                _setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
-                            });
-                        });
+			        jQuery(window).load(function() {
+                    	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
+                        	_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
+                      	}, null);
+                  	});
 
 <xsl:text>
 </xsl:text>
@@ -326,7 +325,7 @@
                     jQuery(window).load(function() {
                         LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
                             dojo.require("dojo.debug.console");
-                        });
+                        }, null);
                     });
                 </script>
             </xsl:if>
