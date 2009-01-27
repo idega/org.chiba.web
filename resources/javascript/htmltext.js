@@ -166,8 +166,6 @@ function _styledTextareaSetXFormsValue(textareaID) {
     // Is the setXFormsValue really needed ?
     if(_styledTextareaLastKnownValue[textareaID] != value) {
         dojo.debug("Flux.setXFormsValue: " + controlID + "='" + value + "'");
-         // commented 2008-10-13 @Arunas
- 		  //     useLoadingMessage();
         DWREngine.setOrdered(true);
       //  DWREngine.setOrdered(false);
         DWREngine.setErrorHandler(handleExceptions);

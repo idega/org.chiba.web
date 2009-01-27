@@ -43,13 +43,8 @@ PresentationContext.prototype.handleRenderMessage = function(message, level) {
         newdiv.setAttribute('style',"display:none");
         newdiv.innerHTML = 'message';
         ni.appendChild(newdiv); */
-        // @author Arunas :
-        // added
+
        changeWindowLocationHrefAndCheckParameters("#chibaform-head", true);
-        
-        
-        // @author= Arunas :
-        // changed rendered message into humman msg.
         
         humanMsg.displayMsg(message);
         
