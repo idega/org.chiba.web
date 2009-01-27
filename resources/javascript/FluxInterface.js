@@ -35,16 +35,8 @@ function initXForms(){
 	
 	    chibaXFormsInited = true;
 	    dojo.event.connect("before",window,"onunload","close");
-	    // Added @ 2008 09 01 by Arunas 
-	    //closeAllLoadingMessages();   
 	}
 }
-
-window.onload = function() {
-    
-    //showLoadingMessage("asdasd");
-};
-//window.addEvent('load', );
 
 /******************************************************************************
  SESSION HANDLING AND PAGE UNLOADING
@@ -70,11 +62,6 @@ function close(){
     if (!skipShutdown) closeSession();
 }
 
-//window.onunload = function() {
-//    dojo.debug("unloading page");
-//    if (!skipShutdown) closeSession();
-//}
-
 // Call this whenever we use the session, so we know not to call updateUI needlessly
 var lastUpdateTime=0;
 function localActivity() {
@@ -94,7 +81,6 @@ function keepAlive() {
         localActivity();
         if(DWREngine){
             DWREngine.setErrorHandler(handleExceptions);
-            //DWREngine.setOrdered(true);
             DWREngine.setOrdered(false);
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
@@ -117,36 +103,19 @@ function ignoreExceptions(msg){
 /******************************************************************************
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
- // commented 2008-10-13 @Arunas
-/*
-function useLoadingMessage() {
-    DWREngine.setPreHook(function() {
-        document.getElementById('indicator').className = 'enabled';
-    });
-
-    DWREngine.setPostHook(function() {
-        document.getElementById('indicator').className = 'disabled';
-    });
-}*/
 
 /*
 just a starter.
 */
 function handleExceptions(msg) {
-    //    if(msg.indexOf(":") != -1){
-    //        alert(msg.substring(msg.lastIndexOf(":") +1 ));
-    //    }else{
-    /*---------Anton---commented this alert because we use xforms messages instead*/
-    //alert(msg);
-    //    }
 }
+
 /*
 This function is called whenever the user presses ENTER in an input or secret
 or on a radiobutton or checkbox. Normally this should not result in a post request
 in an AJAX environment. The current function simply does nothing. If something is
 expected to happen on an ENTER it has to be handled here.
 */
-
 function submitFunction(control) {
     return false;
 }
@@ -161,7 +130,7 @@ function chibaActivate(target) {
 		forceRepeatIndex(dojo.byId(target));
 
 	    // lookup value element
-	    while (target && ! _hasClass(target, "value")) {
+	    while (target && !_hasClass(target, "value")) {
 	        target = target.parentNode;
 	    }
 		if (!target) {
@@ -174,7 +143,6 @@ function chibaActivate(target) {
 	        id = id.substring(0, id.length - 6);
 	    }
 
-	    /*---------Anton---action button is pressed---*/
 	    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
 	    
 	    DWREngine.setErrorHandler(handleExceptions);
@@ -258,12 +226,9 @@ function setXFormsValue(control, forceControl) {
     }
     
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
-     // commented 2008-10-13 @Arunas
- //   useLoadingMessage();
 
-	 //DWREngine.setOrdered(true);
-     DWREngine.setOrdered(false);
-   	 DWREngine.setErrorHandler(handleExceptions);
+    DWREngine.setOrdered(false);
+	DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
     isDirty = true;             
@@ -277,21 +242,17 @@ function setRange(id, value) {
     dojo.debug("Flux.setRangeValue: " + id + "='" + value + "'");
 
     //todo: fix for IE
-    //    var oldValue = document.getElementsByName(id + '-value')[0];
     var oldValue = document.getElementsByClassName('rangevalue', document.getElementById(id))[0];
     if (oldValue) {
         oldValue.className = "step";
-        //        oldValue.removeAttribute("name");
     }
 
     var newValue = document.getElementById(id + value);
     newValue.className = newValue.className + " rangevalue";
-    //    newValue.setAttribute("name", id + "-value");
 
     DWREngine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
-    //Flux.setXFormsValue(updateUI, id, value, sessionKey);
 }
 
 var FluxInterfaceRepeatedIndexes = [];
@@ -443,18 +404,11 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             closeAllLoadingMessages();
             break;
         case "upload-progress-event":
-        //            _updateProgress(targetId,properties["progress"])
             var currentUpload = dojo.widget.byId(targetId + "-value");
             if (currentUpload != null) {
             	currentUpload.updateProgress(properties["progress"]);
             }
             break;
-        /*case "xforms-submit":
-        	showLoadingMessage("Saving data");
-        	break;
-        case "xforms-submit-done":
-        	closeLoadingMessage();
-        	break;*/
         case "xforms-submit-error":
             _highlightFailedRequired();
             break;
@@ -492,15 +446,13 @@ function _highlightFailedRequired() {
         }
 
     }
-    //--------Anton-------is not used and causes exceptions to throw in dwr------------
-    //new Effect.Pulsate(document.getElementById("required-msg"));
+
     submissionErrors ++;
 }
 
 
 /* help function - still not ready */
 function showHelp(helptext) {
-    alert(helptext);
     var helpwnd = window.open('', '', 'scrollbars=no,menubar=no,height=400,width=400,resizable=yes,toolbar=no,location=no,status=no');
     helpwnd.document.getElementsByTagName("body")[0].innerHTML = helptext;
 
@@ -544,10 +496,8 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     var repeatId = target.id;
 
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
-     // commented 2008-10-13 @Arunas
-  //  useLoadingMessage();
+
     DWREngine.setErrorHandler(handleExceptions);
-    //DWREngine.setOrdered(true);
     DWREngine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, {
@@ -556,16 +506,12 @@ chiba.setRepeatIndex = function(targetRepeatElement){
    			FluxInterfaceBusyWithRepeatIndex = false;
    		}
     });
-    //Flux.setRepeatIndex(updateUI, repeatId, targetPosition, sessionKey);
 }
 
 function activateChibaFileUploaders() {
-	var uploadElements = jQuery('input.chibaFileUploaderStyleClass');
-	if (uploadElements != null && uploadElements.length > 0) {
-		for (var i = 0; i < uploadElements.length; i++) {
-			chibaActivate(uploadElements[i]);
-		}
-	}
+	jQuery.each(jQuery('input.chibaFileUploaderStyleClass'), function() {
+		chibaActivate(jQuery(this).attr('id'));
+	});
 }
 
 FluxInterfaceHelper.startUsingXForm = function() {
