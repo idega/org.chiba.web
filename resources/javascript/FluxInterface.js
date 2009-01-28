@@ -330,6 +330,10 @@ function updateUI(data) {
     dojo.debug("updateUI: " + data);
     
     var eventLog = data.documentElement.childNodes;
+    
+    if (eventLog == null || eventLog.length == 0){
+    	closeAllLoadingMessages();
+    }
 
     for (var i = 0; i < eventLog.length; i++) {
         var type = eventLog[i].getAttribute("type");
