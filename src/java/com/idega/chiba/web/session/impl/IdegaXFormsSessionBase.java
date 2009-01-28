@@ -23,6 +23,7 @@ import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xforms.exception.XFormsException;
 
 import com.idega.block.web2.business.Web2Business;
+import com.idega.block.web2.business.Web2BusinessBean;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
@@ -50,7 +51,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
      * @throws XFormsException
      * @throws URISyntaxException
      */
-    public synchronized void handleRequest() throws XFormsException {
+    @Override
+	public synchronized void handleRequest() throws XFormsException {
         boolean updating=false; //this will become true in case ServletAdapter is in use
         updateLRU();
 
@@ -111,7 +113,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         WebUtil.printSessionKeys(this.httpSession);
     }
 	
-    protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
+    @Override
+	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
     	
     	XSLTGenerator generator = (XSLTGenerator) super.createUIGenerator();
     	FacesContext context = FacesContext.getCurrentInstance();
@@ -134,6 +137,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	
 			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"));
 			generator.setParameter("loadingLayerMsg", iwrb.getLocalizedString("chiba.loading_layer_message", "Loading..."));
+			generator.setParameter("reloadPageBecauseOfErrorMsg", iwrb.getLocalizedString("chiba.reload_page_because_of_error_message",
+																"Unfortunately the page was not loaded correctly. Please click OK to reload it."));
 		
 		} catch (RuntimeException e) {
 			throw e;
@@ -148,7 +153,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
      * returns the XFormsSessionManager used
      * @return the XFormsSessionManager used
      */
-    public XFormsSessionManager getManager() {
+    @Override
+	public XFormsSessionManager getManager() {
         try {
 			return DefaultXFormsSessionManagerImpl.createXFormsSessionManager(IdegaXFormSessionManagerImpl.class.getName());
 		} catch (XFormsConfigException e) {

@@ -32,6 +32,7 @@
 	
 	<xsl:param name="standardLayerMsg" select="''"/>
 	<xsl:param name="loadingLayerMsg" select="''"/>
+	<xsl:param name="reloadPageBecauseOfErrorMsg" select="''"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -148,6 +149,7 @@
                         var Localization = {};
                         Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$standardLayerMsg" />';
                         Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
+                        Localization.RELOAD_PAGE = '<xsl:value-of select="$reloadPageBecauseOfErrorMsg" />';
                     }
                 
                     var djConfig = {

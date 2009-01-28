@@ -9,6 +9,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreConstants;
+import com.idega.util.SendMail;
+import com.idega.util.StringUtil;
+
 /**
  * 
  * 
@@ -22,6 +27,7 @@ import org.w3c.dom.Element;
 @Service("fluxexhand")
 public class IdegaFluxFacade extends FluxFacade {
 	
+	@Override
 	public Element fireAction(String id, String sessionKey) {
 		
 		try {
@@ -32,6 +38,7 @@ public class IdegaFluxFacade extends FluxFacade {
     	}
 	}
 
+	@Override
 	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
 		
 		try {
@@ -42,6 +49,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
 	}
 
+	@Override
 	public Element setRepeatIndex(String id, String position, String sessionKey) throws FluxException {
 		try {
 			return super.setRepeatIndex(id, position, sessionKey);
@@ -51,6 +59,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
 	}
 	
+	@Override
 	public Element fetchProgress(String id, String filename, String sessionKey) {
 		try {
 			return super.fetchProgress(id, filename, sessionKey);
@@ -60,6 +69,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
 	}
 	
+	@Override
 	public void keepAlive(String sessionKey) {
 		try {
 			super.keepAlive(sessionKey);
@@ -68,11 +78,32 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
 	}
 	 
-    public void close(String sessionKey){
+    @Override
+	public void close(String sessionKey){
 		try {
 			super.close(sessionKey);
 		} catch (Exception e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception at close, session key="+sessionKey, e);
 		}
+    }
+    
+    public boolean sendEmail(String to, String subject, String text) {
+    	if (StringUtil.isEmpty(to) || StringUtil.isEmpty(subject) || StringUtil.isEmpty(text)) {
+    		return false;
+    	}
+    	
+    	String host = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty(CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER);
+    	if (StringUtil.isEmpty(host)) {
+    		return false;
+    	}
+    	
+    	try {
+    		SendMail.send("idegaweb@idega.com", to, null, null, host, subject, text);
+    	} catch(Exception e) {
+			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error while sending email ("+text+") to: " + to, e);
+			return false;
+		}
+    	
+    	return true;
     }
 }

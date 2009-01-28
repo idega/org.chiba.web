@@ -19,6 +19,7 @@ if(Localization == null) {
 	var Localization = {};
 	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
 	Localization.LOADING_MSG                = 'Loading...';
+	Localization.RELOAD_PAGE				= 'Unfortunately the page was not loaded correctly. Please click OK to reload it.';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -91,23 +92,27 @@ function keepAlive() {
 
 function closeSession() {
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    DWREngine.setErrorHandler(ignoreExceptions);
+    DWREngine.setErrorHandler(function(msg, ex) {});
     DWREngine.setAsync(false);    
     Flux.close(sessionKey);
-}
-
-// this unfortunately does not prevent the 'DWREngine is not defined' messages when closing session
-function ignoreExceptions(msg){
 }
 
 /******************************************************************************
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 
-/*
-just a starter.
-*/
-function handleExceptions(msg) {
+function handleExceptions(msg, ex) {
+	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
+		Flux.sendEmail('arunas@idega.com', '[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' +
+			navigator.userAgent);
+	}, null);
+	
+	if (window.confirm(Localization.RELOAD_PAGE)) {
+		reloadPage();
+		return false;
+	}
+	
+	return false;
 }
 
 /*
@@ -145,7 +150,7 @@ function chibaActivate(target) {
 
 	    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
 	    
-	    DWREngine.setErrorHandler(handleExceptions);
+		DWREngine.setErrorHandler(handleExceptions);
 	    DWREngine.setOrdered(true);
 	    var sessionKey = document.getElementById("chibaSessionKey").value;
 	    Flux.fireAction(id, sessionKey, {
