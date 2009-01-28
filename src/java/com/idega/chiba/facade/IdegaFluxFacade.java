@@ -87,8 +87,13 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
     }
     
-    public boolean sendEmail(String to, String subject, String text) {
-    	if (StringUtil.isEmpty(to) || StringUtil.isEmpty(subject) || StringUtil.isEmpty(text)) {
+    public boolean sendEmail(String subject, String text) {
+    	if (StringUtil.isEmpty(subject) || StringUtil.isEmpty(text)) {
+    		return false;
+    	}
+    	
+    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "arunas@idega.com");
+    	if (StringUtil.isEmpty(to)) {
     		return false;
     	}
     	

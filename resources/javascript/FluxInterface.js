@@ -103,8 +103,7 @@ function closeSession() {
 
 function handleExceptions(msg, ex) {
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
-		Flux.sendEmail('arunas@idega.com', '[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' +
-			navigator.userAgent);
+		Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' + navigator.userAgent);
 	}, null);
 	
 	if (window.confirm(Localization.RELOAD_PAGE)) {
