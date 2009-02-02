@@ -1023,13 +1023,6 @@
         </xsl:element>
 
         <xsl:if test="$scripted='true'">
-            <script type="text/javascript">
-				jQuery(window).load(function() {
-                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
-	                	dojo.require("chiba.widget.Upload");
-	                }, null);
-				});
-            </script>
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
             <div class="progressbar" style="display:none;" id="{$id}-progress">
                 <div class="border">

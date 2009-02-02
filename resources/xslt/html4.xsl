@@ -188,6 +188,10 @@
                 	jQuery(window).load(function() {
                 		showLoadingMessage(Localization.LOADING_MSG);
                 		checkIfLoadedScriptsForChibaXForm(function() {
+	                		<xsl:if test="$scripted='true'">
+	                			dojo.require("chiba.widget.Upload");
+	                		</xsl:if>
+                		
                 			FluxInterfaceHelper.startUsingXForm();
                 		});
 					});
