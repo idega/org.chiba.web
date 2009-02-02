@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  *
- * Last modified: $Date: 2008/12/16 16:07:23 $ by $Author: arunas $
+ * Last modified: $Date: 2009/02/02 17:37:47 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -62,29 +62,31 @@ public class IdegaExtensionFunctions {
     private static final String exp_start = "#{";
     private static final String exp_end = "}";
     private static final String apostrophe ="'";
-
+    private static final String splitter ="_#,";
     
+
+//	TODO node list! <params>
+//    					<param name=''>
+//    							value
+//   					</param>
+//  				<params>	
     @SuppressWarnings("unchecked")
 	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
 
-    	StringBuilder parametersExp = new StringBuilder(); 
     	
-    	
-    	if (params.length == 0 || params == null)
+    	if (params.equals(CoreConstants.EMPTY) || params == null)
     		return CoreConstants.EMPTY;
     	
-    	for (String param : params) {
-    		if (CoreConstants.EMPTY.equals(param))
-    			return CoreConstants.EMPTY;
-    		
-    		parametersExp.append(apostrophe).append(param).append(apostrophe).append(CoreConstants.SPACE);
-    	}
-    		
-    	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(CoreConstants.SPACE));
+    	StringBuilder parametersExp = new StringBuilder(); 
+    	
+    	for (String param : params) 
+    		  parametersExp.append(apostrophe).append(param).append(apostrophe).append(splitter);
+    	
+    	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(splitter));
     	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
     	
     	try {
-//    	TODO empty string .....	
+	
     	Object value = ELUtil.getInstance().evaluateExpression(exp);
     	
     		if (value != null){
