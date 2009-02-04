@@ -23,6 +23,8 @@ if(Localization == null) {
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
+FluxInterfaceHelper.sendingErrorMail = false;
+FluxInterfaceHelper.userDeniedToReloadPageOnError = false;
 
 /******************************************************************************
  PAGE init
@@ -102,13 +104,28 @@ function closeSession() {
  ******************************************************************************/
 
 function handleExceptions(msg, ex) {
-	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
-		Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' + navigator.userAgent);
-	}, null);
+	closeAllLoadingMessages();
 	
-	if (window.confirm(Localization.RELOAD_PAGE)) {
-		reloadPage();
-		return false;
+	if (!FluxInterfaceHelper.sendingErrorMail) {
+		FluxInterfaceHelper.sendingErrorMail = true;
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
+			Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' +
+				navigator.userAgent, {
+				callback: function(data) {
+					FluxInterfaceHelper.sendingErrorMail = false;
+				}
+			});
+		}, null);
+	}
+	
+	if (!FluxInterfaceHelper.userDeniedToReloadPageOnError) {
+		if (window.confirm(Localization.RELOAD_PAGE)) {
+			reloadPage();
+			return false;
+		}
+		else {
+			FluxInterfaceHelper.userDeniedToReloadPageOnError = true;
+		}
 	}
 	
 	return false;
@@ -328,11 +345,17 @@ function _getEventTarget(event) {
 function updateUI(data) {
     dojo.debug("updateUI: " + data);
     
-    var eventLog = data.documentElement.childNodes;
+    var eventLog = null;
+    if (data && data.documentElement && data.documentElement.childNodes) {
+		eventLog = data.documentElement.childNodes;
+    }
     
     if (eventLog == null || eventLog.length == 0){
     	closeAllLoadingMessages();
     }
+	if (eventLog == null) {
+		return;
+	}
 
     for (var i = 0; i < eventLog.length; i++) {
         var type = eventLog[i].getAttribute("type");
