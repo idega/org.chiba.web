@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dwr PUBLIC "-//GetAhead Limited//DTD Direct Web Remoting 2.0//EN" "http://www.getahead.ltd.uk/dwr//dwr20.dtd">
 <dwr>
+    
     <allow>
         <create creator="jsf" javascript="Flux" scope="request">
         	<param name="managedBeanName" value="fluxexhand" />
             <param name="class" value="com.idega.chiba.facade.IdegaFluxFacade" />
         </create>
+        
+      <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception" />
+      <convert match="java.lang.StackTraceElement" converter="null" /> 
     </allow>
+    
 </dwr>

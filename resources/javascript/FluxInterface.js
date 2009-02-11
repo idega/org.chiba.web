@@ -20,6 +20,7 @@ if(Localization == null) {
 	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
 	Localization.LOADING_MSG                = 'Loading...';
 	Localization.RELOAD_PAGE				= 'Unfortunately the page was not loaded correctly. Please click OK to reload it.';
+	Localization.SESSION_EXPIRED 			= 'Your session has expired. Please try again.'
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -105,6 +106,20 @@ function closeSession() {
 
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
+	
+	if (msg == "Session has expired") {
+		
+		showLoadingMessage(Localization.SESSION_EXPIRED);
+		
+		setTimeout(function() { 
+			window.location.href="/pages";
+			closeAllLoadingMessages();
+				
+			}, 2000);
+		
+		return false;
+		
+	}
 	
 	if (!FluxInterfaceHelper.sendingErrorMail) {
 		FluxInterfaceHelper.sendingErrorMail = true;
@@ -352,11 +367,10 @@ function updateUI(data) {
     
     if (eventLog == null || eventLog.length == 0){
     	closeAllLoadingMessages();
+    	return;
+    	
     }
-	if (eventLog == null) {
-		return;
-	}
-
+	
     for (var i = 0; i < eventLog.length; i++) {
         var type = eventLog[i].getAttribute("type");
         var targetId = eventLog[i].getAttribute("targetId");
