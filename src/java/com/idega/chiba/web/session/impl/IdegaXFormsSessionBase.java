@@ -138,8 +138,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("loadingLayerMsg", iwrb.getLocalizedString("chiba.loading_layer_message", "Loading..."));
 			generator.setParameter("reloadPageBecauseOfErrorMsg", iwrb.getLocalizedString("chiba.reload_page_because_of_error_message",
 																"Unfortunately the page was not loaded correctly. Please click OK to reload it."));
-			
-			generator.setParameter("sessionExpiredMsg",iwrb.getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again."));
+			generator.setParameter("sessionExpiredMsg", iwrb.getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again."));
+			generator.setParameter("downloadingPDFForXFormMsg", iwrb.getLocalizedString("chiba.downloading_pdf_for_xform", "Downloading PDF"));
 		
 		} catch (RuntimeException e) {
 			throw e;

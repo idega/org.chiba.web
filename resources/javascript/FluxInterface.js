@@ -20,7 +20,8 @@ if(Localization == null) {
 	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
 	Localization.LOADING_MSG                = 'Loading...';
 	Localization.RELOAD_PAGE				= 'Unfortunately the page was not loaded correctly. Please click OK to reload it.';
-	Localization.SESSION_EXPIRED 			= 'Your session has expired. Please try again.'
+	Localization.SESSION_EXPIRED 			= 'Your session has expired. Please try again.';
+	Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = 'Downloading PDF';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -401,6 +402,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
     switch (type) {
         case "chiba-load-uri":
         	if (properties["show"] == "handlemanually") {
+        		closeAllLoadingMessages();
+        		humanMsg.displayMsg(Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE);
 				window.location.href = properties["uri"];
             } else {
 	            isDirty = false;
@@ -408,8 +411,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
 	              skipShutdown = true;
 	            }
 	            context.handleLoadURI(properties["uri"], properties["show"]);
+	            closeAllLoadingMessages();
             }
-            closeAllLoadingMessages();
             break;
         case "chiba-render-message":
             context.handleRenderMessage(properties["message"], properties["level"]);

@@ -6,3 +6,4 @@ xforms.validation.constraintBroken=The constraint was not met
 xforms.validation.customDefault=Field hasn't passed the validation
 chiba.reload_page_because_of_error_message=\u00DEv\u00ED mi\u00F0ur hl\u00F3\u00F0st s\u00ED\u00F0an ekki r\u00E9tt. Smelltu \u00E1 OK til a\u00F0 endurhla\u00F0a henni.
 chiba.session_expired_messsage=Seta \u00FE\u00EDn er \u00FAtrunnin. Vinsamlega reyndu aftur.
+chiba.downloading_pdf_for_xform=S\u00E6ki skjal
