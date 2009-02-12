@@ -400,11 +400,16 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
     dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
     switch (type) {
         case "chiba-load-uri":
-            isDirty = false;
-            if (properties["show"] == "replace") {
-              skipShutdown = true;
+        	if (properties["show"] == "handlemanually") {
+				window.location.href = properties["uri"];
+            } else {
+	            isDirty = false;
+	            if (properties["show"] == "replace") {
+	              skipShutdown = true;
+	            }
+	            context.handleLoadURI(properties["uri"], properties["show"]);
             }
-            context.handleLoadURI(properties["uri"], properties["show"]);
+            closeAllLoadingMessages();
             break;
         case "chiba-render-message":
             context.handleRenderMessage(properties["message"], properties["level"]);
