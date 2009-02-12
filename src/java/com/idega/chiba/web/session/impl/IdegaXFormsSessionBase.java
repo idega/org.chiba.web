@@ -23,7 +23,6 @@ import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xforms.exception.XFormsException;
 
 import com.idega.block.web2.business.Web2Business;
-import com.idega.block.web2.business.Web2BusinessBean;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
@@ -139,6 +138,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("loadingLayerMsg", iwrb.getLocalizedString("chiba.loading_layer_message", "Loading..."));
 			generator.setParameter("reloadPageBecauseOfErrorMsg", iwrb.getLocalizedString("chiba.reload_page_because_of_error_message",
 																"Unfortunately the page was not loaded correctly. Please click OK to reload it."));
+			
+			generator.setParameter("sessionExpiredMsg",iwrb.getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again."));
 		
 		} catch (RuntimeException e) {
 			throw e;
