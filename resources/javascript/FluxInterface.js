@@ -5,6 +5,8 @@
 var DATE_DISPLAY_FORMAT = "%d.%m.%Y";
 var DATETIME_DISPLAY_FORMAT = "%d.%m.%Y %H:%M";
 var keepAliveTimer;
+// Interval which keeps active session alive if xform is open in browser
+var sessionPollingInterval = 3600000;
 
 // global isDirty flag signals that data have changed through user input
 var isDirty = false;
@@ -90,7 +92,7 @@ function keepAlive() {
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
         }
-    }
+    }   
     return false;
 }
 
@@ -571,4 +573,18 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
 	activateChibaFileUploaders();
 	manageHelpTextIconsForForm();
+	keepActiveXfromSession();
+}
+function keepActiveXfromSession() {
+	
+		try { 
+		
+		Flux.pollXformSession(
+			{ callback: function(data) {
+					 keepAlive();	
+					 setTimeout('keepActiveXfromSession()',sessionPollingInterval);
+				  }
+			 }); 
+		} catch(e) {} 
+		
 }
