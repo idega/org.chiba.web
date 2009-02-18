@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
+import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
 import com.idega.util.SendMail;
@@ -28,14 +29,13 @@ import com.idega.util.StringUtil;
 public class IdegaFluxFacade extends FluxFacade {
 	
 	@Override
-	public Element fireAction(String id, String sessionKey) {
-		
+	public Element fireAction(String id, String sessionKey) throws FluxException {
 		try {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while firing action, session key="+sessionKey, e);
-			return null;
-    	}
+			throw new SessionExpiredException("Session has expired");
+		}
+
 	}
 
 	@Override
@@ -43,20 +43,21 @@ public class IdegaFluxFacade extends FluxFacade {
 		
 		try {
 			return super.setXFormsValue(id, value, sessionKey);
-		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while setting xforms value, session key="+sessionKey, e);
-			return null;
+		} catch (FluxException e) {
+			throw new SessionExpiredException("Session has expired");
 		}
+		
 	}
 
 	@Override
 	public Element setRepeatIndex(String id, String position, String sessionKey) throws FluxException {
-		try {
-			return super.setRepeatIndex(id, position, sessionKey);
-		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while setting repeat index, session key="+sessionKey, e);
-			return null;
-		}
+		
+			try {
+				return super.setRepeatIndex(id, position, sessionKey);
+			} catch (Exception e) {
+				throw new SessionExpiredException("Session has expired");
+			}
+			
 	}
 	
 	@Override
@@ -66,25 +67,25 @@ public class IdegaFluxFacade extends FluxFacade {
 		} catch (Exception e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while fetching progress", e);
 			return null;
-		}
+		}		
 	}
 	
 	@Override
-	public void keepAlive(String sessionKey) {
+	public void keepAlive(String sessionKey) {	
 		try {
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception at keep alive, session key="+sessionKey, e);
-		}
+		}			
 	}
 	 
     @Override
-	public void close(String sessionKey){
-		try {
+	public void close(String sessionKey){	
+    	try {
 			super.close(sessionKey);
 		} catch (Exception e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception at close, session key="+sessionKey, e);
-		}
+		}	
     }
     
     public boolean sendEmail(String subject, String text) {
@@ -111,4 +112,8 @@ public class IdegaFluxFacade extends FluxFacade {
     	
     	return true;
     }
+    
+    public boolean pollXformSession() {
+		return true;
+	}
 }
