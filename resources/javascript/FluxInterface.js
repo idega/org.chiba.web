@@ -5,9 +5,10 @@
 var DATE_DISPLAY_FORMAT = "%d.%m.%Y";
 var DATETIME_DISPLAY_FORMAT = "%d.%m.%Y %H:%M";
 var keepAliveTimer;
+
 // Interval which keeps active session alive if xform is open in browser
 var sessionPollingInterval = 3600000;
-
+var noneActivityInterval = 86400000;
 // global isDirty flag signals that data have changed through user input
 var isDirty = false;
 // skip shutdown for load and submission actions (these do it themselves)
@@ -70,7 +71,7 @@ function close(){
 }
 
 // Call this whenever we use the session, so we know not to call updateUI needlessly
-var lastUpdateTime=0;
+var lastUpdateTime=new Date().getTime();
 function localActivity() {
     lastUpdateTime=new Date().getTime();
 }
@@ -111,15 +112,10 @@ function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
 	if (msg == "Session has expired") {
-		
-		showLoadingMessage(Localization.SESSION_EXPIRED);
-		
-		setTimeout(function() { 
-			window.location.href="/pages";
-			closeAllLoadingMessages();
-				
-			}, 2000);
-		
+			redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
+									closeAllLoadingMessages();			
+					}});
+	
 		return false;
 		
 	}
@@ -578,13 +574,29 @@ FluxInterfaceHelper.startUsingXForm = function() {
 function keepActiveXfromSession() {
 	
 		try { 
+		var sessionKey = document.getElementById("chibaSessionKey").value;
 		
-		Flux.pollXformSession(
+		Flux.keepAlive(sessionKey,
 			{ callback: function(data) {
-					 keepAlive();	
 					 setTimeout('keepActiveXfromSession()',sessionPollingInterval);
 				  }
 			 }); 
 		} catch(e) {} 
 		
+		var  currentTime = new Date().getTime();
+		console.log(lastUpdateTime);
+		if ((currentTime - lastUpdateTime) > noneActivityInterval) {
+					redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
+									closeAllLoadingMessages();			
+					}});
+		}
 }
+	
+function redirectForm(msg) {
+	
+		showLoadingMessage(msg);
+		window.location.href="/pages";
+		
+}
+
+
