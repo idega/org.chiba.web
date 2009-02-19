@@ -2,6 +2,7 @@ package com.idega.chiba.web.session.impl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -37,11 +38,15 @@ import com.idega.presentation.IWContext;
 
 public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
+	private static final AtomicLong sessionId = new AtomicLong();
+	
 	public IdegaXFormsSessionBase(HttpServletRequest request,
 								  HttpServletResponse response, 
 								  HttpSession session)
 			throws XFormsException {		
 		super(request, response, session);
+		//ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
+		this.key = (this.getKey() + sessionId.incrementAndGet());
 	}
 	
 	/**
@@ -150,7 +155,13 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		return generator;
     }
     
-    /**
+    @Override
+	protected void initChibaConfig() throws XFormsException {
+		//Configuration is done once on application startup. 
+    	//No need to do it for each session.
+	}
+
+	/**
      * returns the XFormsSessionManager used
      * @return the XFormsSessionManager used
      */
