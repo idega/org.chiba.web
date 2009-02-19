@@ -113,7 +113,4 @@ public class IdegaFluxFacade extends FluxFacade {
     	return true;
     }
     
-    public boolean pollXformSession() {
-		return true;
-	}
 }
