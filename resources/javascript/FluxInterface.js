@@ -569,9 +569,9 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
 	activateChibaFileUploaders();
 	manageHelpTextIconsForForm();
-	keepActiveXfromSession();
+	keepActiveXformSession();
 }
-function keepActiveXfromSession() {
+function keepActiveXformSession() {
 	
 		try { 
 		var sessionKey = document.getElementById("chibaSessionKey").value;
@@ -583,12 +583,11 @@ function keepActiveXfromSession() {
 			 }); 
 		} catch(e) {} 
 		
-		var  currentTime = new Date().getTime();
-		console.log(lastUpdateTime);
+		var currentTime = new Date().getTime();
 		if ((currentTime - lastUpdateTime) > noneActivityInterval) {
-					redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
+					setTimeout(redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
 									closeAllLoadingMessages();			
-					}});
+					}}), 60000);
 		}
 }
 	
