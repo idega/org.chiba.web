@@ -24,9 +24,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  *
- * Last modified: $Date: 2009/02/25 10:02:19 $ by $Author: arunas $
+ * Last modified: $Date: 2009/02/27 15:28:36 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -57,8 +57,7 @@ public class IdegaExtensionFunctions {
     private static final String item_node = "item";
     private static final String item_node_label = "itemLabel";
     private static final String item_value_label = "itemValue";
-    private static final String item_attribute_label = "lang";    
-    private static final String item_localizeEntries = "localizedEntries"; 
+    private static final String items = "items"; 
     private static final String exp_start = "#{";
     private static final String exp_end = "}";
     private static final String apostrophe ="'";
@@ -97,10 +96,8 @@ public class IdegaExtensionFunctions {
 					DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
 		    		Document document = documentBuilder.newDocument();
 		    		
-					Element localeElement = document.createElement(item_localizeEntries);
-					
-					localeElement.setAttribute(item_attribute_label, currentLocale());
-					
+					Element localeElement = document.createElement(items);
+								
 					Element itemElem = document.createElement(item_node);
 					Element itemLabelElem = document.createElement(item_node_label);
 					Element	itemValueElem = document.createElement(item_value_label);
@@ -126,7 +123,6 @@ public class IdegaExtensionFunctions {
 					
 				}
     		}
-    		
     		
     		return value;
 			

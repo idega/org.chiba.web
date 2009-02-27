@@ -9,13 +9,16 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.idega.util.CoreConstants;
 
 public class IdegaSetValueAction extends SetValueAction{
 	
 	    private String nodeValue;
 	    private String valueAttribute;
-
-	  
+	    private String insertAttribute;	
+	    private static String INSERT_ATTRIBUTE = "insert";
 
 	public IdegaSetValueAction(Element element, Model model) {
 		super(element, model);
@@ -27,11 +30,17 @@ public class IdegaSetValueAction extends SetValueAction{
      * @throws XFormsException if an error occurred during <code>setvalue</code>
      * processing.
      */
-	
+	   @Override
 	   public void init() throws XFormsException {
 	        super.init();
 	        
-	        this.valueAttribute = getXFormsAttribute(VALUE_ATTRIBUTE);
+	       this.valueAttribute = getXFormsAttribute(VALUE_ATTRIBUTE);
+	        
+	       String insertAttribute = getXFormsAttribute(INSERT_ATTRIBUTE);
+	       if (insertAttribute == null) 
+	    	   insertAttribute = "false()";
+	       setInsertAttribute(insertAttribute);
+	        
 	        if (this.valueAttribute == null) {
 	            org.w3c.dom.Node child = this.element.getFirstChild();
 
@@ -89,8 +98,15 @@ public class IdegaSetValueAction extends SetValueAction{
 
             // set node value
             if (value instanceof Document) {
-				Document xml_doc = (Document) value;
-				instance.setNode(pathExpression, xml_doc.getDocumentElement());
+
+            	Document itemListDoc = (Document) value;
+            	Element itemsElem = itemListDoc.getDocumentElement(); 
+            	
+            	if (isInserting())
+            		insertItems(itemsElem.getChildNodes(), instance);
+            	else
+            		overrideExistingItems(itemsElem.getChildNodes(), instance);
+				
 			} else {
 				instance.setNodeValue(pathExpression, value != null ? value.toString() : "");
 			}
@@ -110,5 +126,84 @@ public class IdegaSetValueAction extends SetValueAction{
         doRevalidate(true);
         doRefresh(true);
     }
+	
+	private void insertItems(NodeList items, Instance instance) throws XFormsException {
+		
+      String pathExpression = getLocationPath();
+	  int contextSize = instance.countNodeset(pathExpression);
+      String origin;
+      String after;
+      Element label;
+      Element value;
+      
+      Node item;
+      
+      for (int i = 0; i < items.getLength(); i++) {
+    	  
+    	 origin = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
+    	  
+         after = new StringBuffer(pathExpression).append('[').append(contextSize + 1).append(']').toString();
+
+         instance.insertNode(origin, after);
+          
+         item = items.item(i);
+          
+         label =  (Element)item.getFirstChild();
+         value =  (Element)item.getLastChild();
+    
+         instance.setNodeValue(new StringBuilder().append(origin).append(CoreConstants.SLASH).append(value.getNodeName()).toString() , value.getTextContent());
+         instance.setNodeValue(new StringBuilder().append(origin).append(CoreConstants.SLASH).append(label.getNodeName()).toString() , label.getTextContent());
+
+         contextSize++;
+
+      }
+
+	}
+	
+	private void overrideExistingItems(NodeList items, Instance instance) throws XFormsException {
+		
+	      String pathExpression = getLocationPath();
+		  int contextSize = instance.countNodeset(pathExpression);
+	      String path;
+	      Element label;
+	      Element value;
+	     	     
+	      Node item;
+	      
+	      for (int i = 0; i < items.getLength(); i++) {
+	    	  
+	    	 path = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
+	    	  
+	         instance.createNode(path);
+	          
+	         item = items.item(i);
+	          
+	         label = (Element)item.getFirstChild();
+	         value = (Element)item.getLastChild();
+
+	         instance.setNode(path, label);
+	         instance.setNode(path, value);
+	          
+	         instance.setNodeValue(new StringBuilder().append(path).append(CoreConstants.SLASH).append(value.getNodeName()).toString() , value.getTextContent());
+	         instance.setNodeValue(new StringBuilder().append(path).append(CoreConstants.SLASH).append(label.getNodeName()).toString() , label.getTextContent());
+
+	         contextSize++;
+
+	      }
+
+	}
+	
+	protected String getInsertAttribute() {
+		return insertAttribute;
+	}
+
+	protected void setInsertAttribute(String insertAttribute) {
+		this.insertAttribute = insertAttribute;
+	}
+	
+	protected boolean isInserting() {
+		return  evalCondition(getElement(), getInsertAttribute());
+
+	}
 
 }
