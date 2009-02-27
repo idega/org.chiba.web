@@ -209,7 +209,6 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
 
             if (isExpired(session)) {
                 allSessions.remove();
-                System.gc();
             }
         }
         if (LOGGER.isDebugEnabled()) {
