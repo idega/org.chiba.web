@@ -7,8 +7,8 @@ var DATETIME_DISPLAY_FORMAT = "%d.%m.%Y %H:%M";
 var keepAliveTimer;
 
 // Interval which keeps active session alive if xform is open in browser
-var sessionPollingInterval = 3600000;
-var noneActivityInterval = 86400000;
+//var sessionPollingInterval = 3600000;
+//var noneActivityInterval = 86400000;
 // global isDirty flag signals that data have changed through user input
 var isDirty = false;
 // skip shutdown for load and submission actions (these do it themselves)
@@ -71,7 +71,7 @@ function close(){
 }
 
 // Call this whenever we use the session, so we know not to call updateUI needlessly
-var lastUpdateTime=new Date().getTime();
+var lastUpdateTime=0; //new Date().getTime();
 function localActivity() {
     lastUpdateTime=new Date().getTime();
 }
@@ -569,8 +569,9 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
 	activateChibaFileUploaders();
 	manageHelpTextIconsForForm();
-	keepActiveXformSession();
+//	keepActiveXformSession();
 }
+/*
 function keepActiveXformSession() {
 	
 		try { 
@@ -590,7 +591,7 @@ function keepActiveXformSession() {
 					}}), 60000);
 		}
 }
-	
+	*/
 function redirectForm(msg) {
 	
 		showLoadingMessage(msg);
