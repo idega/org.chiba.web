@@ -1,9 +1,6 @@
 package com.idega.chiba.web.xml.xforms.functions;
 
-import java.text.MessageFormat;
 import java.util.Collection;
-
-import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jxpath.ExpressionContext;
@@ -12,21 +9,17 @@ import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.jxpath.Variables;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
-import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  *
- * Last modified: $Date: 2009/02/27 15:28:36 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/05 16:19:46 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -54,21 +47,7 @@ public class IdegaExtensionFunctions {
     	return null;
     }
     
-    private static final String item_node = "item";
-    private static final String item_node_label = "itemLabel";
-    private static final String item_value_label = "itemValue";
-    private static final String items = "items"; 
-    private static final String exp_start = "#{";
-    private static final String exp_end = "}";
-    private static final String apostrophe ="'";
-    private static final String splitter ="_#,";
-    
-
-//	TODO node list! <params>
-//    					<param name=''>
-//    							value
-//   					</param>
-//  				<params>	
+   
     @SuppressWarnings("unchecked")
 	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
 
@@ -78,10 +57,9 @@ public class IdegaExtensionFunctions {
     	StringBuilder parametersExp = new StringBuilder(); 
     	
     	for (String param : params) 
-    		  parametersExp.append(apostrophe).append(param).append(apostrophe).append(splitter);
+    		  parametersExp.append(ExtensionFunctionUtil.apostrophe).append(param).append(ExtensionFunctionUtil.apostrophe).append(ExtensionFunctionUtil.splitter);
     	
-    	exp = MessageFormat.format(exp, (Object[])parametersExp.toString().split(splitter));
-    	exp = new StringBuilder().append(exp_start).append(exp).append(exp_end).toString();
+    	ExtensionFunctionUtil.formatExpression(exp, parametersExp.toString());
     	
     	try {
 	
@@ -93,33 +71,7 @@ public class IdegaExtensionFunctions {
     				
 					Collection<Item> list = (Collection<Item>) value;
 					
-					DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
-		    		Document document = documentBuilder.newDocument();
-		    		
-					Element localeElement = document.createElement(items);
-								
-					Element itemElem = document.createElement(item_node);
-					Element itemLabelElem = document.createElement(item_node_label);
-					Element	itemValueElem = document.createElement(item_value_label);
-					
-					Node itemNode;
-				
-					for (Item item : list) {
-						
-						itemLabelElem.setTextContent(item.getItemLabel());
-		    			itemValueElem.setTextContent(item.getItemValue());
-						
-		    			itemElem.appendChild(itemLabelElem);
-		    			itemElem.appendChild(itemValueElem);
-		    			
-		    			itemNode = localeElement.getOwnerDocument().importNode(itemElem, true);
-		        		
-		    			localeElement.appendChild(itemNode);
-		    			 
-					}
-					document.appendChild(localeElement);
-					
-					return document;
+					return ExtensionFunctionUtil.createItemListDocument(list);
 					
 				}
     		}
@@ -129,6 +81,35 @@ public class IdegaExtensionFunctions {
 		} catch (Exception e) {
 			throw new XFormsException(e);
 		}
+    	
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Object resolveExpression(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
+    	
+    	String resolvedParams = ExtensionFunctionUtil.resolveParams(expressionContext, params);
+    	String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
+    	
+    	try {
+    		
+        	Object value = ELUtil.getInstance().evaluateExpression(resolveBeanExp);
+        	
+        		if (value != null){
+        			
+        			if (value instanceof Collection<?>) {
+        				
+    					Collection<Item> list = (Collection<Item>) value;
+    					
+    					return ExtensionFunctionUtil.createItemListDocument(list);
+    					
+    				}
+        		}
+        		
+        		return value;
+    			
+    		} catch (Exception e) {
+    			throw new XFormsException(e);
+    		}
     	
     }
     
