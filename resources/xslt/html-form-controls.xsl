@@ -184,7 +184,7 @@
                                  <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
                             </xsl:otherwise>
                         </xsl:choose>
-                        <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                        <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
                     </xsl:if>
                     <xsl:apply-templates select="xforms:hint"/>
                 </xsl:element>
@@ -442,7 +442,7 @@
                         <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
-                <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
             </xsl:if>
             <xsl:apply-templates select="xforms:hint"/>
         </xsl:element>
@@ -1230,7 +1230,7 @@
                 </xsl:if>
                 <xsl:if test="$scripted='true'">
                     <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>
-                    <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                    <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
                 </xsl:if>
             </input>
             <span id="{@id}-label" class="label">
@@ -1276,7 +1276,7 @@
                 </xsl:if>
                 <xsl:if test="$scripted='true'">
                     <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>
-                    <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                    <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
                 </xsl:if>
             </input>
             <span id="{@item-id}-label" class="label">
@@ -1393,7 +1393,7 @@
                 </xsl:if>
                 <xsl:if test="$scripted='true'">
                     <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>
-                    <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                    <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
                 </xsl:if>
             </input>
             <span id="{@id}-label" class="label">
@@ -1448,7 +1448,7 @@
                 </xsl:if>
                 <xsl:if test="$scripted='true'">
                     <xsl:attribute name="onclick">setXFormsValue(this);</xsl:attribute>
-                    <xsl:attribute name="onkeydown">DWRUtil.onReturn(event, submitFunction);</xsl:attribute>
+                    <xsl:attribute name="onkeydown">dwr.util.onReturn(event, submitFunction);</xsl:attribute>
                 </xsl:if>
             </input>
             <span id="{$item-id}-label" class="label">

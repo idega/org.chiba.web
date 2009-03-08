@@ -156,7 +156,7 @@ function _styledTextareaSetInnerHTML (textarea, value) {
  */
 function _styledTextareaSetXFormsValue(textareaID) {
     _styledTextareaLastTimeoutIDs[textareaID] = null;
-    DWREngine.setErrorHandler(handleExceptions);
+    dwr.engine.setErrorHandler(handleExceptions);
 
     var editorInstance = FCKeditorAPI.GetInstance(textareaID);
     // Get XForms control ID form textarea element
@@ -166,9 +166,8 @@ function _styledTextareaSetXFormsValue(textareaID) {
     // Is the setXFormsValue really needed ?
     if(_styledTextareaLastKnownValue[textareaID] != value) {
         dojo.debug("Flux.setXFormsValue: " + controlID + "='" + value + "'");
-        DWREngine.setOrdered(true);
-      //  DWREngine.setOrdered(false);
-        DWREngine.setErrorHandler(handleExceptions);
+        dwr.engine.setOrdered(true);
+        dwr.engine.setErrorHandler(handleExceptions);
 
         var sessionKey = document.getElementById("chibaSessionKey").value;
         Flux.setXFormsValue(controlID, value, sessionKey, updateUI);

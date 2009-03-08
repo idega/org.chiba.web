@@ -71,7 +71,7 @@ function close(){
 }
 
 // Call this whenever we use the session, so we know not to call updateUI needlessly
-var lastUpdateTime=0; //new Date().getTime();
+var lastUpdateTime=0;
 function localActivity() {
     lastUpdateTime=new Date().getTime();
 }
@@ -87,20 +87,20 @@ function keepAlive() {
     var x = (new Date().getTime());
     if ((x - lastUpdateTime) > (60000)) {
         localActivity();
-        if(DWREngine){
-            DWREngine.setErrorHandler(handleExceptions);
-            DWREngine.setOrdered(false);
+        if(dwr && dwr.engine){
+            dwr.engine.setErrorHandler(handleExceptions);
+            dwr.engine.setOrdered(false);
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
         }
-    }   
+    }
     return false;
 }
 
 function closeSession() {
     var sessionKey = document.getElementById("chibaSessionKey").value;
-    DWREngine.setErrorHandler(function(msg, ex) {});
-    DWREngine.setAsync(false);    
+    dwr.engine.setErrorHandler(function(msg, ex) {});
+    dwr.engine.setAsync(false);    
     Flux.close(sessionKey);
 }
 
@@ -180,8 +180,8 @@ function chibaActivate(target) {
 
 	    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
 	    
-		DWREngine.setErrorHandler(handleExceptions);
-	    DWREngine.setOrdered(true);
+		dwr.engine.setErrorHandler(handleExceptions);
+	    dwr.engine.setOrdered(true);
 	    var sessionKey = document.getElementById("chibaSessionKey").value;
 	    Flux.fireAction(id, sessionKey, {
 	    	callback: function(data) {
@@ -195,7 +195,7 @@ function chibaActivate(target) {
 
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
-    DWREngine.setErrorHandler(handleExceptions);
+    dwr.engine.setErrorHandler(handleExceptions);
     var target;
     //forceControll is used to ignore the window.event
     // => set to true if you want to call this function on a control, other than the source of the event
@@ -262,8 +262,8 @@ function setXFormsValue(control, forceControl) {
     
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
 
-    DWREngine.setOrdered(false);
-	DWREngine.setErrorHandler(handleExceptions);
+    dwr.engine.setOrdered(false);
+	dwr.engine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
     isDirty = true;             
@@ -285,7 +285,7 @@ function setRange(id, value) {
     var newValue = document.getElementById(id + value);
     newValue.className = newValue.className + " rangevalue";
 
-    DWREngine.setErrorHandler(handleExceptions);
+    dwr.engine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
 }
@@ -360,14 +360,13 @@ function updateUI(data) {
     dojo.debug("updateUI: " + data);
     
     var eventLog = null;
-    if (data && data.documentElement && data.documentElement.childNodes) {
-		eventLog = data.documentElement.childNodes;
+    if (data && data.childNodes) {
+		eventLog = data.childNodes;
     }
     
     if (eventLog == null || eventLog.length == 0){
     	closeAllLoadingMessages();
     	return;
-    	
     }
 	
     for (var i = 0; i < eventLog.length; i++) {
@@ -548,8 +547,8 @@ chiba.setRepeatIndex = function(targetRepeatElement){
 
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
 
-    DWREngine.setErrorHandler(handleExceptions);
-    DWREngine.setOrdered(false);
+    dwr.engine.setErrorHandler(handleExceptions);
+    dwr.engine.setOrdered(false);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, {
     	callback: function(result) {
