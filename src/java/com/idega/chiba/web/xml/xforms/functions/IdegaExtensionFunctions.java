@@ -17,9 +17,9 @@ import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.19 $
+ * @version $Revision: 1.20 $
  *
- * Last modified: $Date: 2009/03/05 16:19:46 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/12 08:09:23 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -57,9 +57,9 @@ public class IdegaExtensionFunctions {
     	StringBuilder parametersExp = new StringBuilder(); 
     	
     	for (String param : params) 
-    		  parametersExp.append(ExtensionFunctionUtil.apostrophe).append(param).append(ExtensionFunctionUtil.apostrophe).append(ExtensionFunctionUtil.splitter);
+    		  parametersExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
     	
-    	ExtensionFunctionUtil.formatExpression(exp, parametersExp.toString());
+    	exp = ExtensionFunctionUtil.formatExpression(exp, parametersExp.toString());
     	
     	try {
 	

@@ -20,9 +20,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2009/03/05 16:19:46 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/12 08:09:23 $ by $Author: arunas $
  */
 public class ExtensionFunctionUtil {
 	
@@ -68,14 +68,9 @@ public class ExtensionFunctionUtil {
 		}
 		return null;
 	}
-	
-	public static final String apostrophe ="'";
-	public static final String splitter ="_#,";
-	
+		
 	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException{
 		
-		Instance instance;
-    	String instanceID = CoreConstants.EMPTY;
     	String [] params = paramsExp.split(CoreConstants.COMMA);
     	StringBuilder resolvedParamsExp = new StringBuilder(); 
 
@@ -84,18 +79,14 @@ public class ExtensionFunctionUtil {
     	for (String param : params) {
     		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
         		
-        		param = ELUtil.cleanupExp(param);
-
-        		instanceID = param.split("`")[1];
-        	 	param = param.replaceAll("`", apostrophe);
-        	 	instance = XFormsUtil.getInstance(expressionContext, instanceID);
+        		param = ELUtil.cleanupExp(param.trim());
+      
+        		value = getInstanceValueFromExpression(expressionContext, param);	
         	 	
-        	 	value = XFormsUtil.getValueFromExpression(param, instance);
-        	 	
-        	 	resolvedParamsExp.append(apostrophe).append(value).append(apostrophe).append(splitter);
+        	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
 
         	} else {
-        		resolvedParamsExp.append(apostrophe).append(param).append(apostrophe).append(splitter);
+        		resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
         	}
         	
 		}
@@ -105,9 +96,21 @@ public class ExtensionFunctionUtil {
 	
 	public static String formatExpression(String elExpression, String paramsExpression){
 		
-    	String exp = MessageFormat.format(elExpression, (Object[])paramsExpression.split(splitter));
+    	String exp = MessageFormat.format(elExpression, (Object[])paramsExpression.split(CoreConstants.JS_STR_PARAM_SEPARATOR));
     	exp = new StringBuilder().append(ELUtil.EXPRESSION_BEGIN).append(exp).append(ELUtil.EXPRESSION_END).toString();
 		return exp;
 	}
+	
+	private static Object getInstanceValueFromExpression (ExpressionContext expressionContext,String exp)  throws XFormsException{
+		
+		String instanceID = exp.split("`")[1];
+	 	exp = exp.replaceAll("`", CoreConstants.QOUTE_SINGLE_MARK);
+	 	
+	 	Instance instance = XFormsUtil.getInstance(expressionContext, instanceID);
+	 	Object value = XFormsUtil.getValueFromExpression(exp, instance);
+		
+		return value;
+	}
+	
 
 }
