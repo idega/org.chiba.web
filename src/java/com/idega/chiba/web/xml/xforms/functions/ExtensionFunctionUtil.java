@@ -20,9 +20,9 @@ import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  *
- * Last modified: $Date: 2009/03/12 08:09:23 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/17 09:02:04 $ by $Author: arunas $
  */
 public class ExtensionFunctionUtil {
 	
@@ -82,7 +82,10 @@ public class ExtensionFunctionUtil {
         		param = ELUtil.cleanupExp(param.trim());
       
         		value = getInstanceValueFromExpression(expressionContext, param);	
-        	 	
+        		
+        	 	if (value.toString().equals(CoreConstants.EMPTY)){
+        	 		return CoreConstants.SPACE;
+        	 	}
         	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
 
         	} else {
@@ -101,7 +104,7 @@ public class ExtensionFunctionUtil {
 		return exp;
 	}
 	
-	private static Object getInstanceValueFromExpression (ExpressionContext expressionContext,String exp)  throws XFormsException{
+	private static Object getInstanceValueFromExpression(ExpressionContext expressionContext,String exp)  throws XFormsException{
 		
 		String instanceID = exp.split("`")[1];
 	 	exp = exp.replaceAll("`", CoreConstants.QOUTE_SINGLE_MARK);
@@ -112,5 +115,4 @@ public class ExtensionFunctionUtil {
 		return value;
 	}
 	
-
 }
