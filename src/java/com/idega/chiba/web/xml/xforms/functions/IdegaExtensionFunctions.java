@@ -17,9 +17,9 @@ import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
- * @version $Revision: 1.20 $
+ * @version $Revision: 1.21 $
  *
- * Last modified: $Date: 2009/03/12 08:09:23 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/18 08:31:44 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
 
@@ -45,43 +45,6 @@ public class IdegaExtensionFunctions {
     	}
     	
     	return null;
-    }
-    
-   
-    @SuppressWarnings("unchecked")
-	public static Object resolveBean(String exp, String[] params)  throws XFormsException {
-
-    	if (params.length == 0 || params == null)
-    		return CoreConstants.EMPTY;
-    	
-    	StringBuilder parametersExp = new StringBuilder(); 
-    	
-    	for (String param : params) 
-    		  parametersExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-    	
-    	exp = ExtensionFunctionUtil.formatExpression(exp, parametersExp.toString());
-    	
-    	try {
-	
-    	Object value = ELUtil.getInstance().evaluateExpression(exp);
-    	
-    		if (value != null){
-    			
-    			if (value instanceof Collection<?>) {
-    				
-					Collection<Item> list = (Collection<Item>) value;
-					
-					return ExtensionFunctionUtil.createItemListDocument(list);
-					
-				}
-    		}
-    		
-    		return value;
-			
-		} catch (Exception e) {
-			throw new XFormsException(e);
-		}
-    	
     }
     
     @SuppressWarnings("unchecked")
