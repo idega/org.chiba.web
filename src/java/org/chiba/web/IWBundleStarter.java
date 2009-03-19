@@ -1,5 +1,5 @@
 /**
- * $Id: IWBundleStarter.java,v 1.16 2008/08/26 08:59:01 arunas Exp $
+ * $Id: IWBundleStarter.java,v 1.17 2009/03/19 10:29:14 arunas Exp $
  * Created in 2006 by gediminas
  * 
  * Copyright (C) 2000-2006 Idega Software hf. All Rights Reserved.
@@ -23,10 +23,10 @@ import com.idega.servlet.filter.IWBundleResourceFilter;
  * <p>
  * TODO gediminas Describe Type IWBundleStarter
  * </p>
- * Last modified: $Date: 2008/08/26 08:59:01 $ by $Author: arunas $
+ * Last modified: $Date: 2009/03/19 10:29:14 $ by $Author: arunas $
  * 
  * @author <a href="mailto:gediminas@idega.com">Gediminas Paulauskas</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public class IWBundleStarter implements IWBundleStartable {
 	
@@ -59,7 +59,6 @@ public class IWBundleStarter implements IWBundleStartable {
 		IWMainApplication application = starterBundle.getApplication();
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, chibaConfigURI);
     	
-    	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"components.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html4.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"ui.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html-form-controls.xsl");
