@@ -577,12 +577,22 @@ div.group table {
 	margin-top: 5px;
 }
 
-div.group table .input {
+div.group table div.input {
 	margin-bottom: 0 !important;
 }
 
+div.group table tr.repeat-header td {
+	vertical-align: bottom;
+	width: auto !important;
+}
+
+div.group table tr.repeat-header label {
+	width: 100px !important;
+}
+
 div.group table input {
-	width: 150px !important;
+	width: 120px !important;
+	margin-right: 10px !important;
 }
 
 div.fbc_button_area {
@@ -962,4 +972,29 @@ span.trigger.link {
 
 td div.required input.value {
 	background-color: #fee !important;
+}
+
+div.readonly span.help-text {
+	display: none !important;	
+}
+
+span.total label.label {
+	width: 125px !important;
+	margin-right: 12px;
+}
+
+span.total span {
+	width: 120px !important;
+}
+
+label.label {
+	padding: 0 !important;
+}
+
+span.output {
+	margin-bottom: 12px;
+}
+
+span.output span {
+	padding: 0 !important;
 }
