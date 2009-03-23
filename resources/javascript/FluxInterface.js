@@ -568,29 +568,9 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
 	activateChibaFileUploaders();
 	manageHelpTextIconsForForm();
-//	keepActiveXformSession();
+	FluxInterfaceHelper.initializeTextAreasAutoResize();
 }
-/*
-function keepActiveXformSession() {
-	
-		try { 
-		var sessionKey = document.getElementById("chibaSessionKey").value;
-		
-		Flux.keepAlive(sessionKey,
-			{ callback: function(data) {
-					 setTimeout('keepActiveXfromSession()',sessionPollingInterval);
-				  }
-			 }); 
-		} catch(e) {} 
-		
-		var currentTime = new Date().getTime();
-		if ((currentTime - lastUpdateTime) > noneActivityInterval) {
-					setTimeout(redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
-									closeAllLoadingMessages();			
-					}}), 60000);
-		}
-}
-	*/
+
 function redirectForm(msg) {
 	
 		showLoadingMessage(msg);
@@ -598,4 +578,20 @@ function redirectForm(msg) {
 		
 }
 
+FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
+	jQuery.each(jQuery('textarea'), function() {
+		var textarea = jQuery(this);
+		var disabled = textarea.attr('disabled');
+		
+		var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
+		if (!textarea.hasClass(autoResizerInitializedStyleClass) && (disabled == null || !disabled)) {
+			textarea.autoResize({
+				animateDuration: 250,
+				extraSpace: 20
+			});
+			
+			textarea.addClass(autoResizerInitializedStyleClass);
+		}
+	});
 
+}

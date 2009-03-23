@@ -548,7 +548,7 @@ div.select1 > span.selector-prototype {
 
 fieldset.group textarea {
 	width: 352px 			!important;
-	height: 80px			!important;
+	height: auto;
 }
 
 .fbc_simple_text {
@@ -692,7 +692,7 @@ div.textarea label {
 
 div.textarea textarea {
 	float: left;
-	height: 100px !important;
+	height: auto;
 	width: 350px !important;
 }
 
