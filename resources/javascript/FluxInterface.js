@@ -581,14 +581,10 @@ function redirectForm(msg) {
 FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 	jQuery.each(jQuery('textarea'), function() {
 		var textarea = jQuery(this);
-		var disabled = textarea.attr('disabled');
 		
 		var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
-		if (!textarea.hasClass(autoResizerInitializedStyleClass) && (disabled == null || !disabled)) {
-			textarea.autoResize({
-				animateDuration: 250,
-				extraSpace: 20
-			});
+		if (!textarea.hasClass(autoResizerInitializedStyleClass)) {
+			textarea.autogrow();
 			
 			textarea.addClass(autoResizerInitializedStyleClass);
 		}
