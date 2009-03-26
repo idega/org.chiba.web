@@ -584,7 +584,14 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 		
 		var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
 		if (!textarea.hasClass(autoResizerInitializedStyleClass)) {
-			textarea.autogrow();
+			textarea.autoResize({
+				animateDuration: 250,
+				extraSpace: 20
+			});
+			
+			if (textarea.attr('value') != '') {
+				textarea.triggerHandler('keydown');
+			}
 			
 			textarea.addClass(autoResizerInitializedStyleClass);
 		}
