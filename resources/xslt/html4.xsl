@@ -170,13 +170,13 @@
                     						'<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />',
                     						'<xsl:value-of select="$uriToMootoolsLib" />',
                     						'<xsl:value-of select="$uriTojQueryLib" />',
-                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />',
                     						'<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />',
                     						'<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />',
                     						'<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />',
                     						'<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />',
                     						'<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />',
-                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojoSetup.js')" />'
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojoSetup.js')" />'
                     						];
 												
 					function checkIfLoadedScriptsForChibaXForm(callback) {
@@ -334,7 +334,7 @@
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
                     jQuery(window).load(function() {
-                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
                             dojo.require("dojo.debug.console");
                         }, null);
                     });

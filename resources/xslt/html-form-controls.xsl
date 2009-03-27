@@ -41,7 +41,7 @@
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
 				jQuery(window).load(function() {
-					LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+					LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
                     	dojo.require("chiba.widget.DropdownDatePicker");
                     }, null);
 				});
@@ -90,7 +90,7 @@
                     <xsl:when test="$scripted='true'">
                         <script type="text/javascript">
                             jQuery(window).load(function() {
-                                LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                                LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
                                     dojo.require("chiba.widget.Boolean");
                                 }, null);
                             });
@@ -234,7 +234,7 @@
                 <xsl:if test="$scripted='true'">
                     <script type="text/javascript">
                         jQuery(window).load(function() {
-                            LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4/dojo.js')" />", function() {
+                            LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
                                 dojo.require("chiba.widget.Link");
                             }, null);
                         });
