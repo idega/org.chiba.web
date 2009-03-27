@@ -40,11 +40,11 @@
             <!--<xsl:when test="chiba:data[@chiba:type='date' or @chiba:type='dateTime']">-->
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
-				jQuery(window).load(function() {
-					LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
+					
+				   LazyLoader.loadMultiple(chibaXformScripts, function() {
                     	dojo.require("chiba.widget.DropdownDatePicker");
                     }, null);
-				});
+
                 </script>
 				<xsl:variable name="controlType">
 
@@ -179,7 +179,6 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-								<!-- @Author=Arunas onblur action for autofill (removed onchange action)-->                                
                                <!--   <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>--> 
                                  <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
                             </xsl:otherwise>
@@ -1014,6 +1013,7 @@
             -->
             <xsl:if test="$scripted='true'">
                 <!-- <xsl:attribute name="onchange">submitFile(this);</xsl:attribute> -->
+                
                 <xsl:attribute name="dojoType">chiba:Upload</xsl:attribute>
                 <xsl:attribute name="xfreadonly">
                     <xsl:value-of select="chiba:data/@chiba:readonly"/>
@@ -1023,6 +1023,14 @@
         </xsl:element>
 
         <xsl:if test="$scripted='true'">
+        	           <script type="text/javascript">
+            jQuery(window).load(function() {
+                                LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
+                					dojo.require("chiba.widget.Upload");
+                                }, null);
+                            });
+            </script>
+        	
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
             <div class="progressbar" style="display:none;" id="{$id}-progress">
                 <div class="border">

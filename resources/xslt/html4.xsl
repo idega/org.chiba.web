@@ -45,7 +45,8 @@
 
     <xsl:param name="form-id" select="'chibaform'"/>
     <xsl:param name="form-name" select="//xhtml:title"/>
-    <xsl:param name="debug-enabled" select="'false'"/>
+    <xsl:param name="debug-enabled" select="'true'"/>
+    
 
     <!-- ### specifies the parameter prefix for repeat selectors ### -->
     <xsl:param name="selector-prefix" select="'s_'"/>
@@ -159,7 +160,8 @@
                 
                     var djConfig = {
                     	debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
-                    	isDebug: <xsl:value-of select="$debug-enabled"/>
+                    	isDebug: <xsl:value-of select="$debug-enabled"/>,
+                    	afterOnLoad: <xsl:value-of select="$debug-enabled"/>
                     };
                     
                     <!-- DO NOT change order of scripts! IE is very "fragile" on this -->
@@ -193,10 +195,7 @@
                 	jQuery(window).load(function() {
                 		showLoadingMessage(Localization.LOADING_MSG);
                 		checkIfLoadedScriptsForChibaXForm(function() {
-	                		<xsl:if test="$scripted='true'">
-	                			dojo.require("chiba.widget.Upload");
-	                		</xsl:if>
-                		
+	                	
                 			FluxInterfaceHelper.startUsingXForm();
                 		});
 					});

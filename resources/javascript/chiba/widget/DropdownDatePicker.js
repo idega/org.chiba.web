@@ -7,7 +7,7 @@
 dojo.provide("chiba.widget.DropdownDatePicker");
 
 dojo.require("dojo.widget.DropdownDatePicker");
-
+console.log("dropdownPicker date");
 dojo.widget.defineWidget(
         "chiba.widget.DropdownDatePicker",
         dojo.widget.DropdownDatePicker,
@@ -17,8 +17,9 @@ dojo.widget.defineWidget(
     datatype:"date",
     xfreadonly:false,
     id:"",
-
+	
     postMixInProperties: function(localProperties, frag) {
+    	console.log("enables poxtMixInProperties");
         if(this.value == null){
             this.value = "";
         }
@@ -29,7 +30,7 @@ dojo.widget.defineWidget(
     fillInTemplate: function(args, frag) {
         chiba.widget.DropdownDatePicker.superclass.fillInTemplate.apply(this, arguments);
         this.domNode.setAttribute("xfreadonly", this.xfreadonly);
-        this.inputNode.setAttribute("class", "value");
+     //   this.inputNode.setAttribute("class", "value");
 
         if (this.xfreadonly == true) {
             this.inputNode.setAttribute("disabled", "disabled");
@@ -48,8 +49,8 @@ dojo.widget.defineWidget(
         else {
             this.isEnabled = true;
         }
-
-        chiba.widget.DropdownDatePicker.superclass.onIconClick.apply(this, arguments);
+        
+      chiba.widget.DropdownDatePicker.superclass.onIconClick.apply(this, arguments);
 
     },
 
@@ -68,7 +69,7 @@ dojo.widget.defineWidget(
     onInputChange: function(/*Date*/dateObj) {
         chiba.widget.DropdownDatePicker.superclass.onInputChange.call(this);
         var sessionKey = document.getElementById("chibaSessionKey").value;
-        Flux.setXFormsValue(updateUI, this.id.substring(0, this.id.length - 6), this.getValue(), sessionKey);
+        Flux.setXFormsValue(this.id.substring(0, this.id.length - 6), this.getValue(), sessionKey, updateUI);
 
         //summary: triggered when this.value is changed
     },
@@ -83,7 +84,7 @@ dojo.widget.defineWidget(
             if (this.datatype == "dateTime") {
                 newDate = newDate + this.chibaTime;
             }
-            Flux.setXFormsValue(updateUI, this.id.substring(0, this.id.length - 6), newDate, sessionKey);
+            Flux.setXFormsValue(this.id.substring(0, this.id.length - 6), newDate, sessionKey, updateUI);
         }
     }
 },
