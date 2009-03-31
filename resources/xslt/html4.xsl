@@ -160,7 +160,7 @@
                 
                     var djConfig = {
                     	debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
-                    	isDebug: <xsl:value-of select="$debug-enabled"/>,
+                    	isDebug: <xsl:value-of select="$debug-enabled"/>
                     };
                     
                     <!-- DO NOT change order of scripts! IE is very "fragile" on this -->
@@ -194,7 +194,9 @@
                 	jQuery(window).load(function() {
                 		showLoadingMessage(Localization.LOADING_MSG);
                 		checkIfLoadedScriptsForChibaXForm(function() {
-	                	
+	                	     <xsl:if test="$scripted='true'">
+	                			dojo.require("chiba.widget.Upload");
+	                		</xsl:if>
                 			FluxInterfaceHelper.startUsingXForm();
                 		});
 					});
