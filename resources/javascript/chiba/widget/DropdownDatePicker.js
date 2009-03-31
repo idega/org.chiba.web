@@ -18,7 +18,6 @@ dojo.widget.defineWidget(
     id:"",
 	
     postMixInProperties: function(localProperties, frag) {
-    	console.log("enables poxtMixInProperties");
         if(this.value == null){
             this.value = "";
         }
