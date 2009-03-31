@@ -7,7 +7,6 @@
 dojo.provide("chiba.widget.DropdownDatePicker");
 
 dojo.require("dojo.widget.DropdownDatePicker");
-console.log("dropdownPicker date");
 dojo.widget.defineWidget(
         "chiba.widget.DropdownDatePicker",
         dojo.widget.DropdownDatePicker,
