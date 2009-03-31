@@ -45,7 +45,7 @@
 
     <xsl:param name="form-id" select="'chibaform'"/>
     <xsl:param name="form-name" select="//xhtml:title"/>
-    <xsl:param name="debug-enabled" select="'true'"/>
+    <xsl:param name="debug-enabled" select="'false'"/>
     
 
     <!-- ### specifies the parameter prefix for repeat selectors ### -->
@@ -161,7 +161,6 @@
                     var djConfig = {
                     	debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
                     	isDebug: <xsl:value-of select="$debug-enabled"/>,
-                    	afterOnLoad: <xsl:value-of select="$debug-enabled"/>
                     };
                     
                     <!-- DO NOT change order of scripts! IE is very "fragile" on this -->
