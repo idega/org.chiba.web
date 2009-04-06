@@ -89,7 +89,7 @@ function keepAlive() {
         localActivity();
         if(dwr && dwr.engine){
             dwr.engine.setErrorHandler(handleExceptions);
-            dwr.engine.setOrdered(false);
+            dwr.engine.setOrdered(true);
             var sessionKey = document.getElementById("chibaSessionKey").value;
             Flux.keepAlive(sessionKey);
         }
@@ -161,7 +161,7 @@ function chibaActivate(target) {
 		target = document.getElementById(target);
 	}
 	
-	checkIfLoadedScriptsForChibaXForm(function() {
+//	checkIfLoadedScriptsForChibaXForm(function() {
 		forceRepeatIndex(dojo.byId(target));
 
 	    // lookup value element
@@ -188,7 +188,7 @@ function chibaActivate(target) {
 	    		updateUI(data);
 	    	}
 	    });
-	});
+	//});
   
     return false;
 }
@@ -215,7 +215,7 @@ function setXFormsValue(control, forceControl) {
     var value = "";
     if (target.value) {
         value = target.value;
-    }
+    }  
 
     switch (target.type) {
         case "radio":
@@ -262,7 +262,7 @@ function setXFormsValue(control, forceControl) {
     
     dojo.debug("Flux.setXFormsValue: " + id + "='" + value + "'");
 
-    dwr.engine.setOrdered(false);
+    dwr.engine.setOrdered(true);
 	dwr.engine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
@@ -368,10 +368,10 @@ function updateUI(data) {
     	closeAllLoadingMessages();
     	return;
     }
-	
-    for (var i = 0; i < eventLog.length; i++) {
-        var type = eventLog[i].getAttribute("type");
-        var targetId = eventLog[i].getAttribute("targetId");
+    
+    for (var i = 0; i < eventLog.length; i++) {	
+        var type = eventLog[i].getAttribute("type");  
+        var targetId = eventLog[i].getAttribute("targetId");  
         var targetName = eventLog[i].getAttribute("targetName");
         var properties = new Array;
         var nameAtt;
@@ -548,7 +548,7 @@ chiba.setRepeatIndex = function(targetRepeatElement){
     dojo.debug("Flux.setRepeatIndex: " + repeatId + "='" + targetPosition + "'");
 
     dwr.engine.setErrorHandler(handleExceptions);
-    dwr.engine.setOrdered(false);
+    dwr.engine.setOrdered(true);
     var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setRepeatIndex(repeatId, targetPosition, sessionKey, {
     	callback: function(result) {
@@ -557,16 +557,15 @@ chiba.setRepeatIndex = function(targetRepeatElement){
    		}
     });
 }
-
+/*
 function activateChibaFileUploaders() {
 	jQuery.each(jQuery('input.chibaFileUploaderStyleClass'), function() {
 		chibaActivate(jQuery(this).attr('id'));
 	});
-}
+}*/
 
 FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
-	activateChibaFileUploaders();
 	manageHelpTextIconsForForm();
 	FluxInterfaceHelper.initializeTextAreasAutoResize();
 }

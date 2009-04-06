@@ -41,9 +41,7 @@
             <xsl:when test="($type='date' or $type='dateTime' or $type='time') and $scripted='true'">
                <script type="text/javascript">
 					
-				   LazyLoader.loadMultiple(chibaXformScripts, function() {
-                    	dojo.require("chiba.widget.DropdownDatePicker");
-                    }, null);
+				                      	dojo.require("chiba.widget.DropdownDatePicker");
 
                 </script>
 				<xsl:variable name="controlType">
@@ -89,11 +87,8 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <script type="text/javascript">
-                            jQuery(window).load(function() {
-                                LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
-                                    dojo.require("chiba.widget.Boolean");
-                                }, null);
-                            });
+                                                             dojo.require("chiba.widget.Boolean");
+
                         </script>
                         <input id="{$id}-value" type="checkbox" name="{$name}" class="value">
                             <xsl:if test="string-length($navindex) != 0">
@@ -179,7 +174,6 @@
                             </xsl:when>
                             <xsl:otherwise>
                                 <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-                               <!--   <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>--> 
                                  <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>   
                             </xsl:otherwise>
                         </xsl:choose>
@@ -232,11 +226,8 @@
                 <!-- SIDOC/CNAF : sidoc-infra-204, implementation de l'approche Dojo -->
                 <xsl:if test="$scripted='true'">
                     <script type="text/javascript">
-                        jQuery(window).load(function() {
-                            LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
-                                dojo.require("chiba.widget.Link");
-                            }, null);
-                        });
+                                                  dojo.require("chiba.widget.Link");
+
                     </script>
                 </xsl:if>
                 <xsl:element name="a">
@@ -437,7 +428,6 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-                        <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
                         <xsl:attribute name="onblur">setXFormsValue(this);</xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
@@ -520,11 +510,8 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                jQuery(window).load(function() {
-                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        }, null);
-                    });
+	                                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -607,11 +594,8 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                jQuery(window).load(function() {
-                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        }, null);
-                    });
+	                                       initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -692,11 +676,9 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                jQuery(window).load(function() {
-                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                        }, null);
-                    });
+	                
+                                                initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+                    
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -779,11 +761,8 @@
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                	jQuery(window).load(function() {
-	                	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />", function() {
-	                    	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-	                    }, null);
-	             	});
+                		                    	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
+
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -859,7 +838,7 @@
                 <xsl:choose>
                     <xsl:when test="$scripted='true'">
                         <xsl:attribute name="type">button</xsl:attribute>
-                        <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
+                        <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:attribute name="type">submit</xsl:attribute>
@@ -905,7 +884,7 @@
                         </xsl:attribute>
                         <xsl:attribute name="href">#</xsl:attribute>
                         <xsl:if test="not(chiba:data/@chiba:readonly='true')">
-                            <xsl:attribute name="onclick">return chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
+                            <xsl:attribute name="onclick">return chibaActivate(this);</xsl:attribute>
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
                         <xsl:apply-templates select="xforms:label"/>
@@ -952,7 +931,7 @@
                             </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
-                            <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
+                            <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
                             
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
@@ -981,7 +960,7 @@
         <!-- the stylesheet using this template has to take care, that form enctype is set to 'multipart/form-data' -->
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="navindex" select="@navindex" />
-        <xsl:element name="input">
+       <xsl:element name="input">
             <xsl:if test="string-length($navindex) != 0">
                 <xsl:attribute name="tabindex">
                     <xsl:value-of select="$navindex"/>
@@ -995,15 +974,10 @@
             </xsl:attribute>
             <xsl:attribute name="type">file</xsl:attribute>
             <xsl:attribute name="value"/>
-            <xsl:choose>
-                <xsl:when test="$scripted='true'">
-                    <xsl:attribute name="onclick">chibaActivate('<xsl:value-of select="concat($id,'-value')" />');</xsl:attribute>
-                </xsl:when>
-            </xsl:choose>
             <xsl:if test="chiba:data/@chiba:readonly='true'">
                 <xsl:attribute name="disabled">disabled</xsl:attribute>
             </xsl:if>
-            <xsl:attribute name="class">chibaFileUploaderStyleClass</xsl:attribute>
+            <xsl:attribute name="class">value</xsl:attribute>
 			<!-- Content types accepted, from mediatype xforms:upload attribute
             to accept input attribute -->
             <!--
@@ -1012,8 +986,7 @@
                         </xsl:attribute>
             -->
             <xsl:if test="$scripted='true'">
-                <!-- <xsl:attribute name="onchange">submitFile(this);</xsl:attribute> -->
-                
+                <!--<xsl:attribute name="onchange">submitFile(this);</xsl:attribute>-->
                 <xsl:attribute name="dojoType">chiba:Upload</xsl:attribute>
                 <xsl:attribute name="xfreadonly">
                     <xsl:value-of select="chiba:data/@chiba:readonly"/>
@@ -1024,12 +997,8 @@
 
         <xsl:if test="$scripted='true'">
         	           <script type="text/javascript">
-            jQuery(window).load(function() {
-                                LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
-                					dojo.require("chiba.widget.Upload");
-                                }, null);
-                            });
-            </script>
+                    					dojo.require("chiba.widget.Upload");
+        </script>
         	
             <iframe id="UploadTarget" name="UploadTarget" src="" style="width:0px;height:0px;border:0"/>
             <div class="progressbar" style="display:none;" id="{$id}-progress">
