@@ -7,7 +7,7 @@
     xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
-    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.14 $ -->
+    <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.15 $ -->
     
     <!-- ####################################################################################################### -->
     <!-- This stylesheet handles the XForms UI constructs [XForms 1.0, Chapter 9]'group', 'repeat' and           -->
@@ -213,7 +213,13 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-                                		dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+                jQuery(window).load(function() {
+					LazyLoader.loadMultiple(['<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojoSetup.js')" />'],
+						function() {
+                       		dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+						}, null);
+                });
             </script>
         </xsl:if>
     </xsl:template>
@@ -296,9 +302,13 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-            
+                jQuery(window).load(function() {
+                	LazyLoader.loadMultiple(['<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />',
+                							'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojoSetup.js')" />'],
+                		function() {
                         	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
-
+                        }, null);
+                });
             </script>
         </xsl:if>
     </xsl:template>
@@ -455,9 +465,13 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-			
+				jQuery(window).load(function() {
+                    LazyLoader.loadMultiple(['<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojoSetup.js')" />'],
+                    	function() {
                         	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
-
+                    	}, null);
+                });
             </script>
         </xsl:if>
     </xsl:template>

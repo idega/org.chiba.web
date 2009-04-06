@@ -148,7 +148,6 @@
             <xsl:if test="$scripted='true'">
 				<xsl:text>
 </xsl:text>
-<!-- Chiba localization -->
                 <script type="text/javascript">
                     if(Localization == null) {
                         var Localization = {};
@@ -158,19 +157,62 @@
                         Localization.SESSION_EXPIRED = '<xsl:value-of select="$sessionExpiredMsg" />';
                         Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = '<xsl:value-of select="$downloadingPDFForXFormMsg" />';
                     }
-                    if(!IE){
-                        showLoadingMessage(Localization.LOADING_MSG);
-                        }
-                        
-                   </script> 
-                    <xsl:text>
+                
+                    var djConfig = {
+                    	debugAtAllCost:  <xsl:value-of select="$debug-enabled"/>,
+                    	isDebug: <xsl:value-of select="$debug-enabled"/>
+                    };
+                    
+                    <!-- DO NOT change order of scripts! IE is very "fragile" on this -->
+                    var chibaXformScripts = ['<xsl:value-of select="$uriToPrototypeLib" />',
+                    						'<xsl:value-of select="$uriToScriptaculousLib" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/engine.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/util.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,'/dwr/interface/Flux.js')" />',
+                    						'<xsl:value-of select="$uriToMootoolsLib" />',
+                    						'<xsl:value-of select="$uriTojQueryLib" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'xforms-util.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'FluxInterface.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'PresentationContext.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/fckeditor.js')" />',
+                    						'<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojoSetup.js')" />'
+                    						];
+												
+					function checkIfLoadedScriptsForChibaXForm(callback) {
+						LazyLoader.loadMultiple(chibaXformScripts, callback, null);
+					}
+                </script>
+                <xsl:text>
+</xsl:text>
+    		<!-- Chiba localization -->
+				
+				<xsl:text>
+</xsl:text>
+		  <script type="text/javascript">
+                	jQuery(window).load(function() {
+                		showLoadingMessage(Localization.LOADING_MSG);
+                		checkIfLoadedScriptsForChibaXForm(function() {
+	                	     <xsl:if test="$scripted='true'">
+	                			dojo.require("chiba.widget.Upload");
+	                		</xsl:if>
+                			FluxInterfaceHelper.startUsingXForm();
+                		});
+					});
+                </script>
+               <xsl:text>
 </xsl:text>
                 <xsl:if test="$uses-html-textarea">
                     <xsl:text>
 </xsl:text>
                     <script type="text/javascript"><xsl:text>
 </xsl:text>
+			        jQuery(window).load(function() {
+                    	LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'htmltext.js')" />", function() {
                         	_setStyledTextareaGlobalProperties("Chiba",200,"<xsl:value-of select="concat($contextroot,$scriptPath,'fckeditor/')"/>",1000);
+                      	}, null);
+                  	});
 
 <xsl:text>
 </xsl:text>
@@ -291,8 +333,11 @@
             </xsl:choose>
             <xsl:if test="$scripted='true' and $debug-enabled='true'">
                 <script type="text/javascript">
-                                         dojo.require("dojo.debug.console");
-
+                    jQuery(window).load(function() {
+                        LazyLoader.load("<xsl:value-of select="concat($contextroot,$scriptPath,'dojo-0.4.3/dojo.js')" />", function() {
+                            dojo.require("dojo.debug.console");
+                        }, null);
+                    });
                 </script>
             </xsl:if>
             <div id="messagePane"/>
@@ -313,7 +358,7 @@
             </xsl:attribute>
             <xsl:attribute name="action">
                 <xsl:choose>
-                	<xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>
+                	<xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>
                     <!--<xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>-->
                     <xsl:otherwise>
                         <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
@@ -348,7 +393,7 @@
             </xsl:attribute>
             <xsl:attribute name="action">
                 <xsl:choose>
-                    <xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>                    
+                    <xsl:when test="not($uses-upload) and $scripted='true'">javascript:return false;</xsl:when>                    
                     <!--<xsl:when test="not($uses-upload) and $scripted='true'">javascript:submitFunction();</xsl:when>-->
                     <xsl:otherwise>
                         <xsl:value-of select="concat($action-url,'?sessionKey=',$sessionKey)"/>
