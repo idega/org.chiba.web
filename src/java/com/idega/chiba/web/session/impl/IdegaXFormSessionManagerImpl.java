@@ -1,17 +1,16 @@
 package com.idega.chiba.web.session.impl;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.chiba.web.IWBundleStarter;
 import org.chiba.web.WebFactory;
 import org.chiba.web.session.XFormsSession;
@@ -26,7 +25,8 @@ import org.chiba.xml.xforms.exception.XFormsException;
  */
 
 public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runnable {	
-    private static final Log LOGGER = LogFactory.getLog(IdegaXFormSessionManagerImpl.class);
+   // private static final Log LOGGER = LogFactory.getLog(IdegaXFormSessionManagerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(IdegaXFormSessionManagerImpl.class.getName());
 	
 	protected static XFormsSessionManager instance = null;
     protected Map<String, XFormsSession> xformsSessions;
@@ -65,14 +65,15 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
                 request.setAttribute(WebFactory.SCRIPTED,"false");
             }
         } catch(Exception e) {
-        	e.printStackTrace();
+        	LOGGER.log(Level.WARNING, "Exception while trying to create xform session", e);
         }
     	
         XFormsSession xFormsSessionBase = new IdegaXFormsSessionBase(request,response,session);
         //this.xformsSessions.put(xFormsSession.getKey(), xFormsSession);
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("created XFormsSession: " + xFormsSessionBase.getKey());
-        }
+        /*if (LOGGER.isLoggable(Level.WARNING)) {
+        	LOGGER.warning("created XFormsSession: " + xFormsSessionBase.getKey());
+            
+        }*/
         return xFormsSessionBase;
     }
 
@@ -82,10 +83,10 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
     public void addXFormsSession(XFormsSession xfSession) {
         this.xformsSessions.put(xfSession.getKey(), xfSession);
 
-        if (LOGGER.isDebugEnabled()) {
+        /*if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("added XFormsSession to SessionManager: " + xfSession.getKey());
             LOGGER.debug("Session count now: " + xformsSessions.size());
-        }
+        }*/
     }
 
     /**
@@ -98,16 +99,16 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
         if (this.xformsSessions.containsKey(id)) {
             this.xformsSessions.remove(id);
 
-            if (LOGGER.isDebugEnabled()) {
+            /*if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("deleted XFormsSession from SessionManager: " + id);
                 LOGGER.debug("Session count now: " + xformsSessions.size());
-            }
+            }*/
         }
     }
 
     public void destroy() {
     	synchronized (monitor) {
-            LOGGER.info("cleanups allocated resources");
+    //        LOGGER.info("cleanups allocated resources");
             this.stopped = true;
             instance = null;
             monitor.notifyAll();
@@ -128,15 +129,15 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
     public XFormsSession getXFormsSession(String id) {
 
         if (this.xformsSessions.containsKey(id)) {
-            if (LOGGER.isDebugEnabled()) {
+            /*if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("returning XFormsSession: " + id);
                 LOGGER.debug("Session count now: " + xformsSessions.size());
-            }
+            }*/
             return this.xformsSessions.get(id);
         } else {
-            if (LOGGER.isDebugEnabled()) {
+           /* if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("XFormsSession: " + id + " not found");
-            }
+            }*/
             return null;
         }
     }
@@ -146,7 +147,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
             new Thread(this).start();
             this.threadStarted = true;
         } else {
-            LOGGER.warn("No XForms session cleanup. Your server might run out of memory under load. To avoid this configure your chiba-config accordingly.");
+        	LOGGER.log(Level.WARNING, "No XForms session cleanup. Your server might run out of memory under load. To avoid this configure your chiba-config accordingly.");
         }
 
     }
@@ -159,9 +160,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
      * @param milliseconds the interval the wiper is checking for expired sessions
      */
     public void setInterval(int milliseconds) {
-        if(LOGGER.isDebugEnabled()){
+        /*if(LOGGER.isDebugEnabled()){
             LOGGER.debug("checking interval in seconds: " + milliseconds / 1000);
-        }
+        }*/
         this.interval = milliseconds;
     }
 
@@ -175,9 +176,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
     }
 
     public void setTimeout(int milliseconds) {
-        if(LOGGER.isDebugEnabled()){
+        /*if(LOGGER.isDebugEnabled()){
             LOGGER.debug("timeout in seconds: " + milliseconds / 1000);
-        }
+        }*/
         this.timeout = milliseconds;
     }
     
@@ -188,7 +189,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
                 try {
                 	monitor.wait(interval);
                 } catch (InterruptedException e) {
-                    LOGGER.error("Exception while trying to sleep Thread");
+                	
+                	LOGGER.log(Level.SEVERE, "Exception while trying to sleep Thread", e);
                 }
             }
         }
@@ -198,9 +200,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
      * checks for timed-out XFormsSessions and deletes these from internal pool.
      */
     private void wipe() {
-        if (LOGGER.isDebugEnabled()) {
+        /*if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("checking for expired sessions at " + new Date(System.currentTimeMillis()));
-        }
+        }*/
 
         XFormsSession session;
         Iterator<XFormsSession> allSessions = this.xformsSessions.values().iterator();
@@ -211,18 +213,19 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Runna
                 allSessions.remove();
             }
         }
-        if (LOGGER.isDebugEnabled()) {
+        
+       /* if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Session count now: " + xformsSessions.size());
-        }
+        }*/
     }
     
     private boolean isExpired(XFormsSession session) {
         long now = System.currentTimeMillis();
 
         if ((now - session.getLastUseTime()) > (timeout)) {
-            if(LOGGER.isDebugEnabled()){
+    /*        if(LOGGER.isDebugEnabled()){
                 LOGGER.debug("expiring session " + session.getKey() + " lastused: " + new Date(session.getLastUseTime()));
-            }
+            }*/
 
             return true;
         } else {
