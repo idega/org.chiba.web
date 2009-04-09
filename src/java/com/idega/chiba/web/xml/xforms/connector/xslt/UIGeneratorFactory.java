@@ -19,6 +19,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.idega.block.web2.business.Web2Business;
+import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplication;
 
 @Service
 @Scope("singleton")
@@ -128,8 +130,9 @@ public class UIGeneratorFactory {
 				"chiba.js.compressed", "false");
 		generator.setParameter("js-compressed", compressedJS);
 		
-		generator.setParameter("scriptPath", "/idegaweb/bundles/" + IWBundleStarter.BUNDLE_IDENTIFIER + ".bundle/resources/javascript/");
-		generator.setParameter("imagesPath", "/idegaweb/bundles/" + IWBundleStarter.BUNDLE_IDENTIFIER + ".bundle/resources/style/images/");
+		IWBundle bundle = IWMainApplication.getDefaultIWMainApplication().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
+		generator.setParameter("scriptPath", bundle.getVirtualPathWithFileNameString("javascript/"));
+		generator.setParameter("imagesPath", bundle.getVirtualPathWithFileNameString("style/images/"));
 		
 		Web2Business web2 = getWeb2Business();
 		

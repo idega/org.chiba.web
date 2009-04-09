@@ -23,8 +23,6 @@ import org.chiba.xml.events.XMLEvent;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xforms.exception.XFormsException;
 
-import com.idega.block.web2.business.Web2Business;
-import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -123,15 +121,12 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
     	XSLTGenerator generator = (XSLTGenerator) super.createUIGenerator();
     	FacesContext context = FacesContext.getCurrentInstance();
 
-		generator.setParameter("scriptPath", "/idegaweb/bundles/" + IWBundleStarter.BUNDLE_IDENTIFIER + ".bundle/resources/javascript/");
-		generator.setParameter("imagesPath", "/idegaweb/bundles/" + IWBundleStarter.BUNDLE_IDENTIFIER + ".bundle/resources/style/images/");
-		
+    	IWBundle bundle = IWMainApplication.getDefaultIWMainApplication().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
+		generator.setParameter("scriptPath", bundle.getVirtualPathWithFileNameString("javascript/"));
+		generator.setParameter("imagesPath", bundle.getVirtualPathWithFileNameString("style/images/"));
+
 		try {
-			
 			IWContext iwc = IWContext.getIWContext(context);
-			Web2Business business = (Web2Business) IBOLookup.getServiceInstance(iwc, Web2Business.class);
-			
-			IWBundle bundle = getBundle(iwc, IWBundleStarter.BUNDLE_IDENTIFIER);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 	
 			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"));
