@@ -122,6 +122,11 @@ function _replaceClass (element, current, update) {
 
 function getClassComponent(className, position){
     var components = className.split(" ");
+// make an warning msg get position variable  
+    if (components[position] = " "){
+    	components[position] = "anyURI";
+    }
+    
     return components[position];
 }
 

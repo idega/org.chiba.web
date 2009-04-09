@@ -100,6 +100,11 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
   if (type != null && type.indexOf(":") != -1) {
     type = type.substring(type.indexOf(":") + 1, type.length);
   }
+  
+  // make warning msg for it
+  if (dojo.widget == undefined){
+  		return false;
+  }
   var tmpControl = dojo.widget.getWidgetById(targetId + "-value");
 
   //    if(type ==null && getClassComponent(target.className, 1) != "string"){
