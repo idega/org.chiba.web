@@ -72,10 +72,10 @@ dojo.widget.defineWidget(
         //summary: triggered when this.value is changed
     },
 
-
-    onSetDate: function() {
+// _updateText is using in dojo-0.4.3 instead of onSetDate
+    _updateText: function() {
         var oldDate = this.getValue();
-        chiba.widget.DropdownDatePicker.superclass.onSetDate.call(this);
+        chiba.widget.DropdownDatePicker.superclass._updateText.call(this);
         var newDate = this.getValue();
         if (oldDate != newDate) {
             var sessionKey = document.getElementById("chibaSessionKey").value;

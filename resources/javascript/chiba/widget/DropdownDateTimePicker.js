@@ -171,7 +171,7 @@ dojo.widget.defineWidget(
         // add the time to the date
         input = input + "T" + mytime;
         dojo.debug("setXFormsValue with value = " + input);
-        Flux.setXFormsValue(updateUI, this.id.substring(0, this.id.length - 6), input, sessionKey);
+        Flux.setXFormsValue(this.id.substring(0, this.id.length - 6), input, sessionKey, updateUI);
     },
 
     onBlur: function() {
@@ -200,7 +200,7 @@ dojo.widget.defineWidget(
         newDate = newDate + "T" + mytime;
         //dojo.debug("DateTime: " + " onAfterSetDate: dif. date " + newDate);
         var sessionKey = document.getElementById("chibaSessionKey").value;
-        Flux.setXFormsValue(updateUI, this.id.substring(0, this.id.length - 6), newDate, sessionKey);
+        Flux.setXFormsValue(this.id.substring(0, this.id.length - 6), newDate, sessionKey, updateUI);
         //}
     }
 
