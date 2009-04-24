@@ -3,6 +3,7 @@ package com.idega.chiba.web.xml.xforms.elements.action;
 import java.util.Iterator;
 
 import org.apache.commons.jxpath.JXPathContext;
+import org.apache.xerces.dom.NodeImpl;
 import org.chiba.xml.xforms.action.SetValueAction;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
@@ -189,13 +190,24 @@ public class IdegaSetValueAction extends SetValueAction {
 		
 		Instance instance = getInstance();
 		String locationPath = getLocationPath();
+		
 		@SuppressWarnings("unchecked")
-		Iterator<ModelItem> modelItems = instance
-		        .iterateModelItems(locationPath);
+		Iterator<ModelItem> modelItems = instance.iterateModelItems(
+		    locationPath, false);
+		
+		String valueStr = value != null ? value.toString()
+		        : CoreConstants.EMPTY;
 		
 		while (modelItems.hasNext()) {
 			ModelItem modelItem = modelItems.next();
-			System.out.println("___modelItem = " + modelItem);
+			
+			if (!modelItem.isReadonly()) {
+				modelItem.setValue(valueStr);
+				instance.getModel().addChanged((NodeImpl) modelItem.getNode());
+			} else {
+				getLogger().warn(
+				    this + " set node value: attempt to set readonly value");
+			}
 		}
 	}
 	
