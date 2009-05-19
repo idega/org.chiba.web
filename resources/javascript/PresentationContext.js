@@ -256,6 +256,18 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
         break;
 
       case "date":
+      	dojo.require("chiba.widget.DropdownDatePicker");
+
+        var dateWidget = dojo.widget.createWidget("chiba:DropdownDatePicker",
+        {
+          id:targetId + "-value",
+          widgetId:targetId + "-value",
+          name:"d_" + targetId,
+          value: (value == null || value == '') ? tmpControl.getValue() : value,
+          datatype:"date"
+        },
+            dojo.byId(targetId), "last");
+        break;
       case "time":
       case "dateTime":
         dojo.require("chiba.widget.DropdownDatePicker");
