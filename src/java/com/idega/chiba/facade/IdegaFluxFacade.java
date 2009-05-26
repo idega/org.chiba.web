@@ -93,7 +93,7 @@ public class IdegaFluxFacade extends FluxFacade {
     		return false;
     	}
     	
-    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "arunas@idega.com");
+    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "eiki@idega.com");
     	if (StringUtil.isEmpty(to)) {
     		return false;
     	}
