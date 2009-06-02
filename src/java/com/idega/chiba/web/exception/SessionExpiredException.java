@@ -4,21 +4,21 @@ import org.chiba.web.flux.FluxException;
 
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  *
- * Last modified: $Date: 2009/02/11 11:45:32 $ by $Author: arunas $
+ * Last modified: $Date: 2009/06/02 16:18:50 $ by $Author: valdas $
  */
 
 public class SessionExpiredException extends FluxException {
 
 	private static final long serialVersionUID = 3701124290017696348L;
 
-	public SessionExpiredException (){
+	public SessionExpiredException() {
+		super();
 	}
 	
-	public SessionExpiredException (String msg){
-		 super(msg);
+	public SessionExpiredException(String msg, Throwable exception) {
+		super(msg);
+		setStackTrace(exception.getStackTrace());
 	}
-  
-
 }
