@@ -2,13 +2,13 @@ package com.idega.chiba.web.session.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.chiba.web.IWBundleStarter;
 import org.chiba.web.WebFactory;
 import org.chiba.web.session.XFormsSession;
@@ -25,13 +25,12 @@ import com.idega.presentation.IWContext;
  */
 
 public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {	
-    	
-	private static final String XFORM_SESSIONS_ATTR_NAME = "com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl.XFORM_SESSIONS_ATTR_NAME";
-
-	protected static XFormsSessionManager instance = null;
+    
+	private static final Log LOGGER = LogFactory.getLog(IdegaXFormSessionManagerImpl.class);
 	
-    protected Map<String, XFormsSession> xformsSessions;
-
+	private static final String XFORM_SESSIONS_ATTR_NAME = "com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl.XFORM_SESSIONS_ATTR_NAME";
+	
+	protected static XFormsSessionManager instance = null;
 	
     public static XFormsSessionManager getXFormsSessionManager() {
     	if (instance == null) {
@@ -40,7 +39,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
         return instance;
     }
     
-    private IdegaXFormSessionManagerImpl() {    
+    private IdegaXFormSessionManagerImpl() {
     }
     
     public synchronized XFormsSession createXFormsSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {
@@ -58,14 +57,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
                 request.setAttribute(WebFactory.SCRIPTED,"false");
             }
         } catch(Exception e) {
-        //	e.printStackTrace();
-        	Logger.getLogger(IdegaXFormSessionManagerImpl.class.getName()).log(Level.WARNING, "Exception while trying to create xforms session", e);
+        	LOGGER.error("Error parsing configuration for XForm session", e);
         }
     	
         XFormsSession xFormsSessionBase = new IdegaXFormsSessionBase(request,response,session);
-     /*   if (LOGGER.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("created XFormsSession: " + xFormsSessionBase.getKey());
-        }*/
+        }
         return xFormsSessionBase;
     }
 
@@ -73,12 +71,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
      * Register XFormSession.
      */
     public void addXFormsSession(XFormsSession xfSession) {
+       Map<String, XFormsSession> sessionXForms = getCurrentSessionXForms();
        
-    	getCurrentSessionXForms().put(xfSession.getKey(), xfSession);
+       sessionXForms.put(xfSession.getKey(), xfSession);
        
-    /*    if (LOGGER.isDebugEnabled()) {
+        if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("added XFormsSession to SessionManager: " + xfSession.getKey());
-        }*/
+        }
     }
 
     
@@ -89,14 +88,14 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
      */
     public void deleteXFormsSession(String id) {
 
-    	//xformsSessions = getCurrentSessionXForms();
+    	Map<String, XFormsSession> sessionXForms = getCurrentSessionXForms();
     	
-    	getCurrentSessionXForms().remove(id);
-        /*if (removed != null) {
+    	XFormsSession removed = sessionXForms.remove(id);
+        if (removed != null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("deleted XFormsSession from SessionManager: " + id);
             }
-        }*/
+        }
     }
 
     public void destroy() {
@@ -111,21 +110,21 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
      */
     public XFormsSession getXFormsSession(String id) {
 
-    	XFormsSession formsSession = getXformsSessions().get(id);
+    	Map<String, XFormsSession> forms = getCurrentSessionXForms();
+    	
+    	XFormsSession formsSession = forms.get(id);
         if (formsSession != null) {
-            /*if (LOGGER.isDebugEnabled()) {
+            if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("returning XFormsSession: " + id);
-            }*/
+            }
             return formsSession;
         } else {
-        /*    if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("XFormsSession: " + id + " not found");
-            }*/
+            LOGGER.warn("XFormsSession: " + id + " not found");
             return null;
         }
     }
 
-	public synchronized void init() {
+    public synchronized void init() {
     	//no need to initialize session cleanup
 
     }
@@ -139,15 +138,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
 	private Map<String, XFormsSession> getCurrentSessionXForms() {
     	
 		HttpSession session = IWContext.getCurrentInstance().getSession();
-		setXformsSessions((Map<String, XFormsSession>) session.getAttribute(XFORM_SESSIONS_ATTR_NAME));
-		
-		if (getXformsSessions() == null) {
-			
-			setXformsSessions(new HashMap<String, XFormsSession>());
-			session.setAttribute(XFORM_SESSIONS_ATTR_NAME, getXformsSessions());
-			
+		Map<String, XFormsSession> xformsSessions = (Map<String, XFormsSession>) session
+				.getAttribute(XFORM_SESSIONS_ATTR_NAME);
+		if (xformsSessions == null) {
+			xformsSessions = new HashMap<String, XFormsSession>();
+			session.setAttribute(XFORM_SESSIONS_ATTR_NAME, xformsSessions);
 		}
-		return getXformsSessions();
+		return xformsSessions;
 	}
 
 	public int getSessionCount() {
@@ -165,12 +162,4 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
 	public void setTimeout(int milliseconds) {
 		
 	}
-	
-	 protected Map<String, XFormsSession> getXformsSessions() {
-	    	return xformsSessions;
-	 }
-
-	 protected void setXformsSessions(Map<String, XFormsSession> xformsSessions) {
-	    	this.xformsSessions = xformsSessions;
-	 }
 }
