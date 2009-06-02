@@ -33,7 +33,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
-			throw new SessionExpiredException("Session has expired", e);
+			throw new SessionExpiredException("Session has expired: " + sessionKey, e);
 		}
 
 	}
@@ -44,7 +44,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (FluxException e) {
-			throw new SessionExpiredException("Session has expired", e);
+			throw new SessionExpiredException("Session has expired: " + sessionKey, e);
 		}
 		
 	}
@@ -55,7 +55,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			try {
 				return super.setRepeatIndex(id, position, sessionKey);
 			} catch (Exception e) {
-				throw new SessionExpiredException("Session has expired", e);
+				throw new SessionExpiredException("Session has expired: " + sessionKey, e);
 			}
 			
 	}
