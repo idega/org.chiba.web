@@ -1,5 +1,7 @@
 package com.idega.chiba.facade;
 
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,8 +14,10 @@ import org.w3c.dom.Element;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
+import com.idega.util.IOUtil;
 import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
+import com.idega.util.xml.XmlUtil;
 
 /**
  * 
@@ -62,12 +66,19 @@ public class IdegaFluxFacade extends FluxFacade {
 	
 	@Override
 	public Element fetchProgress(String id, String filename, String sessionKey) {
+		OutputStream out = null;
 		try {
-			return super.fetchProgress(id, filename, sessionKey);
+			Element e = super.fetchProgress(id, filename, sessionKey);
+			out = new ByteArrayOutputStream();
+			XmlUtil.prettyPrintDOM(e, out);
+			Logger.getLogger(getClass().getName()).info("ID: " + id + ", filename: " + filename + ", sessionKey: " + sessionKey + ". Result:\n" + out.toString());
+			return e;
 		} catch (Exception e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while fetching progress", e);
 			return null;
-		}		
+		} finally {
+			IOUtil.closeOutputStream(out);
+		}
 	}
 	
 	@Override
