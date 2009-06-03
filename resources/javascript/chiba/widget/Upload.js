@@ -140,7 +140,7 @@ dojo.widget.defineWidget(
             var xfomsId = this.xformsId;
             progressUpdate = setInterval(function() {
             		Flux.fetchProgress(xfomsId, filename, sessionKey, {callback: function(data) { updateUI(data);} });
-            	}, 1000);
+            	}, 2000);
 
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
