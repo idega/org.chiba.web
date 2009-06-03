@@ -77,10 +77,6 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
        Map<String, XFormsSession> sessionXForms = getCurrentSessionXForms();
        
        sessionXForms.put(xfSession.getKey(), xfSession);
-       
-       if (LOGGER.isLoggable(Level.INFO)) {
-    	   LOGGER.info("added XFormsSession to SessionManager: " + xfSession.getKey());
-       }
     }
 
     
@@ -120,9 +116,6 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
         	LOGGER.warning("XFormsSession: " + id + " not found");
             return null;
         } else {
-        	if (LOGGER.isLoggable(Level.INFO)) {
-        		LOGGER.info("returning XFormsSession: " + id);
-        	}
         	return formsSession;
         }
     }
