@@ -29,6 +29,8 @@ dojo.widget.defineWidget(
         inputNode: null,
         progress: null,
         progressBackground: null,
+        changedFetchingProgressInterval: false,
+        uploadFinished: false,
         fillInTemplate: function() {
   
             // todo: this var is a candidate for a (to be implemented) superclass
@@ -48,12 +50,11 @@ dojo.widget.defineWidget(
 
         },
         onChange: function() {
-        
             if (this.xfreadonly == "true") {
                 this.inputNode.disabled = true;
             }
             else {
-                    this._submitFile(this.inputNode);
+            	this._submitFile(this.inputNode);
             }
         },
         updateProgress: function (value) {
@@ -68,7 +69,9 @@ dojo.widget.defineWidget(
                 if(value < 0){
                     alert("Upload failed");
                 }
+                
                 // stop polling
+                this.uploadFinished = true;
                 clearInterval(progressUpdate);
 
                 // reset disabled controls
@@ -85,7 +88,9 @@ dojo.widget.defineWidget(
                 }, 1500);
             }
         },
-        _submitFile: function(){
+        _submitFile: function() {
+        	this.uploadFinished = false;
+        	
             // disable all controls contained in repeat prototypes to avoid
             // inconsistent updates.
             var rPrototypes = document.getElementsByClassName("repeat-prototype", "chibaform");
@@ -138,14 +143,26 @@ dojo.widget.defineWidget(
             var sessionKey = dojo.byId("chibaSessionKey").value;
             //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
             var xfomsId = this.xformsId;
-            progressUpdate = setInterval(function() {
-            		Flux.fetchProgress(xfomsId, filename, sessionKey, {callback: function(data) { updateUI(data);} });
-            	}, 2000);
+            var widget = this;
+            progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 2000);
 
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
          
             return true;
-        }
+        },
+		_fetchUploadProgress: function(xfomsId, filename, sessionKey) {
+			Flux.fetchProgress(xfomsId, filename, sessionKey, {
+				callback: function(data) {
+					updateUI(data);
+				}
+			});
+			if (!this.uploadFinished && !this.changedFetchingProgressInterval) {
+				clearInterval(progressUpdate);
+				var widget = this;
+				progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 1000);
+				this.changedFetchingProgressInterval = true;
+			}
+		}
     }
 );
