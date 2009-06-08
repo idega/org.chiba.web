@@ -19,6 +19,7 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.RequestProvider;
 import com.idega.util.CoreUtil;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -108,7 +109,11 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
      * @return returns the XFormsSession object associated with given id or null if object does not exist
      */
     public XFormsSession getXFormsSession(String id) {
-
+    	if (StringUtil.isEmpty(id)) {
+    		LOGGER.warning("Session id is not provided! It's empty or null: '" + id + "'");
+    		return null;
+    	}
+    	
     	Map<String, XFormsSession> forms = getCurrentSessionXForms();
     	
     	XFormsSession formsSession = forms.get(id);
