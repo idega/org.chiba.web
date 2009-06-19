@@ -790,6 +790,9 @@ dojo.date.addCustomFormats = function(/*String*/packageName, /*String*/bundleNam
 };
 
 dojo.date._getGregorianBundle = function(/*String*/locale){
+	if (!locale) {
+		locale = dojo.hostenv.normalizeLocale(locale);
+	}
 	var gregorian = {};
 	dojo.lang.forEach(_customFormats, function(desc){
 		var bundle = dojo.i18n.getLocalization(desc.pkg, desc.name, locale);
