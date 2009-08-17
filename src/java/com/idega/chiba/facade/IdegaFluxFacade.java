@@ -12,6 +12,7 @@ import org.w3c.dom.Element;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
 
@@ -28,36 +29,33 @@ import com.idega.util.StringUtil;
 @Service("fluxexhand")
 public class IdegaFluxFacade extends FluxFacade {
 	
+	private static final Logger LOGGER = Logger.getLogger(IdegaFluxFacade.class.getName());
+	
 	@Override
 	public Element fireAction(String id, String sessionKey) throws FluxException {
 		try {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
-			throw new SessionExpiredException("Session has expired: " + sessionKey, e);
+			throw new SessionExpiredException("Unable to fire action for element: '" + id + "' using session: " + sessionKey, e);
 		}
-
 	}
 
 	@Override
 	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
-		
 		try {
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (FluxException e) {
-			throw new SessionExpiredException("Session has expired: " + sessionKey, e);
+			throw new SessionExpiredException("Unable to set value '" + value + "' for element '" + id + "' using session: " + sessionKey, e);
 		}
-		
 	}
 
 	@Override
 	public Element setRepeatIndex(String id, String position, String sessionKey) throws FluxException {
-		
-			try {
-				return super.setRepeatIndex(id, position, sessionKey);
-			} catch (Exception e) {
-				throw new SessionExpiredException("Session has expired: " + sessionKey, e);
-			}
-			
+		try {
+			return super.setRepeatIndex(id, position, sessionKey);
+		} catch (Exception e) {
+			throw new SessionExpiredException("Unable to set repeat index for element: '"+ id +"', position: '"+ position +"' using session: " + sessionKey, e);
+		}	
 	}
 	
 	@Override
@@ -65,7 +63,8 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while fetching progress", e);
+			LOGGER.log(Level.SEVERE, "Exception while fetching progress for element: '" + id + "', file: '" + filename + "' using session: " + sessionKey, e);
+			CoreUtil.sendExceptionNotification(e);
 			return null;
 		}
 	}
@@ -75,21 +74,24 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception at keep alive, session key="+sessionKey, e);
+			LOGGER.log(Level.SEVERE, "Exception at keep alive, session key=" + sessionKey, e);
+			CoreUtil.sendExceptionNotification(e);
 		}			
 	}
 	 
     @Override
-	public void close(String sessionKey){	
+	public void close(String sessionKey) {	
     	try {
 			super.close(sessionKey);
 		} catch (Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception at close, session key="+sessionKey, e);
+			LOGGER.log(Level.SEVERE, "Exception at close, session key=" + sessionKey, e);
+			CoreUtil.sendExceptionNotification(e);
 		}	
     }
     
     public boolean sendEmail(String subject, String text) {
     	if (StringUtil.isEmpty(subject) || StringUtil.isEmpty(text)) {
+    		LOGGER.warning("Subject or/and message not provided");
     		return false;
     	}
     	
@@ -106,7 +108,7 @@ public class IdegaFluxFacade extends FluxFacade {
     	try {
     		SendMail.send("idegaweb@idega.com", to, null, null, host, subject, text);
     	} catch(Exception e) {
-			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error while sending email ("+text+") to: " + to, e);
+			LOGGER.log(Level.WARNING, "Error while sending email ("+text+") to: " + to, e);
 			return false;
 		}
     	
