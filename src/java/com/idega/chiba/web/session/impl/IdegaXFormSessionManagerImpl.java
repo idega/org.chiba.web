@@ -62,6 +62,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
             }
         } catch(Exception e) {
         	LOGGER.log(Level.WARNING, "Error parsing configuration for XForm session", e);
+        	CoreUtil.sendExceptionNotification(e);
         }
     	
         XFormsSession xFormsSessionBase = new IdegaXFormsSessionBase(request,response,session);
@@ -146,6 +147,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
 	    		session = requestProvider.getRequest().getSession();
     		} catch(Exception e) {
     			LOGGER.log(Level.SEVERE, "Error getting request from: " + RequestProvider.class, e);
+    			CoreUtil.sendExceptionNotification(e);
     		}
     	} else {
     		session = iwc.getSession();
