@@ -212,10 +212,13 @@ function setXFormsValue(control, forceControl) {
         id = id.substring(0, id.length - 6);
     }
 
-    var value = "";
-    if (target.value) {
+    var value = jQuery('#' + target.id).attr('value');
+    if (value == null && target.value) {
         value = target.value;
-    }  
+    }
+    if (value == null) {
+    	value = '';
+    }
 
     switch (target.type) {
         case "radio":
@@ -557,24 +560,17 @@ chiba.setRepeatIndex = function(targetRepeatElement){
    		}
     });
 }
-/*
-function activateChibaFileUploaders() {
-	jQuery.each(jQuery('input.chibaFileUploaderStyleClass'), function() {
-		chibaActivate(jQuery(this).attr('id'));
-	});
-}*/
 
 FluxInterfaceHelper.startUsingXForm = function() {
 	closeAllLoadingMessages();
 	manageHelpTextIconsForForm();
-	FluxInterfaceHelper.initializeTextAreasAutoResize();
+	//FluxInterfaceHelper.initializeTextAreasAutoResize();
+	FluxInterfaceHelper.initializeTinyMCE();
 }
 
 function redirectForm(msg) {
-	
-		showLoadingMessage(msg);
-		window.location.href="/pages";
-		
+	showLoadingMessage(msg);
+	window.location.href = '/pages';	
 }
 
 FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
@@ -595,5 +591,46 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 			textarea.addClass(autoResizerInitializedStyleClass);
 		}
 	});
+}
 
+FluxInterfaceHelper.initializeTinyMCE = function() {
+	var textAreas = jQuery('textarea');
+	if (textAreas == null || textAreas.length == 0) {
+		return;
+	}
+	
+	jQuery.each(textAreas, function() {
+		var textArea = jQuery(this);
+		var readOnly = textArea.attr('disabled');
+				
+		textArea.tinymce({
+			theme: 'advanced',
+			plugins: 'safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template',
+			
+			language: dojo.locale,
+			
+			theme_advanced_buttons1: 'styleselect,formatselect,fontselect,fontsizeselect',
+			theme_advanced_buttons2: 'bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,link,unlink,image,|,insertdate,inserttime,preview,|,forecolor,backcolor',
+			theme_advanced_buttons3: 'cut,copy,paste,pastetext,pasteword,|,search,replace,|,bullist,numlist,|,outdent,indent,blockquote,|,undo,redo',
+			theme_advanced_buttons4: 'tablecontrols,|,hr,removeformat,visualaid,|,charmap,iespell',
+			theme_advanced_toolbar_location: 'top',
+			theme_advanced_toolbar_align: 'left',
+			theme_advanced_statusbar_location: 'bottom',
+			theme_advanced_resizing: true,
+			
+			readonly: readOnly,
+			
+			init_instance_callback: function(ed) {
+				tinymce.dom.Event.add(ed.getWin(), 'blur', function(e) {
+					textArea.trigger('change');
+				});
+			},
+			
+			setup: function(ed) {
+				ed.onChange.add(function() {
+					textArea.trigger('change');
+				});
+			}
+		});
+	});
 }
