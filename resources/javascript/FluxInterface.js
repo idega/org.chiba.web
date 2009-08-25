@@ -578,7 +578,7 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 		var textarea = jQuery(this);
 		
 		var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
-		if (!textarea.hasClass('enableHTMLEditor') && !textarea.hasClass(autoResizerInitializedStyleClass)) {
+		if (!FluxInterfaceHelper.isTextAreaHtmlEditor(textarea) && !textarea.hasClass(autoResizerInitializedStyleClass)) {
 			textarea.autoResize({
 				animateDuration: 250,
 				extraSpace: 20
@@ -601,7 +601,7 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 	
 	jQuery.each(textAreas, function() {
 		var textArea = jQuery(this);
-		if (textArea.hasClass('enableHTMLEditor')) {
+		if (FluxInterfaceHelper.isTextAreaHtmlEditor(textArea)) {
 			var readOnly = textArea.attr('disabled');
 					
 			textArea.tinymce({
@@ -635,4 +635,8 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 			});
 		}
 	});
+}
+
+FluxInterfaceHelper.isTextAreaHtmlEditor = function(textArea) {
+	return textArea.parent().hasClass('enableHTMLEditor');
 }
