@@ -612,6 +612,8 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 				theme: 'advanced',
 				plugins: 'safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template',
 				
+				entity_encoding : 'raw',
+				
 				language: languageId,
 				
 				theme_advanced_buttons1: 'fullscreen,|,styleselect,formatselect,fontselect,fontsizeselect',
