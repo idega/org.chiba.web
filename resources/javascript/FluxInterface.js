@@ -603,12 +603,15 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 		var textArea = jQuery(this);
 		if (FluxInterfaceHelper.isTextAreaHtmlEditor(textArea)) {
 			var readOnly = textArea.attr('disabled');
-					
+			
+			var languageId = dojo.locale;
+			languageId = languageId.split('_')[0];
+			
 			textArea.tinymce({
 				theme: 'advanced',
 				plugins: 'safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template',
 				
-				language: dojo.locale,
+				language: languageId,
 				
 				theme_advanced_buttons1: 'styleselect,formatselect,fontselect,fontsizeselect',
 				theme_advanced_buttons2: 'bold,italic,underline,strikethrough,|,justifyleft,justifycenter,justifyright,justifyfull,|,link,unlink,image,|,insertdate,inserttime,preview,|,forecolor,backcolor',
