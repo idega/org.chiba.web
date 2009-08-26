@@ -1,21 +1,4 @@
-//document.getElementsByClassName = function(className, parentElement) {
-//  var children = (document.body || $(parentElement)).getElementsByTagName('*');
-//  return $A(children).inject([], function(elements, child) {
-//    if (Element.hasClassName(child, className))
-//      elements.push(child);
-//    return elements;
-//  });
-//}
-//var $A = Array.from = function(iterable) {
-//  if (iterable.toArray) {
-//    return iterable.toArray();
-//  } else {
-//    var results = [];
-//    for (var i = 0; i < iterable.length; i++)
-//      results.push(iterable[i]);
-//    return results;
-//  }
-//}
+if (XFormsUtil == null) var XFormsUtil = {};
 
 function _setElementText (element, text) {
      if (element.firstChild) {
@@ -288,4 +271,28 @@ function manageHelpTextIconsForForm() {
 			});
 		}
 	});
+}
+
+XFormsUtil.downloadAgreement = function() {
+	showLoadingMessage(Localization.LOADING_MSG);
+	var processName = null;
+	if (BPMConfiguration) {
+		if (BPMConfiguration.processName) {
+			processName = BPMConfiguration.processName;
+		}
+	}
+	
+	LazyLoader.loadMultiple(['/dwr/interface/ProcessAgreementProvider.js', '/dwr/engine.js'], function() {
+		try {
+			ProcessAgreementProvider.getAgreementForProcess(processName, {
+				callback: function(uri) {
+					closeAllLoadingMessages();
+					window.location.href = uri;
+				}
+			});
+		} catch(e) {
+			alert('Sorry, some error occurred while downloading agreement');
+			handleExceptions('Error downloading agreement for process: ' + processName, e);
+		}
+	}, null);
 }
