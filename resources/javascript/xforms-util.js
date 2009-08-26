@@ -291,6 +291,7 @@ XFormsUtil.downloadAgreement = function() {
 				}
 			});
 		} catch(e) {
+			closeAllLoadingMessages();
 			alert('Sorry, some error occurred while downloading agreement');
 			handleExceptions('Error downloading agreement for process: ' + processName, e);
 		}
