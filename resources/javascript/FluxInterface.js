@@ -567,6 +567,7 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	manageHelpTextIconsForForm();
 	FluxInterfaceHelper.initializeTextAreasAutoResize();
 	FluxInterfaceHelper.initializeTinyMCE();
+	FluxInterfaceHelper.initializeMaskedInputs();
 }
 
 function redirectForm(msg) {
@@ -645,4 +646,12 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 
 FluxInterfaceHelper.isTextAreaHtmlEditor = function(textArea) {
 	return textArea.parent().hasClass('enableHTMLEditor');
+}
+
+FluxInterfaceHelper.initializeMaskedInputs = function() {
+	jQuery.each(jQuery('.xFormInputMask_time'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.mask('99:99');
+	});
 }
