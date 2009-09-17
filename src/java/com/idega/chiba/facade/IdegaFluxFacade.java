@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.SendMail;
@@ -95,7 +96,7 @@ public class IdegaFluxFacade extends FluxFacade {
     		return false;
     	}
     	
-    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "eiki@idega.com");
+    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "programmers@idega.com");
     	if (StringUtil.isEmpty(to)) {
     		return false;
     	}
@@ -104,6 +105,13 @@ public class IdegaFluxFacade extends FluxFacade {
     	if (StringUtil.isEmpty(host)) {
     		return false;
     	}
+    	
+    	String userName = "Not logged in";
+    	IWContext iwc = CoreUtil.getIWContext();
+    	if (iwc != null && iwc.isLoggedOn()) {
+    		userName = iwc.getCurrentUser().getName();
+    	}
+    	text += "\nUser: " + userName;
     	
     	try {
     		SendMail.send("idegaweb@idega.com", to, null, null, host, subject, text);

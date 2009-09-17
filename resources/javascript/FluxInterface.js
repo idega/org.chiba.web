@@ -112,21 +112,32 @@ function closeSession() {
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
-	if (msg == "Session has expired") {
-			redirectForm(Localization.SESSION_EXPIRED, {callback: function (data) {
-									closeAllLoadingMessages();			
-					}});
-	
+	if (msg == 'Session has expired') {
+		redirectForm(Localization.SESSION_EXPIRED, {
+			callback: function (data) {
+				closeAllLoadingMessages();			
+			}
+		});
 		return false;
-		
 	}
 	
 	if (!FluxInterfaceHelper.sendingErrorMail) {
 		FluxInterfaceHelper.sendingErrorMail = true;
 		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
-			Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' +
-				navigator.userAgent, {
+			var mailMessage = 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' + navigator.userAgent;
+			if (ex.fileName) {
+				mailMessage += '\nFile: ' + ex.fileName;
+			}
+			if (ex.lineNumber) {
+				mailMessage += '\nLine number: ' + ex.lineNumber;
+			}
+			if (ex.number) {
+				mailMessage += '\nError number: ' + ex.number;
+			}
+			Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, mailMessage, {
 				callback: function(data) {
+					FluxInterfaceHelper.sendingErrorMail = false;
+				}, errorHandler: function(tmpMsg, tmpEx) {
 					FluxInterfaceHelper.sendingErrorMail = false;
 				}
 			});
