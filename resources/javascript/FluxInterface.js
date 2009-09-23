@@ -379,7 +379,7 @@ function updateUI(data) {
 		eventLog = data.childNodes;
     }
     
-    if (eventLog == null || eventLog.length == 0){
+    if (eventLog == null || eventLog.length == 0) {
     	closeAllLoadingMessages();
     	return;
     }

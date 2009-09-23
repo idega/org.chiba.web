@@ -80,12 +80,12 @@ dojo.widget.defineWidget(
                 }
 
                 // reset progress bar
-                setTimeout(function() {
+                var resetTimeOutId = setTimeout(function() {
+                	window.clearTimeout(resetTimeOutId);
                 	document.getElementById(progressBarId).style.width = 0;
-                }, 2000);
-                setTimeout(function() {
                 	document.getElementById(progressBarContainerId).style.display = 'none';
-                }, 1500);
+                	closeAllLoadingMessages();
+                }, 500);
             }
         },
         _submitFile: function() {
@@ -146,6 +146,8 @@ dojo.widget.defineWidget(
             var widget = this;
             progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 2000);
 
+			showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+			
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
          
