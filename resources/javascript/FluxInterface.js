@@ -173,35 +173,33 @@ function chibaActivate(target) {
 		target = document.getElementById(target);
 	}
 	
-//	checkIfLoadedScriptsForChibaXForm(function() {
-		forceRepeatIndex(dojo.byId(target));
+	forceRepeatIndex(dojo.byId(target));
 
-	    // lookup value element
-	    while (target && !_hasClass(target, "value")) {
-	        target = target.parentNode;
-	    }
-		if (!target) {
-			return false;
-		}
+    // lookup value element
+    while (target && !_hasClass(target, "value")) {
+        target = target.parentNode;
+    }
+	if (!target) {
+		return false;
+	}
 	
-	    var id = target.id;
-	    if (id.substring(id.length - 6, id.length) == "-value") {
-	        // cut off "-value"
-	        id = id.substring(0, id.length - 6);
-	    }
+    var id = target.id;
+    if (id.substring(id.length - 6, id.length) == "-value") {
+        // cut off "-value"
+        id = id.substring(0, id.length - 6);
+    }
 
-	    showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-	    
-		dwr.engine.setErrorHandler(handleExceptions);
-	    dwr.engine.setOrdered(true);
-	    var sessionKey = document.getElementById("chibaSessionKey").value;
-	    Flux.fireAction(id, sessionKey, {
-	    	callback: function(data) {
-	    		updateUI(data);
-	    	}
-	    });
-	//});
-  
+	showLoadingMessage(Localization.STANDARD_LAYER_MSG);
+    
+	dwr.engine.setErrorHandler(handleExceptions);
+	dwr.engine.setOrdered(true);
+	var sessionKey = document.getElementById("chibaSessionKey").value;
+	Flux.fireAction(id, sessionKey, {
+		callback: function(data) {
+			updateUI(data);
+		}
+	});
+
     return false;
 }
 
@@ -404,10 +402,8 @@ function updateUI(data) {
 
         var context = new PresentationContext();
         _handleServerEvent(context, type, targetId, targetName, properties);
-        
     }
 }
-
 
 function _handleServerEvent(context, type, targetId, targetName, properties) {
     dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
@@ -444,7 +440,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
                 context.handleHelperChanged(properties["parentId"], targetName, properties["value"]);
             }
             else {
-                context.handleStateChanged(targetId, targetName, properties["valid"], properties["readonly"], properties["required"], properties["enabled"], properties["value"],properties["type"]);
+                context.handleStateChanged(targetId, targetName, properties["valid"], properties["readonly"], properties["required"], properties["enabled"],
+                	properties["value"],properties["type"]);
             }
             break;
         case "chiba-prototype-cloned":
@@ -489,7 +486,6 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             break;
     }
 }
-
 
 var submissionErrors = 0;
 function _highlightFailedRequired() {
