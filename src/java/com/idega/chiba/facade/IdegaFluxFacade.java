@@ -19,7 +19,6 @@ import com.idega.util.StringUtil;
 
 /**
  * 
- * 
  * @author <a href="anton@idega.com">Anton Makarov</a>
  * @version Revision: 1.0
  * 
@@ -45,7 +44,7 @@ public class IdegaFluxFacade extends FluxFacade {
 	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
 		try {
 			return super.setXFormsValue(id, value, sessionKey);
-		} catch (FluxException e) {
+		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to set value '" + value + "' for element '" + id + "' using session: " + sessionKey, e);
 		}
 	}

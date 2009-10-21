@@ -99,10 +99,13 @@ function keepAlive() {
 }
 
 function closeSession() {
-    var sessionKey = document.getElementById("chibaSessionKey").value;
-    dwr.engine.setErrorHandler(function(msg, ex) {});
-    dwr.engine.setAsync(false);    
-    Flux.close(sessionKey);
+	var sessionKeyElement = document.getElementById("chibaSessionKey");
+	if (sessionKeyElement != null) {
+    	var sessionKey = sessionKeyElement.value;
+    	dwr.engine.setErrorHandler(function(msg, ex) {});
+    	dwr.engine.setAsync(false);    
+    	Flux.close(sessionKey);
+	}
 }
 
 /******************************************************************************
@@ -112,7 +115,7 @@ function closeSession() {
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
-	if (msg == 'Session has expired') {
+	if (msg != null && msg.indexOf('Session has expired!') == 0) {
 		redirectForm(Localization.SESSION_EXPIRED, {
 			callback: function (data) {
 				closeAllLoadingMessages();			
@@ -578,8 +581,13 @@ FluxInterfaceHelper.startUsingXForm = function() {
 }
 
 function redirectForm(msg) {
-	showLoadingMessage(msg);
-	window.location.href = '/pages';	
+	showLoadingMessage(Localization.LOADING_MSG);
+	humanMsg.displayMsg(msg, {
+		timeout: 3000,
+		callback: function() {
+			window.location.href = '/pages';
+		}
+	});
 }
 
 FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
