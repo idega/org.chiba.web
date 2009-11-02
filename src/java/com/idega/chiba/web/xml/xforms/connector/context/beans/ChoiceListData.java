@@ -5,9 +5,9 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.chiba.xml.dom.DOMUtil;
 import org.w3c.dom.Document;
 
+import com.idega.util.IOUtil;
 import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 import com.thoughtworks.xstream.XStream;
@@ -38,7 +38,6 @@ public class ChoiceListData {
 	}
 	
 	public Document getDocument() throws Exception {
-
 		XStream xstream = new XStream();
     	xstream.alias(choiceListDataElementName, ChoiceListData.class);
     	xstream.alias(localizedEntriesElementName, LocalizedEntries.class);
@@ -50,8 +49,15 @@ public class ChoiceListData {
     	xstream.addImplicitCollection(ChoiceListData.class, localizedEntriesImplicitCollectionName);
     	
     	ByteArrayOutputStream output = new ByteArrayOutputStream();
-    	xstream.toXML(this, output);
-    	DOMUtil.prettyPrintDOM(XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray())));
-    	return XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray()));
+    	try {
+    		xstream.toXML(this, output);
+    		XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray()));
+    		return XmlUtil.getDocumentBuilder().parse(new ByteArrayInputStream(output.toByteArray()));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} finally {
+    		IOUtil.closeOutputStream(output);
+    	}
+    	return null;
 	}
 }
