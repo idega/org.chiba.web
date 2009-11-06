@@ -144,7 +144,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager {
     	if (iwc == null) {
     		try {
 	    		RequestProvider requestProvider = ELUtil.getInstance().getBean(RequestProvider.class);
-	    		session = requestProvider.getRequest().getSession();
+	    		session = requestProvider.getRequest().getSession(Boolean.FALSE);	//	We don't want to create new session here!
     		} catch(Exception e) {
     			LOGGER.log(Level.SEVERE, "Error getting request from: " + RequestProvider.class, e);
     			CoreUtil.sendExceptionNotification(e);
