@@ -43,28 +43,23 @@ public class StylesAutoloader implements ApplicationListener {
 			IWApplicationContext iwac = iwma.getIWApplicationContext();
 			
 			String path = IWBundleStarter.SLIDE_STYLES_PATH + IWBundleStarter.CHIBA_CSS;
-			InputStream streamToResource = null;
-			try {
-				streamToResource = getStreamToResource(iwac, path);
-			} catch (Exception e) {}
 			
-			if (streamToResource == null) {
-				IWBundle bundle = iwma.getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
-				
-				InputStream streamToBundleResource = null;
-				try {
-					streamToBundleResource = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH + IWBundleStarter.CHIBA_CSS);
-					IWSlideService slideService = getIWSlideService(iwac);
-					slideService.uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.SLIDE_STYLES_PATH, IWBundleStarter.CHIBA_CSS, streamToBundleResource,
-							MimeTypeUtil.MIME_TYPE_CSS, Boolean.TRUE);
-				} catch (Exception e) {
-					logger.log(Level.WARNING, "Error uploading to " + path, e);
-				} finally {
-					IOUtil.close(streamToBundleResource);
-				}
+			if (getExistence(iwac, path)) {
+				return;
 			}
 			
-			IOUtil.close(streamToResource);
+			IWBundle bundle = iwma.getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
+			InputStream streamToBundleResource = null;
+			try {
+				streamToBundleResource = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH + IWBundleStarter.CHIBA_CSS);
+				IWSlideService slideService = getIWSlideService(iwac);
+				slideService.uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.SLIDE_STYLES_PATH, IWBundleStarter.CHIBA_CSS, streamToBundleResource,
+						MimeTypeUtil.MIME_TYPE_CSS, Boolean.TRUE);
+			} catch (Exception e) {
+				logger.log(Level.WARNING, "Error uploading to " + path, e);
+			} finally {
+				IOUtil.close(streamToBundleResource);
+			}
 		}
 	}
 
@@ -77,9 +72,13 @@ public class StylesAutoloader implements ApplicationListener {
 		}
 	}
 
-	private InputStream getStreamToResource(IWApplicationContext iwac, String path) throws Exception {
-		IWSlideService service = getIWSlideService(iwac);
-		return service.getInputStream(path);
-		//return service.getWebdavExtendedResource(path, service.getRootUserCredentials());
+	private boolean getExistence(IWApplicationContext iwac, String path) {
+		try {
+			IWSlideService service = getIWSlideService(iwac);
+			return service.getExistence(path);
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Error checking existence for " + path, e);
+		}
+		return false;
 	}
 }
