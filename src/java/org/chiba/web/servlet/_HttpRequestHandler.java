@@ -103,6 +103,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -112,7 +113,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.servlet.ServletRequestContext;
-import org.apache.log4j.Logger;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.upload.MonitoredDiskFileItemFactory;
 import org.chiba.web.upload.UploadInfo;
@@ -129,7 +129,7 @@ import org.chiba.xml.xforms.exception.XFormsException;
  * @version $Id: _HttpRequestHandler.java,v 1.2 2008/04/24 20:59:22 laddi Exp $
  */
 public class _HttpRequestHandler {
-    private static final Logger LOGGER = Logger.getLogger(_HttpRequestHandler.class);
+    private static final Logger LOGGER = Logger.getLogger(_HttpRequestHandler.class.getName());
 
     // todo: ioc
     public static final String DATA_PREFIX_PROPERTY = "chiba.web.dataPrefix";
@@ -199,9 +199,7 @@ public class _HttpRequestHandler {
      * @throws XFormsException if any error occurred during request processing.
      */
     public void handleRequest(HttpServletRequest request) throws XFormsException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("handle request: " + request.getRequestURI());
-        }
+        LOGGER.info("handle request: " + request.getRequestURI());
 
         Map[] parameters;
         try {
@@ -227,9 +225,7 @@ public class _HttpRequestHandler {
     }
 
     public void handleUpload(HttpServletRequest request) throws XFormsException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("handle request: " + request.getRequestURI());
-        }
+        LOGGER.info("handle request: " + request.getRequestURI());
 
         Map[] parameters;
         try {
@@ -274,14 +270,13 @@ public class _HttpRequestHandler {
             FileItem item;
             while (iterator.hasNext()) {
                 item = (FileItem) iterator.next();
-                if(LOGGER.isDebugEnabled()) {
-                    if (item.isFormField()) {
-                         LOGGER.debug("request param: " + item.getFieldName() + " - value='" + item.getString() + "'");
-                    }else{
-                        LOGGER.debug("file in request: " + item.getName());
-                    }
-
+                
+                if (item.isFormField()) {
+                	LOGGER.info("request param: " + item.getFieldName() + " - value='" + item.getString() + "'");
+                } else {
+                    LOGGER.info("file in request: " + item.getName());
                 }
+
                 parseMultiPartParameter(item, encoding, parameters);
             }
         }
@@ -521,9 +516,7 @@ public class _HttpRequestHandler {
     }
 
     protected void processUploadParameters(Map uploads, HttpServletRequest request) throws XFormsException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("updating " + uploads.keySet().size() + " uploads(s)");
-        }
+        LOGGER.info("updating " + uploads.keySet().size() + " uploads(s)");
 
         try {
             // update repeat indices
@@ -557,9 +550,7 @@ public class _HttpRequestHandler {
                     request.getSession().setAttribute(XFormsSession.ADAPTER_PREFIX + sessionKey+"-uploadInfo", new UploadInfo(1, 0, 0, 0,"done"));
                 }
                 else {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("ignoring empty upload " + id);
-                    }
+                    LOGGER.info("ignoring empty upload " + id);
                     // todo: removal ?
                 }
 
@@ -588,12 +579,10 @@ public class _HttpRequestHandler {
             }
         }
 
-        if (LOGGER.isDebugEnabled()) {
-            int all = controls.keySet().size();
-            int changed = all - unchanged;
-            if (changed > 0) {
-                LOGGER.debug("updating " + changed + " of " + all + " control(s)");
-            }
+        int all = controls.keySet().size();
+        int changed = all - unchanged;
+        if (changed > 0) {
+            LOGGER.info("updating " + changed + " of " + all + " control(s)");
         }
 
         // ... then update changed controls to avoid side-effects
@@ -609,9 +598,7 @@ public class _HttpRequestHandler {
     }
 
     protected void processRepeatParameters(Map repeats) throws XFormsException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("updating " + repeats.keySet().size() + " repeat(s)");
-        }
+        LOGGER.info("updating " + repeats.keySet().size() + " repeat(s)");
 
         // update repeat indices
         Iterator iterator = repeats.keySet().iterator();
@@ -627,9 +614,7 @@ public class _HttpRequestHandler {
     }
 
     protected void processTriggerParameters(Map trigger) throws XFormsException {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("activating " + trigger.keySet().size() + " trigger");
-        }
+    	LOGGER.info("activating " + trigger.keySet().size() + " trigger");
 
         // update repeat indices
         Iterator iterator = trigger.keySet().iterator();

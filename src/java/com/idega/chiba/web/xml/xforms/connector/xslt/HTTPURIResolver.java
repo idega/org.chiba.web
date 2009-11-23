@@ -96,15 +96,16 @@
  */
 package com.idega.chiba.web.xml.xforms.connector.xslt;
 
-import org.apache.log4j.Logger;
+import java.net.URI;
+import java.util.logging.Logger;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.connector.http.AbstractHTTPConnector;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.net.URI;
 
 /**
  * This class resolves <code>http</code> URIs. It treats the denoted
@@ -123,7 +124,7 @@ public class HTTPURIResolver extends AbstractHTTPConnector implements URIResolve
     /**
      * The logger.
      */
-    private static Logger LOGGER = Logger.getLogger(HTTPURIResolver.class);
+    private static Logger LOGGER = Logger.getLogger(HTTPURIResolver.class.getName());
 
     /**
      * Performs link traversal of the <code>http</code> URI and returns the result
@@ -136,15 +137,11 @@ public class HTTPURIResolver extends AbstractHTTPConnector implements URIResolve
         try {
             URI uri = new URI(getURI());
             
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("getting '" + uri + "'");
-            }
+            LOGGER.info("getting '" + uri + "'");
 
             get(getURIWithoutFragment());
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("converting response stream to XML");
-            }
+            LOGGER.info("converting response stream to XML");
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
