@@ -1,6 +1,7 @@
 package com.idega.chiba.web.session.impl;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,8 +15,11 @@ import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.event.SessionPollerEvent;
@@ -29,13 +33,15 @@ import com.idega.util.StringUtil;
  * @author Anton Makarov</a>
  */
 
+@Service
+@Scope(BeanDefinition.SCOPE_SINGLETON)
 public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, ApplicationListener {	
     
 	private static final Logger LOGGER = Logger.getLogger(IdegaXFormSessionManagerImpl.class.getName());
 	
 	private static final String XFORMS_SESSIONS_CACHE_NAME = "idegaXFormsSessionsCache";
 	
-	protected static XFormsSessionManager instance = null;
+	private static XFormsSessionManager instance = null;
 	
 	private int wipingInterval;
 	private int maxSessions;
@@ -43,12 +49,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	
     public static XFormsSessionManager getXFormsSessionManager() {
     	if (instance == null) {
-            instance = new IdegaXFormSessionManagerImpl();
+    		new IdegaXFormSessionManagerImpl();
         }
         return instance;
     }
     
     private IdegaXFormSessionManagerImpl() {
+    	instance = this;
     }
     
     public synchronized XFormsSession createXFormsSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {
@@ -113,7 +120,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     	
     	XFormsSession removed = sessionXForms.remove(id);
         if (removed == null) {
-        	LOGGER.warning("Unable to remove XForms session from SessionManager: '" + id + "'");
+        	LOGGER.warning("Unable to remove XForms session from SessionManager: '" + id + "'. Element by this id exists in cache: " +
+        			sessionXForms.containsKey(id));
         } else {
         	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "'");
         }
@@ -156,22 +164,22 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
      * @return map of [key,xform].
      */
 	private Map<String, XFormsSession> getCurrentSessionXForms() {
-		int maxSessions = this.maxSessions == 0 ? 15 : this.maxSessions;
+		int maxSessions = this.maxSessions == 0 ? 25 : this.maxSessions;
 		
 		//	All intervals are in seconds
 		long halfAnHour = 60 * 60 * 30;	
 		long ttlIdle = wipingInterval == 0 ? halfAnHour : wipingInterval / 1000;
 		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;
 		
-		Map<String, XFormsSession> xforms = null;
 		try {
-			xforms = IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, maxSessions, true, false,
+			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, maxSessions, true, false,
 				ttlIdle, ttlCache);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error getting cache of XForms ("+XFORMS_SESSIONS_CACHE_NAME+")", e);
 			CoreUtil.sendExceptionNotification(e);
 		}
-		return xforms;
+		
+		return null;
 	}
 
 	public int getSessionCount() {
@@ -193,8 +201,26 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof SessionPollerEvent) {
-			if (LOGGER.isLoggable(Level.INFO)) {
-				LOGGER.info("XForms sessions in cache: " + getSessionCount());
+			Set<String> ids = null;
+			try {
+				ids = getCurrentSessionXForms().keySet();
+				if (ids == null || ids.isEmpty()) {
+					return;
+				}
+				
+				for (String id: ids) {
+					XFormsSession session = getXFormsSession(id);
+					if (session != null) {
+						session.updateLRU();	//	Keeping session alive!
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Error while trying to keep alive XForms sessions: " + ids);
+			} finally {
+				int sessionsInCache = getSessionCount();
+				if (LOGGER.isLoggable(Level.INFO)) {
+					LOGGER.info("XForms sessions in cache: " + sessionsInCache + " ("+ids+")");
+				}
 			}
 		}
 	}
