@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.chiba.web.IWBundleStarter;
+import org.chiba.web.WebAdapter;
 import org.chiba.web.WebFactory;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.idega.core.cache.IWCacheManager2;
+import com.idega.event.IWHttpSessionsManager;
 import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreUtil;
@@ -42,6 +45,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	private static final String XFORMS_SESSIONS_CACHE_NAME = "idegaXFormsSessionsCache";
 	
 	private static XFormsSessionManager instance = null;
+	
+	@Autowired
+	private IWHttpSessionsManager httpSessionsManager;
 	
 	private int wipingInterval;
 	private int maxSessions;
@@ -210,8 +216,14 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				
 				for (String id: ids) {
 					XFormsSession session = getXFormsSession(id);
-					if (session != null) {
-						session.updateLRU();	//	Keeping session alive!
+					if (session instanceof IdegaXFormsSessionBase) {
+						if (getHttpSessionsManager().isSessionValid(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
+							//	Keeping session alive!
+							session.updateLRU();	
+						} else {
+							//	Removing XForms session because original HTTP session has expired
+							invalidateXFormsSession(session, id);
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -223,5 +235,25 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				}
 			}
 		}
+	}
+	
+	private void invalidateXFormsSession(XFormsSession session, String id) {
+		try {
+			WebAdapter adapter = session.getAdapter();
+	        if (adapter != null) {
+	        	adapter.shutdown();
+	        }
+		} catch (Exception e) {
+		} finally {
+			deleteXFormsSession(id);
+		}
+	}
+
+	public IWHttpSessionsManager getHttpSessionsManager() {
+		return httpSessionsManager;
+	}
+
+	public void setHttpSessionsManager(IWHttpSessionsManager httpSessionsManager) {
+		this.httpSessionsManager = httpSessionsManager;
 	}
 }

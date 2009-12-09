@@ -38,6 +38,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
 	private static final AtomicLong sessionId = new AtomicLong();
 	
+	private String httpSessionId;
+	
 	public IdegaXFormsSessionBase(HttpServletRequest request,
 								  HttpServletResponse response, 
 								  HttpSession session)
@@ -45,6 +47,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		super(request, response, session);
 		//ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
 		this.key = (this.getKey() + sessionId.incrementAndGet());
+		
+		httpSessionId = session.getId();
 	}
 	
 	/**
@@ -170,4 +174,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
     	IWMainApplication iwma = IWMainApplication.getIWMainApplication(ctx);
 		return iwma.getBundle(bundleIdentifier);
     }
+
+	public String getHttpSessionId() {
+		return httpSessionId;
+	}
 }
