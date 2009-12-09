@@ -27,7 +27,7 @@
         Thus XFormsSessions won't expire with this setting though the Http Session might still time out making the
         XFormsSession unavailable.
         -->
-        <property name="sessionChecking" value="120000" description="the amount of time (in millis) between runs of wipe() method checking for expired XForms sessions"/>
+        <property name="sessionChecking" value="0" description="the amount of time (in millis) between runs of wipe() method checking for expired XForms sessions"/>
         <property name="sessionTimeout" value="7200000" description="the amount of time of inactivity before XFormsSession expires"/>
         <property name="sessionManager" value="com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl" description="fully qualified classname of XFormsSessionManager implementation"/>
         <!--<property name="sessionClass" value="org.chiba.web.session.impl.DefaultChibaSession" description="fully qualified classname of XFormsSession implementation"/>-->
