@@ -105,12 +105,6 @@
       <type>jar</type>
     </dependency>
     <dependency>
-      <groupId>xpp3</groupId>
-      <artifactId>xpp3</artifactId>
-      <version>${xpp3-xpp3-version}</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
     </dependency>
