@@ -24,10 +24,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.idega.core.cache.IWCacheManager2;
+import com.idega.event.HttpSessionDestroyed;
 import com.idega.event.IWHttpSessionsManager;
 import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 
 /**
@@ -207,9 +209,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof SessionPollerEvent) {
-			Set<String> ids = null;
+			Set<String> ids = getKeysForXFormsSessions();
 			try {
-				ids = getCurrentSessionXForms().keySet();
 				if (ids == null || ids.isEmpty()) {
 					return;
 				}
@@ -219,7 +220,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 					if (session instanceof IdegaXFormsSessionBase) {
 						if (getHttpSessionsManager().isSessionValid(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
 							//	Keeping session alive!
-							session.updateLRU();	
+							session.updateLRU();
 						} else {
 							//	Removing XForms session because original HTTP session has expired
 							invalidateXFormsSession(session, id);
@@ -234,6 +235,42 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 					LOGGER.info("XForms sessions in cache: " + sessionsInCache + " ("+ids+")");
 				}
 			}
+		} else if (event instanceof HttpSessionDestroyed) {
+			String destroyedHttpSessionId = ((HttpSessionDestroyed) event).getHttpSessionId();
+			invalidateXFormsSessions(destroyedHttpSessionId);
+		}
+	}
+	
+	private Set<String> getKeysForXFormsSessions() {
+		try {
+			return getCurrentSessionXForms().keySet();
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error while resolving keys for XForms sessions", e);
+		}
+		return null;
+	}
+	
+	private void invalidateXFormsSessions(String httpSessionId) {
+		if (StringUtil.isEmpty(httpSessionId)) {
+			return;
+		}
+		
+		Set<String> xFormsSessionsIds = getKeysForXFormsSessions();
+		try {
+			if (ListUtil.isEmpty(xFormsSessionsIds)) {
+				return;
+			}
+			
+			for (String xFormSessionId: xFormsSessionsIds) {
+				XFormsSession session = getXFormsSession(xFormSessionId);
+				if (session instanceof IdegaXFormsSessionBase) {
+					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
+						invalidateXFormsSession(session, xFormSessionId);
+					}
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error while trying invalidate XForms sessions tied to destroyed HttpSession: " + httpSessionId, e);
 		}
 	}
 	
