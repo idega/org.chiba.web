@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.chiba.adapter.ChibaEvent;
-import org.chiba.adapter.DefaultChibaEventImpl;
 import org.chiba.adapter.ui.UIGenerator;
 import org.chiba.adapter.ui.XSLTGenerator;
 import org.chiba.web.IWBundleStarter;
@@ -39,11 +37,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	private static final AtomicLong sessionId = new AtomicLong();
 	
 	private String httpSessionId;
-	
-	public IdegaXFormsSessionBase(HttpServletRequest request,
-								  HttpServletResponse response, 
-								  HttpSession session)
-			throws XFormsException {		
+
+	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {		
 		super(request, response, session);
 		//ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
 		this.key = (this.getKey() + sessionId.incrementAndGet());
@@ -65,14 +60,6 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         WebUtil.nonCachingResponse(response);
         
         try {
-            if (false && request.getMethod().equalsIgnoreCase("POST")) {
-                updating=true;
-                // updating ... - this is only called when ServletAdapter is in use
-                ChibaEvent chibaEvent = new DefaultChibaEventImpl();
-                chibaEvent.initEvent("http-request", null, request);
-                adapter.dispatch(chibaEvent);
-            }
-
             XMLEvent exitEvent = adapter.checkForExitEvent();
             if (exitEvent != null) {
                 handleExit(exitEvent);
@@ -97,12 +84,15 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     setProperty(XFormsSession.REFERER, request.getContextPath() + request.getServletPath() + "?" + referer);
                     //actually register the XFormsSession with the manager
                     getManager().addXFormsSession(this);
-                    /*
-                    the XFormsSessionManager is kept in the http-session though it is accessible as singleton. Subsequent
+                   
+                    /* The XFormsSessionManager is kept in the http-session though it is accessible as singleton. Subsequent
                     servlets should access the manager through the http-session attribute as below to ensure the http-session
-                    is refreshed.
-                    */
-//                    httpSession.setAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER, DefaultXFormsSessionManagerImpl.createXFormsSessionManager(IdegaXFormSessionManagerImpl.class.getName()));
+                    is refreshed.*/
+                    Object xformsManager = httpSession.getAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER);
+                    if (!(xformsManager instanceof XFormsSessionManager)) {
+                    	//	Making sure manager is set to the HTTP session
+                    	httpSession.setAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER, IdegaXFormSessionManagerImpl.getXFormsSessionManager());
+                    }
 
                     FacesContext context = FacesContext.getCurrentInstance();
                     

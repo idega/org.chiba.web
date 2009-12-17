@@ -105,8 +105,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     		LOGGER.warning("XForms sessions cache is null! Unable to put XForms session: " + xfSession.getKey());
     		return;
     	}
-    	
-    	sessionXForms.put(xfSession.getKey(), xfSession);
+
+        sessionXForms.put(xfSession.getKey(), xfSession);
     }
 
     /**
@@ -172,12 +172,12 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
      * @return map of [key,xform].
      */
 	private Map<String, XFormsSession> getCurrentSessionXForms() {
-		int maxSessions = this.maxSessions == 0 ? 25 : this.maxSessions;
+		this.maxSessions = this.maxSessions == 0 ? 50 : this.maxSessions;
 		
 		//	All intervals are in seconds
 		long halfAnHour = 60 * 60 * 30;	
-		long ttlIdle = wipingInterval == 0 ? halfAnHour : wipingInterval / 1000;
-		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;
+		long ttlIdle = wipingInterval == 0 ? halfAnHour : wipingInterval / 1000;	//	Set to 0 in configuration XML file
+		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;					//	Set to 2 hours in configuration XML file
 		
 		try {
 			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, maxSessions, true, false,
@@ -230,10 +230,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 			} catch (Exception e) {
 				LOGGER.log(Level.WARNING, "Error while trying to keep alive XForms sessions: " + ids);
 			} finally {
-				int sessionsInCache = getSessionCount();
-				if (LOGGER.isLoggable(Level.INFO)) {
-					LOGGER.info("XForms sessions in cache: " + sessionsInCache + " ("+ids+")");
-				}
+				getSessionCount();
 			}
 		} else if (event instanceof HttpSessionDestroyed) {
 			String destroyedHttpSessionId = ((HttpSessionDestroyed) event).getHttpSessionId();
