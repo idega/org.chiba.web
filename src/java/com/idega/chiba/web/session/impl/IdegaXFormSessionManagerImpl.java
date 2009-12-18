@@ -52,7 +52,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	private IWHttpSessionsManager httpSessionsManager;
 	
 	private int wipingInterval;
-	private int maxSessions;
+	private static int maxSessions;
 	private int timeOut;
 	
     public static XFormsSessionManager getXFormsSessionManager() {
@@ -172,22 +172,26 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
      * @return map of [key,xform].
      */
 	private Map<String, XFormsSession> getCurrentSessionXForms() {
-		this.maxSessions = this.maxSessions == 0 ? 50 : this.maxSessions;
-		
 		//	All intervals are in seconds
 		long halfAnHour = 60 * 60 * 30;	
 		long ttlIdle = wipingInterval == 0 ? halfAnHour : wipingInterval / 1000;	//	Set to 0 in configuration XML file
 		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;					//	Set to 2 hours in configuration XML file
-		
 		try {
-			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, maxSessions, true, false,
-				ttlIdle, ttlCache);
+			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, getMaxSessions(),
+					false, false, ttlIdle, ttlCache);
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Error getting cache of XForms ("+XFORMS_SESSIONS_CACHE_NAME+")", e);
+			LOGGER.log(Level.WARNING, "Error getting cache of XForms (" + XFORMS_SESSIONS_CACHE_NAME + ")", e);
 			CoreUtil.sendExceptionNotification(e);
 		}
 		
 		return null;
+	}
+	
+	public static final int getMaxSessions() {
+		if (maxSessions == 0)
+			return Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(25)));
+		
+		return maxSessions;
 	}
 
 	public int getSessionCount() {
@@ -199,8 +203,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		this.wipingInterval = wipingInterval;
 	}
 
-	public void setMaxSessions(int max) {
-		maxSessions = max;
+	public void setMaxSessions(int maxSessions) {
+		IdegaXFormSessionManagerImpl.maxSessions = maxSessions;
 	}
 
 	public void setTimeout(int milliseconds) {

@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import org.chiba.adapter.ui.UIGenerator;
 import org.chiba.adapter.ui.XSLTGenerator;
 import org.chiba.web.IWBundleStarter;
+import org.chiba.web.flux.FluxAdapter;
+import org.chiba.web.servlet.ServletAdapter;
 import org.chiba.web.servlet.WebUtil;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
@@ -37,13 +39,22 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	private static final AtomicLong sessionId = new AtomicLong();
 	
 	private String httpSessionId;
-
+	private String originalKey;
+	
 	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {		
 		super(request, response, session);
+		
+		originalKey = key;
 		//ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
 		this.key = (this.getKey() + sessionId.incrementAndGet());
 		
 		httpSessionId = session.getId();
+	}
+	
+	@Override
+	protected void createAdapter() {
+		this.adapter = isScripted() ? /*new IdegaFluxAdapter(key)*/ new FluxAdapter() : new ServletAdapter();
+		adapter.setXFormsSession(this);
 	}
 	
 	/**
@@ -167,5 +178,9 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
 	public String getHttpSessionId() {
 		return httpSessionId;
+	}
+
+	public String getOriginalKey() {
+		return originalKey;
 	}
 }
