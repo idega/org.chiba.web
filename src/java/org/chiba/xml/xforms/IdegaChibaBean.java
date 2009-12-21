@@ -1,15 +1,18 @@
 package org.chiba.xml.xforms;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+
 import javax.xml.transform.TransformerException;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+
 import org.chiba.session.IdegaXFormSerializer;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
+
 import com.idega.util.IOUtil;
 import com.idega.util.xml.XmlUtil;
 
