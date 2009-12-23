@@ -1,5 +1,6 @@
 package com.idega.chiba.web.session.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -16,21 +17,26 @@ import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.jdom.Attribute;
+import org.jdom.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
 
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.event.HttpSessionDestroyed;
 import com.idega.event.IWHttpSessionsManager;
+import com.idega.event.PDFGeneratedEvent;
 import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.xml.XmlUtil;
 
 /**
  * Idega implementation of a XFormsSessionManager.
@@ -239,6 +245,39 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		} else if (event instanceof HttpSessionDestroyed) {
 			String destroyedHttpSessionId = ((HttpSessionDestroyed) event).getHttpSessionId();
 			invalidateXFormsSessions(destroyedHttpSessionId);
+		} else if (event instanceof PDFGeneratedEvent) {
+			invalidateXFormsSession(((PDFGeneratedEvent) event).getPdfSource());
+		}
+	}
+	
+	private void invalidateXFormsSession(Document doc) {
+		if (doc == null) {
+			return;
+		}
+		
+		org.jdom.Document document = XmlUtil.getJDOMXMLDocument(doc);
+		if (document == null) {
+			return;
+		}
+		
+		List<Element> forms = XmlUtil.getElementsByXPath(document, "form", XmlUtil.XHTML_NAMESPACE_ID);
+		if (ListUtil.isEmpty(forms)) {
+			return;
+		}
+		
+		for (Element form: forms) {
+			Attribute action = form.getAttribute("action");
+			if (action == null) {
+				break;
+			}
+			
+			String actionValue = action.getValue();
+			if (StringUtil.isEmpty(actionValue) || actionValue.indexOf(IWBundleStarter.SESSION_KEY) == -1) {
+				break;
+			}
+			
+			String sessionId = actionValue.substring(actionValue.indexOf(IWBundleStarter.SESSION_KEY) + IWBundleStarter.SESSION_KEY.length() + 1);
+			invalidateXFormsSession(getXFormsSession(sessionId), sessionId);
 		}
 	}
 	

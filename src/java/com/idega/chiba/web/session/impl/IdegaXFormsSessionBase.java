@@ -81,7 +81,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     // updating ... - this is only called when ServletAdapter is in use
                     referer = (String) getProperty(XFormsSession.REFERER);
                     setProperty("update","true");
-                    String forwardTo = request.getContextPath() + "/view?sessionKey=" + getKey() + "&referer=" + referer;
+                    String forwardTo = request.getContextPath() + "/view?"+IWBundleStarter.SESSION_KEY+"=" + getKey() + "&referer=" + referer;
                     response.sendRedirect(response.encodeRedirectURL(forwardTo));
                 } else {
                     referer = request.getQueryString();

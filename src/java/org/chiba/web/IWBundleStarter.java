@@ -18,6 +18,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWBundleStartable;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.servlet.filter.IWBundleResourceFilter;
+import com.idega.util.CoreConstants;
 
 /**
  * <p>
@@ -33,20 +34,17 @@ public class IWBundleStarter implements IWBundleStartable {
 	public static final String CHIBA_CSS = "xforms.css";
 	public static final String BUNDLE_IDENTIFIER = "org.chiba.web";
 	public static final String BUNDLE_STYLES_PATH = "/style/";
-	public static final String SLIDE_STYLES_PATH = "/files/public/style/";
+	public static final String SLIDE_STYLES_PATH = CoreConstants.PUBLIC_PATH + BUNDLE_STYLES_PATH;
 	public static final String CSS_STYLE_PATH = "resources/style/";
 	
-    //private String defaultRequestEncoding = "UTF-8";
-
+	public static final String SESSION_KEY = "sessionKey";
+	
 	public static final String TRANSFORMER_SERVICE = TransformerService.class.getName();
 	
 	public static WebFactory webFactory = new WebFactory();
 	
 	private Locale icelandicLocale = new Locale("is", "IS"); 
 
-//	public static final URI XSLT_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/xslt/html4.xsl");
-//	private static final URI CHIBA_CONFIG_URI = URI.create("bundle://" + BUNDLE_IDENTIFIER + "/resources/chiba-config.xml");
-	
 	public void start(IWBundle starterBundle) {
 	
     	String chibaConfigURI = "/idegaweb/bundles/org.chiba.web.bundle/resources/chiba-config.xml";
@@ -63,13 +61,9 @@ public class IWBundleStarter implements IWBundleStartable {
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"ui.xsl");
     	IWBundleResourceFilter.checkCopyOfResourceToWebapp(application, styleSheetsPath+"html-form-controls.xsl");
     	
-//		GlobalIncludeManager.getInstance().addBundleStyleSheet(BUNDLE_IDENTIFIER, BUNDLE_STYLES_PATH);
-
         webFactory.setServletContext(application.getServletContext());
         try {
             webFactory.initConfiguration();
-            //defaultRequestEncoding = webFactory.getConfig().getProperty("defaultRequestEncoding", defaultRequestEncoding);
-            //webFactory.initLogging(this.getClass());
             webFactory.initTransformerService();
             webFactory.initXFormsSessionManager();
         } catch (XFormsConfigException e) {
