@@ -116,6 +116,7 @@
             <xsl:call-template name="getMeta" />
 
 			<div class="info">
+				<div id="chibaXFormSessionKeyContainerId" class="chibaXFormSessionKeyContainerStyle" title="{$sessionKey}"/>
             	<h1>
                 	<xsl:value-of select="$form-name"/>
 				</h1>
@@ -146,7 +147,7 @@
 </xsl:text>
 <!-- Chiba localization -->
                 <script type="text/javascript">
-                    if(Localization == null) {
+                    if (Localization == null) {
                         var Localization = {};
                         Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$standardLayerMsg" />';
                         Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
@@ -154,13 +155,10 @@
                         Localization.SESSION_EXPIRED = '<xsl:value-of select="$sessionExpiredMsg" />';
                         Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = '<xsl:value-of select="$downloadingPDFForXFormMsg" />';
                     }
-                    if(!IE){
+                    if (!IE) {
                         showLoadingMessage(Localization.LOADING_MSG);
-                        }
-                        
-                 
-                        
-                   </script> 
+                    }
+                </script> 
                     <xsl:text>
 </xsl:text>
                 <xsl:if test="$uses-html-textarea">

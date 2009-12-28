@@ -1,5 +1,6 @@
 package com.idega.chiba.web.session.impl;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -260,24 +261,38 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 			return;
 		}
 		
-		List<Element> forms = XmlUtil.getElementsByXPath(document, "form", XmlUtil.XHTML_NAMESPACE_ID);
-		if (ListUtil.isEmpty(forms)) {
+		List<Element> divs = XmlUtil.getElementsByXPath(document, "div", XmlUtil.XHTML_NAMESPACE_ID);
+		if (ListUtil.isEmpty(divs)) {
 			return;
 		}
 		
-		for (Element form: forms) {
-			Attribute action = form.getAttribute("action");
-			if (action == null) {
-				break;
+		boolean sessionDestroyed = false;
+		for (Iterator<Element> divsIter = divs.iterator(); (divsIter.hasNext() && !sessionDestroyed);) {
+			Element div = divsIter.next();
+			
+			Attribute id = div.getAttribute("id");
+			if (id == null) {
+				continue;
 			}
 			
-			String actionValue = action.getValue();
-			if (StringUtil.isEmpty(actionValue) || actionValue.indexOf(IWBundleStarter.SESSION_KEY) == -1) {
-				break;
+			String idValue = id.getValue();
+			if (StringUtil.isEmpty(idValue) || !idValue.equals("chibaXFormSessionKeyContainerId")) {
+				continue;
 			}
 			
-			String sessionId = actionValue.substring(actionValue.indexOf(IWBundleStarter.SESSION_KEY) + IWBundleStarter.SESSION_KEY.length() + 1);
-			invalidateXFormsSession(getXFormsSession(sessionId), sessionId);
+			Attribute title = div.getAttribute("title");
+			if (title == null) {
+				continue;
+			}
+			
+			String sessionId = title.getValue();
+			XFormsSession session = getXFormsSession(sessionId);
+			if (session == null) {
+				continue;
+			}
+			
+			invalidateXFormsSession(session, sessionId);
+			sessionDestroyed = true;
 		}
 	}
 	
