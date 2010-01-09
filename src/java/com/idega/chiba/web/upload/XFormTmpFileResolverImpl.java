@@ -215,4 +215,8 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		throw new UnsupportedOperationException(
 				"Unsupported, use default tmp files resolver");
 	}
+
+	public void uploadToTmpLocation(String pathDirRelativeToBase, String fileName, InputStream inputStream, boolean closeStream) {
+		throw new UnsupportedOperationException("Unsupported, use default tmp files resolver");
+	}
 }
