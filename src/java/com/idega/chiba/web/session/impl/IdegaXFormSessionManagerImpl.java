@@ -185,7 +185,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;					//	Set to 2 hours in configuration XML file
 		try {
 			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, getMaxSessions(),
-					false, false, ttlIdle, ttlCache);
+					true, false, ttlIdle, ttlCache);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error getting cache of XForms (" + XFORMS_SESSIONS_CACHE_NAME + ")", e);
 			CoreUtil.sendExceptionNotification(e);
@@ -196,7 +196,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	
 	public static final int getMaxSessions() {
 		if (maxSessions == 0)
-			return Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(25)));
+			return Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(100)));
 		
 		return maxSessions;
 	}
