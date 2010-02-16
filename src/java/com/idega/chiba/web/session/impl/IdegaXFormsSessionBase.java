@@ -183,4 +183,9 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	public String getOriginalKey() {
 		return originalKey;
 	}
+	
+	@Override
+	public String toString() {
+		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId());
+	}
 }
