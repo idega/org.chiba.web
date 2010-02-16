@@ -5,11 +5,13 @@ import java.util.logging.Logger;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
+import org.chiba.web.session.XFormsSession;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
 import com.idega.chiba.web.exception.SessionExpiredException;
+import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
@@ -36,7 +38,8 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
-			throw new SessionExpiredException("Unable to fire action for element: '" + id + "' using session: " + sessionKey, e);
+			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
+					.concat(getSessionInformation(sessionKey)), e);
 		}
 	}
 
@@ -45,7 +48,8 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (Exception e) {
-			throw new SessionExpiredException("Unable to set value '" + value + "' for element '" + id + "' using session: " + sessionKey, e);
+			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
+					.concat(sessionKey).concat(getSessionInformation(sessionKey)), e);
 		}
 	}
 
@@ -54,7 +58,8 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.setRepeatIndex(id, position, sessionKey);
 		} catch (Exception e) {
-			throw new SessionExpiredException("Unable to set repeat index for element: '"+ id +"', position: '"+ position +"' using session: " + sessionKey, e);
+			throw new SessionExpiredException("Unable to set repeat index for element: '".concat(id).concat("', position: '").concat(position)
+					.concat("' using session: ").concat(sessionKey).concat(getSessionInformation(sessionKey)), e);
 		}	
 	}
 	
@@ -63,8 +68,10 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			return super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception while fetching progress for element: '" + id + "', file: '" + filename + "' using session: " + sessionKey, e);
-			CoreUtil.sendExceptionNotification(e);
+			String message = "Exception while fetching progress for element: '".concat(id).concat("', file: '").concat(filename).concat("' using session: ")
+				.concat(sessionKey).concat(getSessionInformation(sessionKey));
+			LOGGER.log(Level.SEVERE, message, e);
+			CoreUtil.sendExceptionNotification(message, e);
 			return null;
 		}
 	}
@@ -74,8 +81,9 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception at keep alive, session key=" + sessionKey, e);
-			CoreUtil.sendExceptionNotification(e);
+			String message = "Exception at keep alive, session key=".concat(sessionKey).concat(getSessionInformation(sessionKey));
+			LOGGER.log(Level.SEVERE, message, e);
+			CoreUtil.sendExceptionNotification(message, e);
 		}			
 	}
 	 
@@ -84,9 +92,15 @@ public class IdegaFluxFacade extends FluxFacade {
     	try {
 			super.close(sessionKey);
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception at close, session key=" + sessionKey, e);
-			CoreUtil.sendExceptionNotification(e);
+			String message = "Exception at close, session key=".concat(sessionKey).concat(getSessionInformation(sessionKey));
+			LOGGER.log(Level.SEVERE, message, e);
+			CoreUtil.sendExceptionNotification(message, e);
 		}	
+    }
+    
+    private String getSessionInformation(String sessionKey) {
+    	XFormsSession session = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(sessionKey);
+    	return ". Object found for this key: " + session;
     }
     
     public boolean sendEmail(String subject, String text) {
