@@ -166,7 +166,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     	try {
     		formsSession = forms.get(id);
     	} catch (Exception e) {
-    		LOGGER.log(Level.WARNING, "Error getting XForm session: " + id + " from: " + forms);
+    		LOGGER.log(Level.WARNING, "Error getting XForm session: " + id + " from: " + forms + ", active sessions: " + forms.keySet());
     	}
         if (formsSession == null) {
         	LOGGER.warning("XForms session with '" + id + "' not found!");
@@ -190,7 +190,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;					//	Set to 2 hours in configuration XML file
 		try {
 			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, getMaxSessions(),
-					true, false, ttlIdle, ttlCache);
+					true, false, ttlIdle, ttlCache, Boolean.FALSE);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error getting cache of XForms (" + XFORMS_SESSIONS_CACHE_NAME + ")", e);
 			CoreUtil.sendExceptionNotification(e);
@@ -200,8 +200,10 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	}
 	
 	public static final int getMaxSessions() {
-		if (maxSessions == 0)
-			return Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(100)));
+		int sessions = Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(100)));
+		
+		if (maxSessions != sessions)
+			maxSessions = sessions;
 		
 		return maxSessions;
 	}
@@ -352,5 +354,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 
 	public void setHttpSessionsManager(IWHttpSessionsManager httpSessionsManager) {
 		this.httpSessionsManager = httpSessionsManager;
+	}
+	
+	public Set<String> getKeysOfActiveSessions() {
+		Map<String, XFormsSession> sessions = getCurrentSessionXForms();
+		if (sessions == null) {
+			return null;
+		}
+		return sessions.keySet();
 	}
 }
