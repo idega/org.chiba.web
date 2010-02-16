@@ -162,7 +162,12 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     		return null;
     	}
     	
-    	XFormsSession formsSession = forms.get(id);
+    	XFormsSession formsSession = null;
+    	try {
+    		formsSession = forms.get(id);
+    	} catch (Exception e) {
+    		LOGGER.log(Level.WARNING, "Error getting XForm session: " + id + " from: " + forms);
+    	}
         if (formsSession == null) {
         	LOGGER.warning("XForms session with '" + id + "' not found!");
             return null;
