@@ -31,7 +31,7 @@
 	<xsl:param name="reloadPageBecauseOfErrorMsg" select="''"/>
 	<xsl:param name="sessionExpiredMsg" select="''"/>
 	<xsl:param name="downloadingPDFForXFormMsg" select="''"/>
-	
+	<xsl:param name="uploadingFailed" select="''"/>	
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -147,14 +147,13 @@
 </xsl:text>
 <!-- Chiba localization -->
                 <script type="text/javascript">
-                    if (Localization == null) {
-                        var Localization = {};
-                        Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$standardLayerMsg" />';
-                        Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
-                        Localization.RELOAD_PAGE = '<xsl:value-of select="$reloadPageBecauseOfErrorMsg" />';
-                        Localization.SESSION_EXPIRED = '<xsl:value-of select="$sessionExpiredMsg" />';
-                        Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = '<xsl:value-of select="$downloadingPDFForXFormMsg" />';
-                    }
+                    if (Localization == null) var Localization = {};
+                    Localization.STANDARD_LAYER_MSG = '<xsl:value-of select="$standardLayerMsg" />';
+                    Localization.LOADING_MSG = '<xsl:value-of select="$loadingLayerMsg" />';
+                    Localization.RELOAD_PAGE = '<xsl:value-of select="$reloadPageBecauseOfErrorMsg" />';
+                    Localization.SESSION_EXPIRED = '<xsl:value-of select="$sessionExpiredMsg" />';
+                    Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = '<xsl:value-of select="$downloadingPDFForXFormMsg" />';
+                    Localization.UPLOADING_FAILED = '<xsl:value-of select="$uploadingFailed" />';
                     if (!IE) {
                         showLoadingMessage(Localization.LOADING_MSG);
                     }

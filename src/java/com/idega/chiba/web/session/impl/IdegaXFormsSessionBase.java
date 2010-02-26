@@ -134,13 +134,13 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			IWContext iwc = IWContext.getIWContext(context);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 	
-			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data"));
+			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data..."));
 			generator.setParameter("loadingLayerMsg", iwrb.getLocalizedString("chiba.loading_layer_message", "Loading..."));
 			generator.setParameter("reloadPageBecauseOfErrorMsg", iwrb.getLocalizedString("chiba.reload_page_because_of_error_message",
 																"Unfortunately the page was not loaded correctly. Please click OK to reload it."));
 			generator.setParameter("sessionExpiredMsg", iwrb.getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again."));
 			generator.setParameter("downloadingPDFForXFormMsg", iwrb.getLocalizedString("chiba.downloading_pdf_for_xform", "Downloading PDF"));
-		
+			generator.setParameter("uploadingFailed", iwrb.getLocalizedString("chiba.uploading_failed", "Sorry, uploading failed. Please try again."));
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
