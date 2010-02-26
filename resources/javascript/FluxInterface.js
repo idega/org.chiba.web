@@ -1,15 +1,8 @@
-
-/******************************************************************************
- GENERAL STUFF
- ******************************************************************************/
 // todo: make configurable
 var DATE_DISPLAY_FORMAT = "%d.%m.%Y";
 var DATETIME_DISPLAY_FORMAT = "%d.%m.%Y %H:%M";
 var keepAliveTimer;
 
-// Interval which keeps active session alive if xform is open in browser
-//var sessionPollingInterval = 3600000;
-//var noneActivityInterval = 86400000;
 // global isDirty flag signals that data have changed through user input
 var isDirty = false;
 // skip shutdown for load and submission actions (these do it themselves)
@@ -21,27 +14,22 @@ var confirmMsg = "There are changed data. Really exit?";
 // ***** Localised variables
 if(Localization == null) {
 	var Localization = {};
-	Localization.STANDARD_LAYER_MSG 		= 'Processing Data';
-	Localization.LOADING_MSG                = 'Loading...';
-	Localization.RELOAD_PAGE				= 'Unfortunately the page was not loaded correctly. Please click OK to reload it.';
-	Localization.SESSION_EXPIRED 			= 'Your session has expired. Please try again.';
-	Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = 'Downloading PDF';
+	Localization.STANDARD_LAYER_MSG 				= 'Processing Data';
+	Localization.LOADING_MSG                		= 'Loading...';
+	Localization.RELOAD_PAGE						= 'Unfortunately the page was not loaded correctly. Please click OK to reload it.';
+	Localization.SESSION_EXPIRED		 			= 'Your session has expired. Please try again.';
+	Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE	= 'Downloading PDF';
+	Localization.UPLOADING_FAILED 					= 'Sorry, uploading failed. Please try again.';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.sendingErrorMail = false;
 FluxInterfaceHelper.userDeniedToReloadPageOnError = false;
-
-/******************************************************************************
- PAGE init
- ******************************************************************************/
  
 var chibaXFormsInited = false;
  
 function initXForms(){
-	
 	if(!chibaXFormsInited) {
-	
 	    chibaXFormsInited = true;
 	    dojo.event.connect("before",window,"onunload","close");
 	}
@@ -66,7 +54,7 @@ function unload(e) {
     }
 }
 
-function close(){
+function close() {
     dojo.debug("close called");
     if (!skipShutdown) closeSession();
 }
@@ -115,10 +103,23 @@ function closeSession() {
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
+	if (ex != null && ex.messageToClient != null && ex.messageToClient != '-') {
+		humanMsg.displayMsg(ex.messageToClient, {
+			timeout: 5000,
+			callback: function() {
+				FluxInterfaceHelper.sendExceptionNotification(msg, ex);
+			}
+		});
+	} else {
+		FluxInterfaceHelper.sendExceptionNotification(msg, ex);
+	}
+}
+
+FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 	if (msg != null && msg.indexOf('Session has expired!') == 0) {
 		redirectForm(Localization.SESSION_EXPIRED, {
 			callback: function (data) {
-				closeAllLoadingMessages();			
+				closeAllLoadingMessages();
 			}
 		});
 		return false;
@@ -147,13 +148,14 @@ function handleExceptions(msg, ex) {
 		}, null);
 	}
 	
-	if (!FluxInterfaceHelper.userDeniedToReloadPageOnError) {
-		if (window.confirm(Localization.RELOAD_PAGE)) {
-			reloadPage();
-			return false;
-		}
-		else {
-			FluxInterfaceHelper.userDeniedToReloadPageOnError = true;
+	if (ex != null && ex.messageToClient != null && ex.reloadPage) {
+		if (!FluxInterfaceHelper.userDeniedToReloadPageOnError) {
+			if (window.confirm(Localization.RELOAD_PAGE)) {
+				reloadPage();
+				return false;
+			} else {
+				FluxInterfaceHelper.userDeniedToReloadPageOnError = true;
+			}
 		}
 	}
 	
