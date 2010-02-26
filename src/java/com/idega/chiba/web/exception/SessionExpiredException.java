@@ -2,6 +2,7 @@ package com.idega.chiba.web.exception;
 
 import org.chiba.web.flux.FluxException;
 
+import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 
 /**
@@ -15,14 +16,36 @@ public class SessionExpiredException extends FluxException {
 
 	private static final long serialVersionUID = 3701124290017696348L;
 
+	private String messageToClient;
+	
+	private boolean reloadPage = Boolean.TRUE;
+	
 	public SessionExpiredException() {
 		super();
 	}
 	
 	public SessionExpiredException(String msg, Throwable exception) {
+		this(msg, exception, CoreConstants.MINUS);
+	}
+	
+	public SessionExpiredException(String msg, Throwable exception, String messageToClient) {
 		super("Session has expired! ".concat(msg));
 		setStackTrace(exception.getStackTrace());
 		
 		CoreUtil.sendExceptionNotification(this);
+		
+		this.messageToClient = messageToClient;
+	}
+
+	public String getMessageToClient() {
+		return messageToClient;
+	}
+
+	public void setMessageToClient(String messageToClient) {
+		this.messageToClient = messageToClient;
+	}
+
+	public boolean isReloadPage() {
+		return reloadPage;
 	}
 }

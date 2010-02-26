@@ -4,6 +4,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.chiba.web.IWBundleStarter;
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
 import org.chiba.web.session.XFormsSession;
@@ -12,9 +13,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
+import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
+import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
@@ -41,7 +45,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
-					.concat(getSessionInformation(sessionKey)), e);
+					.concat(getSessionInformation(sessionKey)), e, getSessionExpiredLocalizedString());
 		}
 	}
 
@@ -51,7 +55,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
-					.concat(sessionKey).concat(getSessionInformation(sessionKey)), e);
+					.concat(sessionKey).concat(getSessionInformation(sessionKey)), e, getSessionExpiredLocalizedString());
 		}
 	}
 
@@ -61,7 +65,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.setRepeatIndex(id, position, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to set repeat index for element: '".concat(id).concat("', position: '").concat(position)
-					.concat("' using session: ").concat(sessionKey).concat(getSessionInformation(sessionKey)), e);
+					.concat("' using session: ").concat(sessionKey).concat(getSessionInformation(sessionKey)), e, getSessionExpiredLocalizedString());
 		}	
 	}
 	
@@ -74,18 +78,21 @@ public class IdegaFluxFacade extends FluxFacade {
 				.concat(sessionKey).concat(getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
-			return null;
+			
+			throw getIdegaChibaException(sessionKey, e.getMessage(), "chiba.uploading_failed", "Sorry, uploading failed. Please try again.");
 		}
 	}
 	
 	@Override
-	public void keepAlive(String sessionKey) {	
+	public void keepAlive(String sessionKey) {
 		try {
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
 			String message = "Exception at keep alive, session key=".concat(sessionKey).concat(getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
+			
+			throw getIdegaChibaException(sessionKey, e.getMessage(), "chiba.error_keeping_session_alive", "Sorry, some internal error occurred...");
 		}			
 	}
 	 
@@ -100,9 +107,37 @@ public class IdegaFluxFacade extends FluxFacade {
 		}	
     }
     
+    private IdegaChibaException getIdegaChibaException(String sessionKey, String exceptionMessage, String localizationKey, String defaultLocalizationValue) {
+    	boolean reloadPage = true;
+		String messageToTheClient = null;
+		if (CoreConstants.EMPTY.equals(getSessionInformation(sessionKey))) {
+			messageToTheClient = getSessionExpiredLocalizedString();
+		} else {
+			reloadPage = false;
+			messageToTheClient = getLocalizedString(localizationKey, defaultLocalizationValue);
+		}
+		
+		return new IdegaChibaException(exceptionMessage, messageToTheClient, reloadPage);
+    }
+    
     private String getSessionInformation(String sessionKey) {
     	XFormsSession session = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(sessionKey);
-    	return ". Object found for this key: " + session;
+    	return session == null ? CoreConstants.EMPTY : ". Object found for this key: " + session;
+    }
+    
+    private String getSessionExpiredLocalizedString() {
+    	return getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again.");
+    }
+    
+    private String getLocalizedString(String key, String defaultValue) {
+    	try {
+	    	IWBundle bundle = IWMainApplication.getDefaultIWMainApplication().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
+	    	IWResourceBundle iwrb = bundle.getResourceBundle(CoreUtil.getIWContext());
+	    	return iwrb == null ? defaultValue : iwrb.getLocalizedString(key, defaultValue);
+    	} catch (Exception e) {
+    		LOGGER.log(Level.WARNING, "Error getting localization for: " + key, e);
+    	}
+    	return defaultValue;
     }
     
     public boolean sendEmail(String subject, String text) {

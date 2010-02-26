@@ -9,6 +9,7 @@
         </create>
         
       <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception" />
+      <convert match="com.idega.chiba.web.exception.IdegaChibaException" converter="exception" />
       <convert match="java.lang.StackTraceElement" converter="null" /> 
     </allow>
     
