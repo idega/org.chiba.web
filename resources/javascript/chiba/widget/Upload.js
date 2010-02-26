@@ -9,10 +9,7 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.*");
 
-dojo.widget.defineWidget(
-	"chiba.widget.Upload",
-	dojo.widget.HtmlWidget,
-	{
+dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
 		widgetType: "chiba:Upload",
         templatePath: dojo.uri.dojoUri('../chiba/widget/templates/HtmlUpload.html'),
 
@@ -32,28 +29,22 @@ dojo.widget.defineWidget(
         changedFetchingProgressInterval: false,
         uploadFinished: false,
         fillInTemplate: function() {
-  
-            // todo: this var is a candidate for a (to be implemented) superclass
             this.xformsId = this.id.substring(0, this.id.length - 6);
-//            dojo.debug("Upload xformsId: " + this.xformsId);
 
             this.progress.id = this.xformsId + "-progress";
             this.progressBackground.id = this.xformsId + "-progress-bg";
 
             var xformsControl = dojo.byId(this.xformsId);
             _replaceClass(xformsControl,"upload","upload " + this.css);
-//            _addClass(xformsControl, this.css);
 
             if (this.xfreadonly == "true") {
                 this.inputNode.disabled = true;
             }
-
         },
         onChange: function() {
             if (this.xfreadonly == "true") {
                 this.inputNode.disabled = true;
-            }
-            else {
+            } else {
             	this._submitFile(this.inputNode);
             }
         },
@@ -66,10 +57,6 @@ dojo.widget.defineWidget(
             }
 
             if (value == 100 || value < 0) {
-                if(value < 0){
-                    alert("Upload failed");
-                }
-                
                 // stop polling
                 this.uploadFinished = true;
                 clearInterval(progressUpdate);
@@ -91,8 +78,7 @@ dojo.widget.defineWidget(
         _submitFile: function() {
         	this.uploadFinished = false;
         	
-            // disable all controls contained in repeat prototypes to avoid
-            // inconsistent updates.
+            // disable all controls contained in repeat prototypes to avoid inconsistent updates.
             var rPrototypes = document.getElementsByClassName("repeat-prototype", "chibaform");
             for (var p = 0; p < rPrototypes.length; p++) {
                 var rControls = document.getElementsByClassName("value", rPrototypes[p].id);
@@ -106,8 +92,7 @@ dojo.widget.defineWidget(
                 }
             }
 
-            // disable all uploads that have a different id than the current
-            // to avoid re-sending of multiple uploads.
+            // disable all uploads that have a different id than the current to avoid re-sending of multiple uploads.
             var uContainers = document.getElementsByClassName("upload", "chibaform");
             for (var u = 0; u < uContainers.length; u++) {
                 var uControl = dojo.byId(uContainers[u].id + "-value");
@@ -118,7 +103,6 @@ dojo.widget.defineWidget(
                 }
             }
             
-
             //	disable all triggers in xform when uploading file is in process
             var trigContainers = document.getElementsByClassName("trigger", "chibaform");
             for (var trig = 0; trig < trigContainers.length; trig++) {
@@ -141,7 +125,6 @@ dojo.widget.defineWidget(
 		
             //polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
-            //Flux.fetchProgress(updateUI, this.xformsId, filename, sessionKey);
             var xfomsId = this.xformsId;
             var widget = this;
             progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 2000);
@@ -157,6 +140,10 @@ dojo.widget.defineWidget(
 			Flux.fetchProgress(xfomsId, filename, sessionKey, {
 				callback: function(data) {
 					updateUI(data);
+				},
+				errorHandler: function(msg, exc) {
+					clearInterval(progressUpdate);
+					handleExceptions(msg, exc);
 				}
 			});
 			if (!this.uploadFinished && !this.changedFetchingProgressInterval) {
