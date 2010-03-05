@@ -85,7 +85,7 @@
 
 	<servlet>
         <servlet-name>FluxHelper</servlet-name>
-        <servlet-class>org.chiba.web.flux.FluxHelperServlet</servlet-class>
+        <servlet-class>org.chiba.web.flux.IdegaFluxHelperServlet</servlet-class>
     </servlet>
 
 <!--  
