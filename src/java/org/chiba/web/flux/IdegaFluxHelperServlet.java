@@ -18,9 +18,9 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		ChibaUtils.getInstance().prepareForChibaMethod(request);
-		
 		try {
+			ChibaUtils.getInstance().prepareForChibaMethod(request);
+			
 			super.doPost(request, response);
 		} catch (Exception e) {
 			String message = "Error while handling request: " + request.getRequestURI();
