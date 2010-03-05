@@ -1,8 +1,3 @@
-/*
-	Copyright 2001-2007 ChibaXForms GmbH
-	All Rights Reserved.
-*/
-
 dojo.provide("chiba.widget.Upload");
 
 dojo.require("dojo.widget.*");
@@ -70,12 +65,39 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
                 var resetTimeOutId = setTimeout(function() {
                 	window.clearTimeout(resetTimeOutId);
                 	document.getElementById(progressBarId).style.width = 0;
-                	document.getElementById(progressBarContainerId).style.display = 'none';
+                	jQuery('#' + progressBarContainerId).hide('normal');
                 	closeAllLoadingMessages();
                 }, 500);
             }
         },
+        _chooseFile: function(useAlert) {
+        	var fileInputId = this.inputNode.id;
+        	var functionToFocus = function() {
+        		jQuery('#' + fileInputId).trigger('focus');
+        	}
+        	
+        	if (useAlert) {
+        		alert(Localization.INVALID_FILE_TO_UPLOAD);
+        		functionToFocus();
+        	} else {
+	        	humanMsg.displayMsg(Localization.INVALID_FILE_TO_UPLOAD, {
+					timeout: 3000,
+					callback: functionToFocus
+				});
+        	}
+        },
         _submitFile: function() {
+        	var path = this.inputNode.value;
+            if (path == null || path == '') {
+				this._chooseFile();
+            	return false;
+            }
+            var filename = path.substring(path.lastIndexOf("/") + 1);
+            if (filename == null || filename == '') {
+            	this._chooseFile();
+            	return false;
+            }
+        	
         	this.uploadFinished = false;
         	
             // disable all controls contained in repeat prototypes to avoid inconsistent updates.
@@ -116,14 +138,10 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             
 			var progressBar = document.getElementById(this.xformsId + '-progress');
 			if (progressBar != null) {
-				progressBar.style.display = 'block';
+				jQuery(progressBar).show('normal');
 			}
 
-            var path = this.inputNode.value;
-            
-            var filename = path.substring(path.lastIndexOf("/") + 1);
-		
-            //polling Chiba for update information and submit the form
+            //	Polling Chiba for update information and submit the form
             var sessionKey = dojo.byId("chibaSessionKey").value;
             var xfomsId = this.xformsId;
             var widget = this;
