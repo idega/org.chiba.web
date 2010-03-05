@@ -46,8 +46,12 @@ public class IdegaFluxFacade extends FluxFacade {
 	public IdegaFluxFacade() {
 		super();
 		
-		RequestResponseProvider provider = ELUtil.getInstance().getBean(RequestResponseProvider.class);
-		this.session = provider.getRequest().getSession(Boolean.TRUE);
+		try {
+			RequestResponseProvider provider = ELUtil.getInstance().getBean(RequestResponseProvider.class);
+			this.session = provider.getRequest().getSession(Boolean.TRUE);
+		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error while trying to get HTTP session object", e);
+		}
 	}
 	
 	@Override
