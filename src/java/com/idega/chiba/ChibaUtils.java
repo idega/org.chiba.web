@@ -70,6 +70,10 @@ public class ChibaUtils extends DefaultSpringBean {
 					Boolean.TRUE);
 		}
 		
+		if (httpSession == null) {
+			LOGGER.warning("HTTP session object is undefined for XForm session: " + chibaSessionKey);
+			return;
+		}
 		if (!(httpSession.getAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER) instanceof IdegaXFormSessionManagerImpl)) {
 			httpSession.setAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER, IdegaXFormSessionManagerImpl.getXFormsSessionManager());
 		}
