@@ -141,6 +141,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("sessionExpiredMsg", iwrb.getLocalizedString("chiba.session_expired_messsage", "Your session has expired. Please try again."));
 			generator.setParameter("downloadingPDFForXFormMsg", iwrb.getLocalizedString("chiba.downloading_pdf_for_xform", "Downloading PDF"));
 			generator.setParameter("uploadingFailed", iwrb.getLocalizedString("chiba.uploading_failed", "Sorry, uploading failed. Please try again."));
+			generator.setParameter("invalidFileProvidedToUpload", iwrb.getLocalizedString("chiba.invalid_file_to_upload", "Invalid file provided to upload!"));
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
