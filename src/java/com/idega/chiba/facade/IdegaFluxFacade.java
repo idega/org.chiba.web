@@ -8,14 +8,12 @@ import javax.servlet.http.HttpSession;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
-import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
 
 import com.idega.chiba.ChibaUtils;
-import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.idegaweb.IWMainApplication;
@@ -62,7 +60,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
-					.concat(getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}
 	}
 
@@ -74,7 +72,8 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
-					.concat(sessionKey).concat(getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
+					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}
 	}
 
@@ -86,7 +85,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.setRepeatIndex(id, position, sessionKey);
 		} catch (Exception e) {
 			throw new SessionExpiredException("Unable to set repeat index for element: '".concat(id).concat("', position: '").concat(position)
-					.concat("' using session: ").concat(sessionKey).concat(getSessionInformation(sessionKey)), e,
+					.concat("' using session: ").concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
 					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}	
 	}
@@ -99,11 +98,12 @@ public class IdegaFluxFacade extends FluxFacade {
 			return super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
 			String message = "Exception while fetching progress for element: '".concat(id).concat("', file: '").concat(filename).concat("' using session: ")
-				.concat(sessionKey).concat(getSessionInformation(sessionKey));
+				.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 			
-			throw getIdegaChibaException(sessionKey, e.getMessage(), "chiba.uploading_failed", "Sorry, uploading failed. Please try again.");
+			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, e.getMessage(), "chiba.uploading_failed",
+					"Sorry, uploading failed. Please try again.");
 		}
 	}
 	
@@ -114,11 +114,11 @@ public class IdegaFluxFacade extends FluxFacade {
 			
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
-			String message = "Exception at keep alive, session key=".concat(sessionKey).concat(getSessionInformation(sessionKey));
+			String message = "Exception at keep alive, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 			
-			throw getIdegaChibaException(sessionKey, e.getMessage(), "chiba.error_keeping_session_alive", "Sorry, some internal error occurred...");
+			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, e.getMessage(), ChibaUtils.getInstance().getInternalErrorLocalizedString());
 		}			
 	}
 	 
@@ -127,28 +127,10 @@ public class IdegaFluxFacade extends FluxFacade {
     	try {
 			super.close(sessionKey);
 		} catch (Exception e) {
-			String message = "Exception at close, session key=".concat(sessionKey).concat(getSessionInformation(sessionKey));
+			String message = "Exception at close, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 		}	
-    }
-    
-    private IdegaChibaException getIdegaChibaException(String sessionKey, String exceptionMessage, String localizationKey, String defaultLocalizationValue) {
-    	boolean reloadPage = true;
-		String messageToTheClient = null;
-		if (CoreConstants.EMPTY.equals(getSessionInformation(sessionKey))) {
-			messageToTheClient = ChibaUtils.getInstance().getSessionExpiredLocalizedString();
-		} else {
-			reloadPage = false;
-			messageToTheClient = ChibaUtils.getInstance().getLocalizedString(localizationKey, defaultLocalizationValue);
-		}
-		
-		return new IdegaChibaException(exceptionMessage, messageToTheClient, reloadPage);
-    }
-    
-    private String getSessionInformation(String sessionKey) {
-    	XFormsSession session = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(sessionKey);
-    	return session == null ? CoreConstants.EMPTY : ". Object found for this key: " + session;
     }
     
     public boolean sendEmail(String subject, String text) {
