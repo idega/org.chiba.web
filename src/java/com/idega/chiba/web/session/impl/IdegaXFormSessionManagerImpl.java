@@ -344,6 +344,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	        }
 		} catch (Exception e) {
 		} finally {
+			LOGGER.info("Deleting XForm session manually: " + id);
 			deleteXFormsSession(id);
 		}
 	}
