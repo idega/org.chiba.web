@@ -8,13 +8,73 @@ XFormsTester.openSessions = function(number) {
 		window.open(window.location.href, '', '');
 	}
 	
-	window.setTimeout(XFormsTester.testUploads, 3000);
+	var timeOutId = window.setTimeout(function() {XFormsTester.testXForm(timeOutId);}, 3000);
 }
 
-XFormsTester.testButtons = function() {
-	jQuery.each(jQuery('input[type=button]'), function() {
-		jQuery(this).trigger('click');
+XFormsTester.testXForm = function(timeOutId) {
+	if (timeOutId != null) {
+		window.clearTimeout(timeOutId);
+	}
+	
+	var nextTimeOut = 500;
+	var decision = XFormsTester.getDecisionOnTesting();
+	if (decision < 70) {
+		//	Set random values
+		XFormsTester.setRandomValue();
+	} else if (decision < 95) {
+		//	"Click" random buttons
+		XFormsTester.testNavigationButtons();
+	} else if (decision < 100) {
+		//	Test uploads
+		nextTimeOut = 10000;
+		XFormsTester.testUploads();
+	}
+	
+	var timeOutId = window.setTimeout(function() {XFormsTester.testXForm(timeOutId);}, nextTimeOut);
+}
+
+XFormsTester.getDecisionOnTesting = function() {
+	return XFormsTester.getRandomNumber(100);
+}
+
+XFormsTester.getRandomNumber = function(maxValue) {
+	return Math.floor(Math.random() * maxValue);
+}
+
+XFormsTester.setRandomValue = function() {
+	var inputElements = [];
+	jQuery.each(jQuery('.value'), function() {
+		var type = jQuery(this).attr('type');
+		if (type == 'text' || type == 'radio' || type == 'checkbox') {
+			inputElements.push(this);
+		} else if (this.tagName == 'TEXTAREA') {
+			inputElements.push(this);
+		}
 	});
+	
+	var randomElementIndex = XFormsTester.getRandomNumber(inputElements.length);
+	var randomElement = inputElements[randomElementIndex];
+	var type = jQuery(randomElement).attr('type');
+	if (type == 'text' || randomElement.tagName == 'TEXTAREA') {
+		jQuery(randomElement).attr('value', 'Random value for element: ' + randomElement.id);
+	} else if (type == 'radio' || type == 'checkbox') {
+		jQuery(randomElement).attr('checked', true);
+	}
+	jQuery(randomElement).trigger('blur');
+}
+
+XFormsTester.testNavigationButtons = function() {
+	var buttons = [];
+	jQuery.each(jQuery('input[type=button]'), function() {
+		var value = jQuery(this).attr('value');
+		if (value == 'Next' || value == 'Næsta skref' || value == 'Back' || value == 'Til baka') {
+			buttons.push(this);
+		}
+	});
+	
+	var randomButtonIndex = XFormsTester.getRandomNumber(buttons.length);
+	var randomButton = buttons[randomButtonIndex];
+	jQuery(randomButton).trigger('click');
 }
 	
 XFormsTester.testUploads = function() {
