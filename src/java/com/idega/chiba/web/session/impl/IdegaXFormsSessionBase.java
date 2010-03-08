@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.chiba.adapter.ui.UIGenerator;
 import org.chiba.adapter.ui.XSLTGenerator;
 import org.chiba.web.IWBundleStarter;
-import org.chiba.web.flux.FluxAdapter;
+import org.chiba.web.flux.IdegaFluxAdapter;
 import org.chiba.web.servlet.ServletAdapter;
 import org.chiba.web.servlet.WebUtil;
 import org.chiba.web.session.XFormsSession;
@@ -53,7 +53,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	
 	@Override
 	protected void createAdapter() {
-		this.adapter = isScripted() ? /*new IdegaFluxAdapter(key)*/ new FluxAdapter() : new ServletAdapter();
+		this.adapter = isScripted() ? new IdegaFluxAdapter(key) /*new FluxAdapter()*/ : new ServletAdapter();
 		adapter.setXFormsSession(this);
 	}
 	
