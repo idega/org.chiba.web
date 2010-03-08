@@ -1,42 +1,25 @@
 package org.chiba.web.flux;
 
-import java.io.InputStream;
-import java.net.URI;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.chiba.adapter.ChibaEvent;
 import org.chiba.web.servlet.HttpRequestHandler;
-import org.chiba.xml.xforms.ChibaBean;
-import org.chiba.xml.xforms.IdegaChibaBean;
-import org.chiba.xml.xforms.exception.XFormsException;
-import org.w3c.dom.Node;
-import org.w3c.dom.events.Event;
-import org.w3c.xforms.XFormsModelElement;
-import org.xml.sax.InputSource;
-
-import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
-import com.idega.core.cache.IWCacheManager2;
-import com.idega.idegaweb.IWMainApplication;
+import org.chiba.web.servlet.IdegaHttpRequestHandler;
 
 public class IdegaFluxAdapter extends FluxAdapter {
 
-	private static final Logger LOGGER = Logger.getLogger(IdegaFluxAdapter.class.getName());
-	
-	private static final long CACHE_IDLE_TIME = 2 * 60 * 60;	//	2 hours by default
-	public static final String CHIBA_BEANS_CACHE_NAME = "ChibaBeansCache";
-	
-	private String key;
+//	private static final Logger LOGGER = Logger.getLogger(IdegaFluxAdapter.class.getName());
+//	
+//	private static final long CACHE_IDLE_TIME = 2 * 60 * 60;	//	2 hours by default
+//	public static final String CHIBA_BEANS_CACHE_NAME = "ChibaBeansCache";
+//	
+//	private String key;
 	
 	public IdegaFluxAdapter(String key) {
 		super();
 		
-		this.key = key;
-		putChibaBean();
+//		this.key = key;
+//		putChibaBean();
 	}
 	
-	//	TODO: finish up IdegaChibaBean!
+	/*//	TODO: finish up IdegaChibaBean!
 	@Override
 	protected ChibaBean createXFormsProcessor() {
 		return new IdegaChibaBean();
@@ -197,20 +180,27 @@ public class IdegaFluxAdapter extends FluxAdapter {
     	} finally {
     		removeChibaBean();
     	}
-    }
+    }*/
 
     @Override
 	protected HttpRequestHandler getHttpRequestHandler() {
-    	chibaBean = getChibaBean();
+    	/*chibaBean = getChibaBean();
     	
     	try {
     		return super.getHttpRequestHandler();
     	} finally {
     		putChibaBean();
+    	}*/
+    	
+    	if (this.httpRequestHandler == null) {
+    		this.httpRequestHandler = new IdegaHttpRequestHandler(this.chibaBean);
+    		this.httpRequestHandler.setUploadRoot(this.uploadDestination);
+    		this.httpRequestHandler.setSessionKey(this.xformsSession.getKey());
     	}
+    	return this.httpRequestHandler;
     }
 	
-    private void removeChibaBean() {
+    /*private void removeChibaBean() {
     	getChibaBeansCache().remove(key);
     	chibaBean = null;
     }
@@ -228,5 +218,5 @@ public class IdegaFluxAdapter extends FluxAdapter {
 		IWMainApplication iwma = IWMainApplication.getDefaultIWMainApplication();
 		return IWCacheManager2.getInstance(iwma).getCache(CHIBA_BEANS_CACHE_NAME, IdegaXFormSessionManagerImpl.getMaxSessions(), true, false, CACHE_IDLE_TIME,
 				CACHE_IDLE_TIME);
-	}
+	}*/
 }
