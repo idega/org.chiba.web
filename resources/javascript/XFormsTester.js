@@ -18,10 +18,10 @@ XFormsTester.testXForm = function(timeOutId) {
 	
 	var nextTimeOut = 500;
 	var decision = XFormsTester.getDecisionOnTesting();
-	if (decision < 70) {
+	if (decision < 85) {
 		//	Set random values
 		XFormsTester.setRandomValue();
-	} else if (decision < 95) {
+	} else if (decision < 99) {
 		//	"Click" random buttons
 		XFormsTester.testNavigationButtons();
 	} else if (decision < 100) {
