@@ -8,7 +8,6 @@ import javax.servlet.http.HttpSession;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
-import org.chiba.web.session.XFormsSessionManager;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -171,17 +170,6 @@ public class IdegaFluxFacade extends FluxFacade {
     }
     
     public Set<String> getKeysOfCurrentSessions() {
-    	IWContext iwc = CoreUtil.getIWContext();
-    	if (iwc == null || !iwc.isLoggedOn()) {
-    		LOGGER.warning("User must be logged!");
-    		return null;
-    	}
-    	if (!iwc.isSuperAdmin()) {
-    		LOGGER.warning("User does not have enough rights!");
-    		return null;
-    	}
-    	
-    	XFormsSessionManager manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
-    	return manager instanceof IdegaXFormSessionManagerImpl ? ((IdegaXFormSessionManagerImpl) manager).getKeysOfActiveSessions() : null;
+    	return ChibaUtils.getInstance().getKeysOfCurrentSessions();
     }
 }
