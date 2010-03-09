@@ -94,6 +94,11 @@ public class IdegaFluxFacade extends FluxFacade {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			
+			if (ChibaUtils.getInstance().isUploadInvalid(session, sessionKey)) {
+				throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, "Upload is marked as failed", "chiba.uploading_failed",
+					"Sorry, uploading failed. Please try again.");
+			}
+			
 			return super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
 			String message = "Exception while fetching progress for element: '".concat(id).concat("', file: '").concat(filename).concat("' using session: ")

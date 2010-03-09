@@ -29,6 +29,8 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String sessionKey = null;
+		boolean isUpload = false;
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(request);
 
@@ -36,7 +38,8 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 			WebAdapter webAdapter = null;
 	        response.setContentType("text/html");
 
-	        XFormsSession xFormsSession = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(ChibaUtils.getInstance().getSessionKey(request));
+	        sessionKey = ChibaUtils.getInstance().getSessionKey(request);
+	        XFormsSession xFormsSession = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(sessionKey);
 	        webAdapter = xFormsSession.getAdapter();
 	        if (webAdapter == null) {
 	        	throw new ServletException(Config.getInstance().getErrorMessage("session-invalid"));
@@ -45,8 +48,7 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 	        chibaEvent.initEvent("http-request", null, request);
 	        webAdapter.dispatch(chibaEvent);
 
-	        boolean isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
-
+	        isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
 	        if (isUpload) {
 	        	ServletOutputStream out = response.getOutputStream();
 	            out.println("<html><head><title>status</title></head><body></body></html>");
@@ -56,6 +58,10 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 			String message = "Error while handling request: " + request.getRequestURI();
 			LOGGER.log(Level.WARNING, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
+			
+			if (isUpload) {
+				ChibaUtils.getInstance().markUploadAsFailed(request.getSession(true), sessionKey);
+			}
 		}
 	}
 

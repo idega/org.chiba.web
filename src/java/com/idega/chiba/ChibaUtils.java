@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 import org.chiba.web.IWBundleStarter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
+import org.chiba.web.upload.UploadInfo;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class ChibaUtils extends DefaultSpringBean {
 	private static final Logger LOGGER = Logger.getLogger(ChibaUtils.class.getName());
 	
 	private static ChibaUtils instance;
+	
+	private static final String UPLOAD_INFO_STATUS_FAILED = "failed";
 	
 	private ChibaUtils() {
 		instance = this;
@@ -156,5 +159,45 @@ public class ChibaUtils extends DefaultSpringBean {
     	}
     	
     	return number;
+    }
+    
+    private String getUploadInfoKey(String sessionKey) {
+    	return XFormsSession.ADAPTER_PREFIX.concat(sessionKey).concat("-uploadInfo");
+    }
+    
+    private UploadInfo getUploadInfo(HttpSession session, String sessionKey) {
+    	if (session == null) {
+    		return null;
+    	}
+    	
+    	Object info = session.getAttribute(getUploadInfoKey(sessionKey));
+    	return info instanceof UploadInfo ? (UploadInfo) info : null;
+    }
+    
+    public void markUploadAsFailed(String sessionKey) {
+    	markUploadAsFailed(getSession(), sessionKey);
+    }
+    
+    public void markUploadAsFailed(HttpSession session, String sessionKey) {
+    	UploadInfo info = getUploadInfo(session, sessionKey);
+    	if (info == null) {
+    		return;
+    	}
+		
+    	info.setStatus(UPLOAD_INFO_STATUS_FAILED);
+	}
+    
+    public boolean isUploadInvalid(HttpSession session, String sessionKey) {
+    	UploadInfo info = getUploadInfo(session, sessionKey);
+    	if (info == null) {
+    		return Boolean.FALSE;
+    	}
+    	
+    	if (UPLOAD_INFO_STATUS_FAILED.equals(info.getStatus())) {
+    		session.removeAttribute(getUploadInfoKey(sessionKey));
+    		return Boolean.TRUE;
+    	}
+    	
+    	return Boolean.FALSE;
     }
 }
