@@ -1148,8 +1148,13 @@ PresentationContext._insertRepeatItem = function(targetId, originalId, position)
 
     // insert prototype clone
     prototypeClone.setAttribute("style","display:none;");
-    Effect.Appear(prototypeClone,{duration:0.5});
-    repeatElement.insertBefore(prototypeClone, referenceNode);
+    if (Effect && Effect.Appear) {
+    	Effect.Appear(prototypeClone,{duration:0.5});
+    	repeatElement.insertBefore(prototypeClone, referenceNode);
+    } else {
+   		repeatElement.insertBefore(prototypeClone, referenceNode);
+    	jQuery(prototypeClone).show('normal');
+    }
 
 	// A dirty hack for <textarea mediatype='text/html'> : need to initialize
 	// the textarea elements used to support the JScript Editor
@@ -1281,7 +1286,13 @@ PresentationContext._deleteRepeatItem = function(targetId, originalId, position)
     }
 
     // delete item
-    Effect.Fade(deleteItem.id,{duration:0.5});
+    if (Effect && Effect.Fade) {
+    	Effect.Fade(deleteItem.id,{duration:0.5});
+    } else {
+    	jQuery('#' + deleteItem.id).hide('normal', function() {
+    		jQuery('#' + deleteItem.id).remove();
+    	});
+    }
 //    repeatElement.removeChild(deleteItem);
 //    if (nextItem) {
 //        _addClass(nextItem, "repeat-index");
