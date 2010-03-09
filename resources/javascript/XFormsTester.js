@@ -16,7 +16,7 @@ XFormsTester.testXForm = function(timeOutId) {
 		window.clearTimeout(timeOutId);
 	}
 	
-	var nextTimeOut = 500;
+	var nextTimeOut = 250;
 	var decision = XFormsTester.getDecisionOnTesting();
 	if (decision < 85) {
 		//	Set random values
