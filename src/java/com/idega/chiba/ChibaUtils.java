@@ -1,5 +1,6 @@
 package com.idega.chiba;
 
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,11 +16,15 @@ import org.springframework.stereotype.Service;
 
 import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
+import com.idega.chiba.web.session.impl.IdegaXFormsSessionBase;
 import com.idega.core.business.DefaultSpringBean;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
+import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 
 @Service
@@ -107,7 +112,49 @@ public class ChibaUtils extends DefaultSpringBean {
     }
     
     public String getSessionInformation(String sessionKey) {
-    	XFormsSession session = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(sessionKey);
+    	XFormsSession session = getXFormSession(sessionKey);
     	return session == null ? CoreConstants.EMPTY : ". Object found for this key: " + session;
+    }
+    
+    public Set<String> getKeysOfCurrentSessions() {
+    	IWContext iwc = CoreUtil.getIWContext();
+    	if (iwc == null || !iwc.isLoggedOn()) {
+    		LOGGER.warning("User must be logged!");
+    		return null;
+    	}
+    	if (!iwc.isSuperAdmin()) {
+    		LOGGER.warning("User does not have enough rights!");
+    		return null;
+    	}
+    	
+    	XFormsSessionManager manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
+    	return manager instanceof IdegaXFormSessionManagerImpl ? ((IdegaXFormSessionManagerImpl) manager).getKeysOfActiveSessions() : null;
+    }
+    
+    private XFormsSession getXFormSession(String key) {
+    	return IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(key);
+    }
+    
+    public int getNumberOfXFormSessionsForHttpSession(String httpSessionId) {
+    	if (StringUtil.isEmpty(httpSessionId)) {
+    		return 0;
+    	}
+    	
+    	Set<String> xformSessions = getKeysOfCurrentSessions();
+    	if (ListUtil.isEmpty(xformSessions)) {
+    		return 0;
+    	}
+    	
+    	int number = 0;
+    	for (String xformSessionId: xformSessions) {
+    		XFormsSession session = getXFormSession(xformSessionId);
+    		if (session instanceof IdegaXFormsSessionBase) {
+    			if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
+    				number++;
+    			}
+    		}
+    	}
+    	
+    	return number;
     }
 }
