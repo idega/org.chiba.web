@@ -73,14 +73,14 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
 
   var target = document.getElementById(targetId);
   if (target == null) {
-    alert("target '" + targetId + "' not found");
+  	throw new Error("Element with ID '" + targetId + "' was not found while trying to set value '" + value +
+  		"' for it in PresentationContext.handleStateChanged method. Parameters: targetName='"+targetName+"', valid='"+valid+"', readonly='"+readonly+
+  		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.", 'PresentationContext.js', 76);
     return;
   }
 
   if (value != null) {
     PresentationContext._setControlValue(targetId, value);
-    //        var tmpColor = dojo.byId(targetId + "-value").style.backgroundColor;
-    //        new Effect.Highlight(dojo.byId(targetId + "-value"),{restorecolor:tmpColor});
   }
 
   if (valid != null) {
