@@ -71,6 +71,10 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             }
         },
         _chooseFile: function(useAlert) {
+        	if (!this.uploadFinished) {
+        		return false;
+        	}
+        	
         	var fileInputId = this.inputNode.id;
         	var functionToFocus = function() {
         		jQuery('#' + fileInputId).trigger('focus');
@@ -98,6 +102,9 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             	return false;
             }
         	
+        	if (!this.uploadFinished) {
+        		return false;
+        	}
         	this.uploadFinished = false;
         	
             // disable all controls contained in repeat prototypes to avoid inconsistent updates.
@@ -155,15 +162,20 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             return true;
         },
 		_fetchUploadProgress: function(xfomsId, filename, sessionKey) {
+			var uploadWidget = this;
 			Flux.fetchProgress(xfomsId, filename, sessionKey, {
 				callback: function(data) {
 					updateUI(data);
 				},
 				errorHandler: function(msg, exc) {
+					uploadWidget.uploadFinished = true;
 					clearInterval(progressUpdate);
 					handleExceptions(msg, exc);
 				}
 			});
+			if (errorUploading) {
+				this.uploadFinished = true;
+			}
 			if (!this.uploadFinished && !this.changedFetchingProgressInterval) {
 				clearInterval(progressUpdate);
 				var widget = this;
