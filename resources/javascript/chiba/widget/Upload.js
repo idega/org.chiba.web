@@ -22,7 +22,7 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
         progress: null,
         progressBackground: null,
         changedFetchingProgressInterval: false,
-        uploadFinished: false,
+        uploadFinished: true,
         fillInTemplate: function() {
             this.xformsId = this.id.substring(0, this.id.length - 6);
 
@@ -173,9 +173,6 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
 					handleExceptions(msg, exc);
 				}
 			});
-			if (errorUploading) {
-				this.uploadFinished = true;
-			}
 			if (!this.uploadFinished && !this.changedFetchingProgressInterval) {
 				clearInterval(progressUpdate);
 				var widget = this;
