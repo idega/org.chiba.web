@@ -2,6 +2,9 @@ if (XFormsTester == null) var XFormsTester = {};
 
 XFormsTester.OPENED_SESSIONS = 0;
 
+XFormsTester.INPUT_ELEMENTS = null;
+XFormsTester.FORM_BUTTONS = null;
+
 XFormsTester.openSessions = function(number) {
 	if (XFormsTester.OPENED_SESSIONS < number) {
 		XFormsTester.OPENED_SESSIONS++;
@@ -42,15 +45,19 @@ XFormsTester.getRandomNumber = function(maxValue) {
 }
 
 XFormsTester.setRandomValue = function() {
-	var inputElements = [];
-	jQuery.each(jQuery('.value'), function() {
-		var type = jQuery(this).attr('type');
-		if (type == 'text' || type == 'radio' || type == 'checkbox') {
-			inputElements.push(this);
-		} else if (this.tagName == 'TEXTAREA') {
-			inputElements.push(this);
-		}
-	});
+	var inputElements = XFormsTester.INPUT_ELEMENTS;
+	if (inputElements == null) {
+		inputElements = [];
+		jQuery.each(jQuery('.value'), function() {
+			var type = jQuery(this).attr('type');
+			if (type == 'text' || type == 'radio' || type == 'checkbox') {
+				inputElements.push(this);
+			} else if (this.tagName == 'TEXTAREA') {
+				inputElements.push(this);
+			}
+		});
+		XFormsTester.INPUT_ELEMENTS = inputElements;
+	}
 	
 	var randomElementIndex = XFormsTester.getRandomNumber(inputElements.length);
 	var randomElement = inputElements[randomElementIndex];
@@ -64,13 +71,17 @@ XFormsTester.setRandomValue = function() {
 }
 
 XFormsTester.testNavigationButtons = function() {
-	var buttons = [];
-	jQuery.each(jQuery('input[type=button]'), function() {
-		var value = jQuery(this).attr('value');
-		if (value == 'Next' || value == 'Næsta skref' || value == 'Back' || value == 'Til baka') {
-			buttons.push(this);
-		}
-	});
+	var buttons = XFormsTester.FORM_BUTTONS;
+	if (buttons == null) {
+		buttons = [];
+		jQuery.each(jQuery('input[type=button]'), function() {
+			var value = jQuery(this).attr('value');
+			if (value == 'Next' || value == 'Næsta skref' || value == 'Back' || value == 'Til baka') {
+				buttons.push(this);
+			}
+		});
+		XFormsTester.FORM_BUTTONS = buttons;
+	}
 	
 	var randomButtonIndex = XFormsTester.getRandomNumber(buttons.length);
 	var randomButton = buttons[randomButtonIndex];
