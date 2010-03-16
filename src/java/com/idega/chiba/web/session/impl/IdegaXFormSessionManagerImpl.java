@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
+import com.idega.chiba.ChibaUtils;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.event.HttpSessionDestroyed;
 import com.idega.event.IWHttpSessionsManager;
@@ -128,7 +129,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     
     public void deleteXFormsSession(String id, String explanation) {
     	if (StringUtil.isEmpty(id)) {
-    		LOGGER.warning("Session id is not provided! It's empty or null: '" + id + "'");
+    		LOGGER.warning("XForm session id is not provided! It is empty or null: '" + id + "'");
     		return;
     	}
     	
@@ -140,13 +141,23 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     	
     	XFormsSession removed = sessionXForms.remove(id);
         if (removed == null) {
-        	LOGGER.warning("Unable to remove XForms session from SessionManager: '" + id + "'. Element by this id exists in cache: " +
+        	LOGGER.warning("Unable to delete XForms session from SessionManager: '" + id + "'. Element by this id exists in cache: " +
         			sessionXForms.containsKey(id));
         } else {
         	if (explanation == null) {
-        		explanation = CoreConstants.EMPTY;
+        		String testMessage = "TEST! Exploring XForm deletion traces";
+        		try {
+	        		if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("log_xform_deletion_trace", Boolean.FALSE)) {
+	        			throw new RuntimeException(testMessage);
+	        		}
+        		} catch (Exception e) {
+        			LOGGER.log(Level.INFO, testMessage, e);
+        			CoreUtil.sendExceptionNotification(e);
+        		}
+        		explanation = "No explanation provided.";
         	}
-        	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "'. " + explanation);
+        	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "' for HTTP session: " + ChibaUtils.getInstance().getCurrentHttpSessionId() +
+        			". " + explanation);
         }
     }
 
