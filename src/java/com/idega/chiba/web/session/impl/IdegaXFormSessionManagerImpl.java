@@ -237,12 +237,14 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				for (String id: ids) {
 					XFormsSession session = getXFormsSession(id);
 					if (session instanceof IdegaXFormsSessionBase) {
-						if (getHttpSessionsManager().isSessionValid(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
+						String httpSession = ((IdegaXFormsSessionBase) session).getHttpSessionId();
+						if (getHttpSessionsManager().isSessionValid(httpSession)) {
 							//	Keeping session alive!
 							session.updateLRU();
+							LOGGER.info("Keeping HTTP session " + httpSession + " and XForm session " + id + " alive...");
 						} else {
 							//	Removing XForms session because original HTTP session has expired
-							invalidateXFormsSession(session, id);
+							invalidateXFormsSession(session, id, "HTTP session " + httpSession + " already is invalid. It was invalidated by web application");
 						}
 					}
 				}
@@ -299,7 +301,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				continue;
 			}
 			
-			invalidateXFormsSession(session, sessionId);
+			invalidateXFormsSession(session, sessionId, "PDF document was just generated using this XForm session, so session is not needed anymore");
 			sessionDestroyed = true;
 		}
 	}
@@ -328,7 +330,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				XFormsSession session = getXFormsSession(xFormSessionId);
 				if (session instanceof IdegaXFormsSessionBase) {
 					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
-						invalidateXFormsSession(session, xFormSessionId);
+						invalidateXFormsSession(session, xFormSessionId, "HTTP session was just invalidated by web application: " + httpSessionId);
 					}
 				}
 			}
@@ -337,7 +339,15 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		}
 	}
 	
-	private void invalidateXFormsSession(XFormsSession session, String id) {
+	private void invalidateXFormsSession(XFormsSession session, String id, String explanation) {
+		String httpSession = null;
+		if (session instanceof IdegaXFormsSessionBase) {
+			httpSession = ((IdegaXFormsSessionBase) session).getHttpSessionId();
+		}
+		if (StringUtil.isEmpty(httpSession)) {
+			httpSession = "unknown";
+		}
+		
 		try {
 			WebAdapter adapter = session.getAdapter();
 	        if (adapter != null) {
@@ -345,7 +355,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	        }
 		} catch (Exception e) {
 		} finally {
-			LOGGER.info("Deleting XForm session manually: " + id);
+			LOGGER.info("Deleting XForm session manually: " + id + " for HTTP session: " + httpSession + ". " + explanation);
 			deleteXFormsSession(id);
 		}
 	}
