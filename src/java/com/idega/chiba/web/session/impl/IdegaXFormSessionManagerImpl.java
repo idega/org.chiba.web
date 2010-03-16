@@ -301,7 +301,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				continue;
 			}
 			
-			invalidateXFormsSession(session, sessionId, "PDF document was just generated using this XForm session, so session is not needed anymore");
+			invalidateXFormsSession(session, sessionId, "PDF document was just generated using this XForm session - it is not needed anymore");
 			sessionDestroyed = true;
 		}
 	}
