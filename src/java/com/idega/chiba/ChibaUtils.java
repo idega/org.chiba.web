@@ -200,4 +200,9 @@ public class ChibaUtils extends DefaultSpringBean {
     	
     	return Boolean.FALSE;
     }
+    
+    public String getCurrentHttpSessionId() {
+    	HttpSession session = getSession();
+    	return session == null ? CoreConstants.MINUS : session.getId();
+    }
 }
