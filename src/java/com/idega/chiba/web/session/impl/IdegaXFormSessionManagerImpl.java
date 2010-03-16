@@ -34,6 +34,7 @@ import com.idega.event.IWHttpSessionsManager;
 import com.idega.event.PDFGeneratedEvent;
 import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
@@ -122,6 +123,10 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
      * @param id the XFormsSession id
      */
     public void deleteXFormsSession(String id) {
+    	deleteXFormsSession(id, null);
+    }
+    
+    public void deleteXFormsSession(String id, String explanation) {
     	if (StringUtil.isEmpty(id)) {
     		LOGGER.warning("Session id is not provided! It's empty or null: '" + id + "'");
     		return;
@@ -138,7 +143,10 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
         	LOGGER.warning("Unable to remove XForms session from SessionManager: '" + id + "'. Element by this id exists in cache: " +
         			sessionXForms.containsKey(id));
         } else {
-        	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "'");
+        	if (explanation == null) {
+        		explanation = CoreConstants.EMPTY;
+        	}
+        	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "'. " + explanation);
         }
     }
 
@@ -355,8 +363,11 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	        }
 		} catch (Exception e) {
 		} finally {
-			LOGGER.info("Deleting XForm session manually: " + id + " for HTTP session: " + httpSession + ". " + explanation);
-			deleteXFormsSession(id);
+			if (explanation == null) {
+				explanation = CoreConstants.EMPTY;
+			}
+			explanation = "Deleting XForm session manually: ".concat(id).concat(" for HTTP session: ").concat(httpSession).concat(". ").concat(explanation);
+			deleteXFormsSession(id, explanation);
 		}
 	}
 
