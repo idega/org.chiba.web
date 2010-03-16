@@ -263,7 +263,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 							LOGGER.info("Keeping HTTP session " + httpSession + " and XForm session " + id + " alive...");
 						} else {
 							//	Removing XForms session because original HTTP session has expired
-							invalidateXFormsSession(session, id, "HTTP session " + httpSession + " already is invalid. It was invalidated by web application");
+							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
+									" already is invalid. It was invalidated by web application earlier.");
 						}
 					}
 				}
@@ -349,7 +350,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				XFormsSession session = getXFormsSession(xFormSessionId);
 				if (session instanceof IdegaXFormsSessionBase) {
 					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
-						invalidateXFormsSession(session, xFormSessionId, "HTTP session was just invalidated by web application: " + httpSessionId);
+						invalidateXFormsSession(session, xFormSessionId, "HTTP session " + httpSessionId + " was just invalidated by web application");
 					}
 				}
 			}
@@ -377,7 +378,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 			if (explanation == null) {
 				explanation = CoreConstants.EMPTY;
 			}
-			explanation = "Deleting XForm session manually: ".concat(id).concat(" for HTTP session: ").concat(httpSession).concat(". ").concat(explanation);
+			explanation = "Deleted XForm session manually. ".concat(explanation);
 			deleteXFormsSession(id, explanation);
 		}
 	}
