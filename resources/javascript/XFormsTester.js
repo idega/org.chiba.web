@@ -4,6 +4,7 @@ XFormsTester.OPENED_SESSIONS = 0;
 
 XFormsTester.INPUT_ELEMENTS = null;
 XFormsTester.FORM_BUTTONS = null;
+XFormsTester.PDF_BUTTONS = null;
 
 XFormsTester.openSessions = function(number) {
 	if (XFormsTester.OPENED_SESSIONS < number) {
@@ -21,12 +22,16 @@ XFormsTester.testXForm = function(timeOutId) {
 	
 	var nextTimeOut = 250;
 	var decision = XFormsTester.getDecisionOnTesting();
-	if (decision < 85) {
+	if (decision < 80) {
 		//	Set random values
 		XFormsTester.setRandomValue();
-	} else if (decision < 99) {
+	} else if (decision < 95) {
 		//	"Click" random buttons
 		XFormsTester.testNavigationButtons();
+	} else if (decision < 99) {
+		//	Test 'XForm to PDF' engine
+		XFormsTester.testPDFButton();
+		nextTimeOut = 45000;
 	} else if (decision < 100) {
 		//	Test uploads
 		nextTimeOut = 10000;
@@ -73,16 +78,36 @@ XFormsTester.setRandomValue = function() {
 XFormsTester.testNavigationButtons = function() {
 	var buttons = XFormsTester.FORM_BUTTONS;
 	if (buttons == null) {
-		buttons = [];
-		jQuery.each(jQuery('input[type=button]'), function() {
-			var value = jQuery(this).attr('value');
-			if (value == 'Next' || value == 'Næsta skref' || value == 'Back' || value == 'Til baka') {
-				buttons.push(this);
-			}
-		});
+		buttons = XFormsTester.getButtons(['Back', 'Next', 'Næsta skref', 'Til baka']);
 		XFormsTester.FORM_BUTTONS = buttons;
 	}
 	
+	XFormsTester.clickRandomButton(buttons);
+}
+
+XFormsTester.testPDFButton = function() {
+	var pdfButtons = XFormsTester.PDF_BUTTONS;
+	if (pdfButtons == null) {
+		pdfButtons = XFormsTester.getButtons(['Get as PDF', 'Sækja sem PDF']);
+		XFormsTester.PDF_BUTTONS = pdfButtons;
+	}
+	
+	XFormsTester.clickRandomButton(pdfButtons);
+}
+
+XFormsTester.getButtons = function(values) {
+	var buttons = [];
+	jQuery.each(jQuery('input[type=button]'), function() {
+		var button = this;
+		var value = jQuery(button).attr('value');
+		if (jQuery.inArray(value, values) != -1) {
+			buttons.push(button);
+		}
+	});
+	return buttons;
+}
+
+XFormsTester.clickRandomButton = function(buttons) {
 	var randomButtonIndex = XFormsTester.getRandomNumber(buttons.length);
 	var randomButton = buttons[randomButtonIndex];
 	jQuery(randomButton).trigger('click');
