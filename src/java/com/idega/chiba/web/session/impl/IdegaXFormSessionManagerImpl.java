@@ -1,5 +1,6 @@
 package com.idega.chiba.web.session.impl;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -156,8 +157,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
         		}
         		explanation = "No explanation provided.";
         	}
-        	LOGGER.info("Deleted XForms session from SessionManager: '" + id + "' for HTTP session: " + ChibaUtils.getInstance().getCurrentHttpSessionId() +
-        			". " + explanation);
+        	LOGGER.info("Deleted XForms session: '" + id + "' for HTTP session: " + ChibaUtils.getInstance().getCurrentHttpSessionId() + ". " +
+        			explanation);
         }
     }
 
@@ -249,7 +250,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		if (event instanceof SessionPollerEvent) {
 			Set<String> ids = getKeysForXFormsSessions();
 			try {
-				if (ids == null || ids.isEmpty()) {
+				if (ListUtil.isEmpty(ids)) {
 					return;
 				}
 				
@@ -260,7 +261,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 						if (getHttpSessionsManager().isSessionValid(httpSession)) {
 							//	Keeping session alive!
 							session.updateLRU();
-							LOGGER.info("Keeping HTTP session " + httpSession + " and XForm session " + id + " alive...");
+							LOGGER.info("Keeping XForm session " + id + " alive for HTTP session: " + httpSession);
 						} else {
 							//	Removing XForms session because original HTTP session has expired
 							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
@@ -274,8 +275,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				getSessionCount();
 			}
 		} else if (event instanceof HttpSessionDestroyed) {
-			String destroyedHttpSessionId = ((HttpSessionDestroyed) event).getHttpSessionId();
-			invalidateXFormsSessions(destroyedHttpSessionId);
+			HttpSessionDestroyed destroyed = (HttpSessionDestroyed) event;
+			invalidateXFormsSessions(destroyed.getHttpSessionId(), new Date(destroyed.getLastTimeAccessed()), destroyed.getMaxInactiveInterval());
 		} else if (event instanceof PDFGeneratedEvent) {
 			invalidateXFormsSession(((PDFGeneratedEvent) event).getPdfSource());
 		}
@@ -335,7 +336,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		return null;
 	}
 	
-	private void invalidateXFormsSessions(String httpSessionId) {
+	private void invalidateXFormsSessions(String httpSessionId, Date lastTimeAccessed, int maxInactiveInterval) {
 		if (StringUtil.isEmpty(httpSessionId)) {
 			return;
 		}
@@ -350,7 +351,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				XFormsSession session = getXFormsSession(xFormSessionId);
 				if (session instanceof IdegaXFormsSessionBase) {
 					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
-						invalidateXFormsSession(session, xFormSessionId, "HTTP session " + httpSessionId + " was just invalidated by web application");
+						invalidateXFormsSession(session, xFormSessionId, "HTTP session " + httpSessionId +
+								" was just invalidated by web application. The last time it was accessed: " + lastTimeAccessed +
+								". It had to be inactive for too long. It is allowed to be inactive for " + maxInactiveInterval + " seconds.");
 					}
 				}
 			}
