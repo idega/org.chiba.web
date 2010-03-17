@@ -1,5 +1,6 @@
 package com.idega.chiba.facade;
 
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,6 +130,8 @@ public class IdegaFluxFacade extends FluxFacade {
     @Override
 	public void close(String sessionKey) {	
     	try {
+    		ChibaUtils.getInstance().markXFormSessionFinished(sessionKey, Boolean.TRUE);
+    		
 			super.close(sessionKey);
 		} catch (Exception e) {
 			String message = "Exception at close, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
@@ -176,5 +179,13 @@ public class IdegaFluxFacade extends FluxFacade {
     
     public Set<String> getKeysOfCurrentSessions() {
     	return ChibaUtils.getInstance().getKeysOfCurrentSessions();
+    }
+    
+    public List<String> getInfoAboutCurrentSessions() {
+    	return ChibaUtils.getInstance().getInfoAboutCurrentSessions();
+    }
+    
+    public boolean deleteXFormSessionManually(String key) {
+    	return ChibaUtils.getInstance().deleteXFormSessionManually(key);
     }
 }
