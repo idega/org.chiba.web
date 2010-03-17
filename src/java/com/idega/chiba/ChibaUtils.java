@@ -1,5 +1,7 @@
 package com.idega.chiba;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +25,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
@@ -119,19 +122,57 @@ public class ChibaUtils extends DefaultSpringBean {
     	return session == null ? CoreConstants.EMPTY : ". Object found for this key: " + session;
     }
     
-    public Set<String> getKeysOfCurrentSessions() {
+    private boolean isSuperAdmin() {
     	IWContext iwc = CoreUtil.getIWContext();
     	if (iwc == null || !iwc.isLoggedOn()) {
     		LOGGER.warning("User must be logged!");
-    		return null;
+    		return false;
     	}
     	if (!iwc.isSuperAdmin()) {
     		LOGGER.warning("User does not have enough rights!");
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    public Set<String> getKeysOfCurrentSessions() {
+    	if (!isSuperAdmin()) {
     		return null;
     	}
     	
     	XFormsSessionManager manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
     	return manager instanceof IdegaXFormSessionManagerImpl ? ((IdegaXFormSessionManagerImpl) manager).getKeysOfActiveSessions() : null;
+    }
+    
+    public List<String> getInfoAboutCurrentSessions() {
+    	Set<String> keys = getKeysOfCurrentSessions();
+    	if (ListUtil.isEmpty(keys)) {
+    		return null;
+    	}
+    	
+    	List<String> info = new ArrayList<String>(keys.size());
+    	for (String key: keys) {
+    		XFormsSession session = getXFormSession(key);
+    		info.add(session == null ? "No XForm session found by key: " + key : session.toString());
+    	}
+    	return info;
+    }
+    
+    public boolean deleteXFormSessionManually(String key) {
+    	if (!isSuperAdmin()) {
+    		return false;
+    	}
+    	
+    	XFormsSession session = getXFormSession(key);
+    	if (session == null) {
+    		return false;
+    	}
+    	
+    	User currentUser = getCurrentUser();
+    	((IdegaXFormSessionManagerImpl) IdegaXFormSessionManagerImpl.getXFormsSessionManager()).invalidateXFormsSession(session, key,
+    			"Deleted manually via DWR by user: " + (currentUser == null ? "unknown" : currentUser.getName() + ", id: " + currentUser.getId()));
+    	return true;
     }
     
     private XFormsSession getXFormSession(String key) {
@@ -204,5 +245,18 @@ public class ChibaUtils extends DefaultSpringBean {
     public String getCurrentHttpSessionId() {
     	HttpSession session = getSession();
     	return session == null ? CoreConstants.MINUS : session.getId();
+    }
+    
+    public void markXFormSessionFinished(String key, boolean finished) {
+    	markXFormSessionFinished(getXFormSession(key), finished);
+    }
+    
+    public void markXFormSessionFinished(XFormsSession session, boolean finished) {
+		if (session instanceof IdegaXFormsSessionBase) {
+			((IdegaXFormsSessionBase) session).setFinished(finished);
+			return;
+		}
+		
+		LOGGER.warning("Session " + session + " is not of required type, can not mark as " + (finished ? "finished" : "not finished"));
     }
 }
