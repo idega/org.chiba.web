@@ -23,6 +23,8 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
         progressBackground: null,
         changedFetchingProgressInterval: false,
         uploadFinished: true,
+        progressBarContainerId: '',
+        progressBarId: '',
         fillInTemplate: function() {
             this.xformsId = this.id.substring(0, this.id.length - 6);
 
@@ -44,31 +46,51 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             }
         },
         updateProgress: function (value) {
-        	var progressBarContainerId = this.xformsId + '-progress';
-        	var progressBarId = progressBarContainerId + '-bg';
+        	this.progressBarContainerId = this.xformsId + '-progress';
+        	this.progressBarId = this.progressBarContainerId + '-bg';
         	
-            if (value != 0) {
-            	document.getElementById(progressBarId).style.width = value + '%';
+            if (value != 0 && (this.progressBarId != null && this.progressBarId != '')) {
+            	var element = document.getElementById(this.progressBarId);
+            	if (element != null) {
+            		element.style.width = value + '%';
+            	}
             }
 
             if (value == 100 || value < 0) {
-                // stop polling
-                this.uploadFinished = true;
-                clearInterval(progressUpdate);
-
-                // reset disabled controls
-                for (var i = 0, j = this.disabledNodes.length; i < j; i++) {
-                    this.disabledNodes.pop().disabled = false;
-                }
-
-                // reset progress bar
-                var resetTimeOutId = setTimeout(function() {
-                	window.clearTimeout(resetTimeOutId);
-                	document.getElementById(progressBarId).style.width = 0;
-                	jQuery('#' + progressBarContainerId).hide('normal');
-                	closeAllLoadingMessages();
-                }, 500);
+                this._doActionsAfterUpload();
             }
+        },
+        _doActionsAfterUpload: function() {
+        	// stop polling
+            this.uploadFinished = true;
+            if (progressUpdate != null) {
+            	clearInterval(progressUpdate);
+            }
+
+            // reset disabled controls
+            for (var i = 0, j = this.disabledNodes.length; i < j; i++) {
+                this.disabledNodes.pop().disabled = false;
+            }
+
+            // reset progress bar
+            var uploadWidget = this;
+            var resetTimeOutId = setTimeout(function() {
+            	if (resetTimeOutId != null) {
+            		window.clearTimeout(resetTimeOutId);
+            	}
+            	
+            	if (uploadWidget.progressBarId != null && uploadWidget.progressBarId != '') {
+	               	var element = document.getElementById(uploadWidget.progressBarId);
+	               	if (element != null) {
+	               		element.style.width = 0;
+	               	}
+            	}
+            	if (uploadWidget.progressBarContainerId != null && uploadWidget.progressBarContainerId != '') {
+               		jQuery('#' + uploadWidget.progressBarContainerId).hide('normal');
+            	}
+            	
+               	closeAllLoadingMessages();
+            }, 500);
         },
         _chooseFile: function(useAlert) {
         	if (!this.uploadFinished) {
@@ -168,8 +190,7 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
 					updateUI(data);
 				},
 				errorHandler: function(msg, exc) {
-					uploadWidget.uploadFinished = true;
-					clearInterval(progressUpdate);
+					uploadWidget._doActionsAfterUpload();
 					handleExceptions(msg, exc);
 				}
 			});
