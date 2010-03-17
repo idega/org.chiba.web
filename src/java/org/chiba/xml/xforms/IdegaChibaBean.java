@@ -6,10 +6,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
 import org.chiba.session.IdegaXFormSerializer;
+import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
 
@@ -27,6 +29,10 @@ public class IdegaChibaBean extends ChibaBean {
 		try {
 			XmlUtil.prettyPrintDOM(serializedForm, output);
 			objectOutput.write(output.toByteArray());
+			
+			List<Model> models = getContainer().getModels();
+			byte[] encModels = null;//IOUtil.getBytesFromObject((Serializable) models);
+			System.out.println(encModels);
 			
 			objectOutput.flush();
 			objectOutput.close();
