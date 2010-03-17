@@ -30,6 +30,10 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
 import com.idega.chiba.ChibaUtils;
+import com.idega.chiba.cache.XFormsSessionsCacheGuardian;
+import com.idega.chiba.cache.XFormsSessionsCacheListener;
+import com.idega.core.cache.CacheMapGuardian;
+import com.idega.core.cache.CacheMapListener;
 import com.idega.core.cache.IWCacheManager2;
 import com.idega.event.HttpSessionDestroyed;
 import com.idega.event.IWHttpSessionsManager;
@@ -60,6 +64,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	
 	@Autowired
 	private IWHttpSessionsManager httpSessionsManager;
+	
+	private CacheMapListener<String, XFormsSession> cacheListener;
+	private CacheMapGuardian<String, XFormsSession> cacheGuardian;
 	
 	private int wipingInterval;
 	private static int maxSessions;
@@ -143,7 +150,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     	XFormsSession removed = sessionXForms.remove(id);
         if (removed == null) {
         	LOGGER.warning("Unable to delete XForms session from SessionManager: '" + id + "'. Element by this id exists in cache: " +
-        			sessionXForms.containsKey(id));
+        			sessionXForms.get(id));
         } else {
         	if (explanation == null) {
         		String testMessage = "TEST! Exploring XForm deletion traces";
@@ -195,9 +202,23 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
         
         return formsSession;
     }
-
+    
     public synchronized void init() {}
-            
+    
+    private CacheMapListener<String, XFormsSession> getCacheListener() {
+    	if (cacheListener == null) {
+    		cacheListener = new XFormsSessionsCacheListener<String, XFormsSession>();
+    	}
+    	return cacheListener;
+    }
+    
+    private CacheMapGuardian<String, XFormsSession> getCacheGuardian() {
+    	if (cacheGuardian == null) {
+    		cacheGuardian = new XFormsSessionsCacheGuardian<String, XFormsSession>();
+    	}
+    	return cacheGuardian;
+    }
+    
     /**
      * Get xforms in current from the cache.
      * 
@@ -211,7 +232,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		try {
 			//	TODO: the elements of a cache are not serializable, can not flush!
 			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, getMaxSessions(),
-					Boolean.FALSE, Boolean.FALSE, ttlIdle, ttlCache, Boolean.FALSE);
+					Boolean.FALSE, Boolean.FALSE, ttlIdle, ttlCache, Boolean.FALSE, getCacheListener(), getCacheGuardian());
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error getting cache of XForms (" + XFORMS_SESSIONS_CACHE_NAME + ")", e);
 			CoreUtil.sendExceptionNotification(e);
@@ -261,7 +282,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 						if (getHttpSessionsManager().isSessionValid(httpSession)) {
 							//	Keeping session alive!
 							session.updateLRU();
-							LOGGER.info("Keeping XForm session " + id + " alive for HTTP session: " + httpSession);
+							if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("print_xform_keep_alive", Boolean.TRUE)) {
+								LOGGER.info("Keeping XForm session " + id + " alive for HTTP session: " + httpSession);
+							}
 						} else {
 							//	Removing XForms session because original HTTP session has expired
 							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
@@ -362,7 +385,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		}
 	}
 	
-	private void invalidateXFormsSession(XFormsSession session, String id, String explanation) {
+	public void invalidateXFormsSession(XFormsSession session, String id, String explanation) {
 		String httpSession = null;
 		if (session instanceof IdegaXFormsSessionBase) {
 			httpSession = ((IdegaXFormsSessionBase) session).getHttpSessionId();
@@ -382,6 +405,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				explanation = CoreConstants.EMPTY;
 			}
 			explanation = "Deleted XForm session manually. ".concat(explanation);
+			
+			ChibaUtils.getInstance().markXFormSessionFinished(session, Boolean.TRUE);
 			deleteXFormsSession(id, explanation);
 		}
 	}
