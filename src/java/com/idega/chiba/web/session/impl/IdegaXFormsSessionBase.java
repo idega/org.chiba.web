@@ -41,6 +41,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	private String httpSessionId;
 	private String originalKey;
 	
+	private boolean finished;
+	
 	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {		
 		super(request, response, session);
 		
@@ -185,8 +187,16 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		return originalKey;
 	}
 	
+	public boolean isFinished() {
+		return finished;
+	}
+
+	public void setFinished(boolean finished) {
+		this.finished = finished;
+	}
+
 	@Override
 	public String toString() {
-		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId());
+		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished());
 	}
 }
