@@ -40,6 +40,9 @@ function initXForms(){
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
+	//	We want to close session on before unload event
+	closeSession();
+	
     if (!e) e = event;
     return unload(e);
 }
@@ -93,7 +96,11 @@ function closeSession() {
     	var sessionKey = sessionKeyElement.value;
     	dwr.engine.setErrorHandler(function(msg, ex) {});
     	dwr.engine.setAsync(false);    
-    	Flux.close(sessionKey);
+    	Flux.close(sessionKey, {
+    		callback: function() {
+    			skipShutdown = true;
+    		}
+    	});
 	}
 }
 
