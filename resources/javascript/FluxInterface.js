@@ -21,6 +21,7 @@ if(Localization == null) {
 	Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE	= 'Downloading PDF';
 	Localization.UPLOADING_FAILED 					= 'Sorry, uploading failed. Please try again.';
 	Localization.INVALID_FILE_TO_UPLOAD				= 'Invalid file provided to upload!';
+	Localization.CLOSING							= 'Closing...';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -40,6 +41,7 @@ function initXForms(){
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
+	showLoadingMessage(Localization.CLOSING);
 	//	We want to close session on before unload event
 	closeSession();
 	

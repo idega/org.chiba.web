@@ -33,6 +33,7 @@
 	<xsl:param name="downloadingPDFForXFormMsg" select="''"/>
 	<xsl:param name="uploadingFailed" select="''"/>
 	<xsl:param name="invalidFileProvidedToUpload"/>
+	<xsl:param name="closingMsg"/>
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -156,6 +157,7 @@
                     Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE = '<xsl:value-of select="$downloadingPDFForXFormMsg" />';
                     Localization.UPLOADING_FAILED = '<xsl:value-of select="$uploadingFailed" />';
                     Localization.INVALID_FILE_TO_UPLOAD = '<xsl:value-of select="$invalidFileProvidedToUpload" />';
+                    Localization.CLOSING = '<xsl:value-of select="$closingMsg" />';
                     if (!IE) {
                         showLoadingMessage(Localization.LOADING_MSG);
                     }
