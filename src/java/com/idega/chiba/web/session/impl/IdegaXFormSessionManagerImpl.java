@@ -88,22 +88,22 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
          	Config config = IWBundleStarter.webFactory.getConfig();
         	String mode = config.getProperty("scripted");
         	
-        	if(mode == null)
-            	mode = "true";
+        	if (mode == null)
+            	mode = Boolean.TRUE.toString();
             
-            if (mode.equalsIgnoreCase("true")){
-                request.setAttribute(WebFactory.SCRIPTED,"true");
-            }else if(mode.equalsIgnoreCase("false")){
-                request.setAttribute(WebFactory.SCRIPTED,"false");
+            if (mode.equalsIgnoreCase(Boolean.TRUE.toString())) {
+                request.setAttribute(WebFactory.SCRIPTED, Boolean.TRUE.toString());
+            } else if (mode.equalsIgnoreCase(Boolean.FALSE.toString())) {
+                request.setAttribute(WebFactory.SCRIPTED, Boolean.FALSE.toString());
             }
         } catch(Exception e) {
         	LOGGER.log(Level.WARNING, "Error parsing configuration for XForm session", e);
         	CoreUtil.sendExceptionNotification(e);
         }
     	
-        XFormsSession xFormsSessionBase = new IdegaXFormsSessionBase(request,response,session);
+        XFormsSession xFormsSessionBase = new IdegaXFormsSessionBase(request, response, session);
         if (LOGGER.isLoggable(Level.INFO)) {
-        	LOGGER.info("Created XFormsSession: '" + xFormsSessionBase.getKey() + "'");
+        	LOGGER.info("Created XFormsSession: '" + xFormsSessionBase.getKey() + "' for HTTP session: " + (session == null ? "unknown" : session.getId()));
         }
         return xFormsSessionBase;
     }
