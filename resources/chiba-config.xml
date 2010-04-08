@@ -28,7 +28,7 @@
         XFormsSession unavailable.
         -->
         <property name="sessionChecking" value="0" description="the amount of time (in millis) between runs of wipe() method checking for expired XForms sessions"/>
-        <property name="sessionTimeout" value="7200000" description="the amount of time of inactivity before XFormsSession expires"/>
+        <property name="sessionTimeout" value="0" description="the amount of time of inactivity before XFormsSession expires"/>
         <property name="sessionManager" value="com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl" description="fully qualified classname of XFormsSessionManager implementation"/>
         <!--<property name="sessionClass" value="org.chiba.web.session.impl.DefaultChibaSession" description="fully qualified classname of XFormsSession implementation"/>-->
 

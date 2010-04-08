@@ -226,9 +226,9 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
      */
 	private Map<String, XFormsSession> getCurrentSessionXForms() {
 		//	All intervals are in seconds
-		long halfAnHour = 60 * 60 * 30;	
-		long ttlIdle = wipingInterval == 0 ? halfAnHour : wipingInterval / 1000;	//	Set to 0 in configuration XML file
-		long ttlCache = timeOut == 0 ? halfAnHour : timeOut / 1000;					//	Set to 2 hours in configuration XML file
+		long liveTime = 999999999;												//	Maximal time
+		long ttlIdle = wipingInterval == 0 ? liveTime : wipingInterval / 1000;	//	Can be defined in configuration XML file
+		long ttlCache = timeOut == 0 ? liveTime : timeOut / 1000;				//	Can be defined in configuration XML file
 		try {
 			//	TODO: the elements of a cache are not serializable, can not flush!
 			return IWCacheManager2.getInstance(IWMainApplication.getDefaultIWMainApplication()).getCache(XFORMS_SESSIONS_CACHE_NAME, getMaxSessions(),
