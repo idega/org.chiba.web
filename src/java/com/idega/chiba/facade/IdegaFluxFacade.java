@@ -59,6 +59,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error firing action", e);
 			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
 					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}
@@ -71,6 +72,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			
 			return super.setXFormsValue(id, value, sessionKey);
 		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
 					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
 					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
@@ -84,6 +86,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			
 			return super.setRepeatIndex(id, position, sessionKey);
 		} catch (Exception e) {
+			LOGGER.log(Level.WARNING, "Error setting repeat index", e);
 			throw new SessionExpiredException("Unable to set repeat index for element: '".concat(id).concat("', position: '").concat(position)
 					.concat("' using session: ").concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
 					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
