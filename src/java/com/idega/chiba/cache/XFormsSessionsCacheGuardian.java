@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.idega.chiba.web.session.impl.IdegaXFormsSessionBase;
 import com.idega.core.business.DefaultSpringBean;
 import com.idega.core.cache.CacheMapGuardian;
+import com.idega.idegaweb.IWMainApplication;
+import com.idega.util.CoreUtil;
 
 @Service
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
@@ -65,6 +67,14 @@ public class XFormsSessionsCacheGuardian<K, V extends XFormsSession> extends Def
 			return Boolean.FALSE;	//	Not letting to remove XForm session that was not finished even if HTTP session was invalidated.
 		}
 		
+		getLogger().info("Nothing bad diagnosted about " + session + ", not allowing to remove!");
+		if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("log_xform_guardian", Boolean.TRUE)) {
+			try {
+				throw new RuntimeException("Attempted to remove " + session);
+			} catch (Exception e) {
+				CoreUtil.sendExceptionNotification("Checking stack trace of an attempt to remove XForm session from a cache", e);
+			}
+		}
 		return Boolean.FALSE;
 	}
 
