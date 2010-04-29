@@ -27,6 +27,7 @@ if(Localization == null) {
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.sendingErrorMail = false;
 FluxInterfaceHelper.userDeniedToReloadPageOnError = false;
+FluxInterfaceHelper.changingUriManually = false;
  
 var chibaXFormsInited = false;
  
@@ -41,6 +42,10 @@ function initXForms(){
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
+	if (FluxInterfaceHelper.changingUriManually) {
+		return;
+	}
+	
 	showLoadingMessage(Localization.CLOSING);
 	//	We want to close session on before unload event
 	closeSession();
@@ -425,9 +430,11 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
     switch (type) {
         case "chiba-load-uri":
         	if (properties["show"] == "handlemanually") {
+        		FluxInterfaceHelper.changingUriManually = true;
         		closeAllLoadingMessages();
         		humanMsg.displayMsg(Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE);
 				window.location.href = properties["uri"];
+				FluxInterfaceHelper.changingUriManually = false;
             } else {
 	            isDirty = false;
 	            if (properties["show"] == "replace") {

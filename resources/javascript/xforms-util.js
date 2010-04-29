@@ -274,6 +274,7 @@ function manageHelpTextIconsForForm() {
 }
 
 XFormsUtil.downloadAgreement = function() {
+	FluxInterfaceHelper.changingUriManually = true;
 	showLoadingMessage(Localization.LOADING_MSG);
 	var processName = null;
 	if (BPMConfiguration) {
@@ -288,9 +289,11 @@ XFormsUtil.downloadAgreement = function() {
 				callback: function(uri) {
 					closeAllLoadingMessages();
 					window.location.href = uri;
+					FluxInterfaceHelper.changingUriManually = false;
 				}
 			});
 		} catch(e) {
+			FluxInterfaceHelper.changingUriManually = false;
 			closeAllLoadingMessages();
 			alert('Sorry, some error occurred while downloading agreement');
 			handleExceptions('Error downloading agreement for process: ' + processName, e);
