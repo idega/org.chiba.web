@@ -81,6 +81,11 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
 
   if (value != null) {
     PresentationContext._setControlValue(targetId, value);
+    
+    var realTarget = document.getElementById(targetId + '-value');
+    if (realTarget != null && realTarget.tagName == 'TEXTAREA') {
+    	jQuery(realTarget).trigger('keydown');
+    }
   }
 
   if (valid != null) {
