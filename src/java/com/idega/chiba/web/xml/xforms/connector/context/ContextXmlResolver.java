@@ -26,6 +26,8 @@ import javax.faces.context.FacesContext;
  */
 public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.ContextResolver implements URIResolver {
 
+	private static final Logger LOGGER = Logger.getLogger(ContextXmlResolver.class.getName());
+	
 	private static final String faces_exp_part1 = "#{";
 	private static final String faces_exp_part2 = "}";
 	
@@ -34,32 +36,29 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
 	 */
     @SuppressWarnings("unchecked")
 	@Override
-		public Object resolve() throws XFormsException {
-    	
+	public Object resolve() throws XFormsException {
         try {
         	String xpath = new URI(getURI()).getSchemeSpecificPart();
             FacesContext ctx = FacesContext.getCurrentInstance();
             
             Object value = ctx.getApplication().getExpressionFactory().createValueExpression(ctx.getELContext(),
-            			new StringBuilder(faces_exp_part1).append(xpath).append(faces_exp_part2).toString(), Object.class)
-            	.getValue(ctx.getELContext());
+            		new StringBuilder(faces_exp_part1).append(xpath).append(faces_exp_part2).toString(), Object.class).getValue(ctx.getELContext());
             
             if (value == null) {
-            	Logger.getLogger(ContextXmlResolver.class.getName()).log(Level.WARNING, "No value was retrieved from the key: "+xpath);
+            	LOGGER.warning("No value was retrieved from the key: " + xpath);
             	return XmlUtil.getDocumentBuilder().newDocument();
             }
             	
             if (!(value instanceof Map)) {
-            	Logger.getLogger(ContextXmlResolver.class.getName()).log(Level.WARNING, "Value of wrong type was retrieved from the key: "+xpath+" value class: "
-            			+value.getClass().getName() + ". It must be: Map<Locale, Map<String, String>>");
+            	LOGGER.warning("Value of wrong type was retrieved from the key: " + xpath +	" value class: " + value.getClass().getName() +
+            			". It must be: Map<Locale, Map<String, String>>. Returning empty XML document");
             	return XmlUtil.getDocumentBuilder().newDocument();
             }
 
-            Map<Locale, Map<String, String>> localizedItems = (Map<Locale, Map<String, String>>)value;
-            
+            Map<Locale, Map<String, String>> localizedItems = (Map<Locale, Map<String, String>>) value;
 	        return createResponseDocument(localizedItems);
         } catch (Exception e) {
-        	
+        	LOGGER.log(Level.WARNING, "Error resolving items", e);
         	try {
         		return XmlUtil.getDocumentBuilder().newDocument();
 			} catch (Exception e2) {
@@ -69,16 +68,12 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
     }
     
     protected Document createResponseDocument(Map<Locale, Map<String, String>> localizedItems) throws Exception {
-
     	ChoiceListData choiceListData = new ChoiceListData();
-    	
 		for (Entry<Locale, Map<String, String>> localizedItemsEntry : localizedItems.entrySet()) {
-			
 			LocalizedEntries localizedEntries = new LocalizedEntries();
-			localizedEntries.setLang(localizedItemsEntry.getKey().getLanguage());
+			localizedEntries.setLang(localizedItemsEntry.getKey().toString());
 			
 			for (Entry<String, String> itemEntry : localizedItemsEntry.getValue().entrySet()) {
-
 				localizedEntries.add(new Item(itemEntry.getKey(), itemEntry.getValue()));
 			}
 			
