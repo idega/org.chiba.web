@@ -18,6 +18,8 @@ import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.servlet.filter.RequestResponseProvider;
 import com.idega.util.CoreUtil;
+import com.idega.util.IWTimestamp;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -126,16 +128,39 @@ public class IdegaFluxFacade extends FluxFacade {
 	}
 	 
     @Override
-	public void close(String sessionKey) {	
+	public void close(String sessionKey) {
+    	boolean error = false;
+    	String windowKey = null;
     	try {
+    		if (!StringUtil.isEmpty(sessionKey) && sessionKey.indexOf("@") != -1) {
+    			String[] info = sessionKey.split("@");
+    			sessionKey = info[0];
+    			if (info.length == 2) {
+    				windowKey = info[1];
+    			}
+    		}
+    		
     		ChibaUtils.getInstance().markXFormSessionFinished(sessionKey, Boolean.TRUE);
     		
 			super.close(sessionKey);
 		} catch (Exception e) {
+			error = true;
 			String message = "Exception at close, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
-		}	
+		} finally {
+			if (!error) {
+				IWTimestamp browserWindowOpenedAt = null;
+				if (!StringUtil.isEmpty(windowKey)) {
+					browserWindowOpenedAt = new IWTimestamp(Long.valueOf(windowKey));
+				}
+				String message = "XForm session (" + sessionKey + ") was removed because browser window (" + windowKey + ") was closed.";
+				if (browserWindowOpenedAt != null) {
+					message += " Browser window was opened at: " + browserWindowOpenedAt;
+				}
+				LOGGER.info(message);
+			}
+		}
     }
     
     public int getNumberOfActiveSessions() {

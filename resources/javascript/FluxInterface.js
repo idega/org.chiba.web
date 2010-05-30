@@ -26,7 +26,8 @@ if(Localization == null) {
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
- 
+FluxInterfaceHelper.WINDOW_KEY = null;
+
 var chibaXFormsInited = false;
  
 function initXForms(){
@@ -35,6 +36,11 @@ function initXForms(){
 	    dojo.event.connect("before",window,"onunload","close");
 	}
 }
+
+registerEvent(window, 'load', function() {
+	var loadedAt = new Date();
+	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
+});
 
 /******************************************************************************
  SESSION HANDLING AND PAGE UNLOADING
@@ -100,7 +106,12 @@ function closeSession() {
 	if (sessionKeyElement != null) {
     	var sessionKey = sessionKeyElement.value;
     	dwr.engine.setErrorHandler(function(msg, ex) {});
-    	dwr.engine.setAsync(false);    
+    	dwr.engine.setAsync(false);
+    	
+    	if (FluxInterfaceHelper.WINDOW_KEY != null) {
+    		sessionKey += '@' + FluxInterfaceHelper.WINDOW_KEY;
+    	}
+    	
     	Flux.close(sessionKey, {
     		callback: function() {
     			skipShutdown = true;
