@@ -25,8 +25,6 @@ if(Localization == null) {
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
-FluxInterfaceHelper.sendingErrorMail = false;
-FluxInterfaceHelper.userDeniedToReloadPageOnError = false;
 FluxInterfaceHelper.changingUriManually = false;
  
 var chibaXFormsInited = false;
@@ -140,39 +138,7 @@ FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 		return false;
 	}
 	
-	if (!FluxInterfaceHelper.sendingErrorMail) {
-		FluxInterfaceHelper.sendingErrorMail = true;
-		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/Flux.js'], function() {
-			var mailMessage = 'Error: ' + msg + '\nException: ' + ex + '\nBrowser: ' + navigator.userAgent;
-			if (ex.fileName) {
-				mailMessage += '\nFile: ' + ex.fileName;
-			}
-			if (ex.lineNumber) {
-				mailMessage += '\nLine number: ' + ex.lineNumber;
-			}
-			if (ex.number) {
-				mailMessage += '\nError number: ' + ex.number;
-			}
-			Flux.sendEmail('[XForm JavaScript error] ERROR on: ' + window.location.href, mailMessage, {
-				callback: function(data) {
-					FluxInterfaceHelper.sendingErrorMail = false;
-				}, errorHandler: function(tmpMsg, tmpEx) {
-					FluxInterfaceHelper.sendingErrorMail = false;
-				}
-			});
-		}, null);
-	}
-	
-	if (ex != null && ex.messageToClient != null && ex.reloadPage) {
-		if (!FluxInterfaceHelper.userDeniedToReloadPageOnError) {
-			if (window.confirm(Localization.RELOAD_PAGE)) {
-				reloadPage();
-				return false;
-			} else {
-				FluxInterfaceHelper.userDeniedToReloadPageOnError = true;
-			}
-		}
-	}
+	IWCORE.sendExceptionNotification(msg, ex, Localization.RELOAD_PAGE);
 	
 	return false;
 }

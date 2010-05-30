@@ -16,13 +16,8 @@ import org.w3c.dom.Element;
 import com.idega.chiba.ChibaUtils;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.RequestResponseProvider;
-import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
-import com.idega.util.SendMail;
-import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 /**
@@ -141,39 +136,6 @@ public class IdegaFluxFacade extends FluxFacade {
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 		}	
-    }
-    
-    public boolean sendEmail(String subject, String text) {
-    	if (StringUtil.isEmpty(subject) || StringUtil.isEmpty(text)) {
-    		LOGGER.warning("Subject or/and message not provided");
-    		return false;
-    	}
-    	
-    	String to = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_error_mail_to", "programmers@idega.com");
-    	if (StringUtil.isEmpty(to)) {
-    		return false;
-    	}
-    	
-    	String host = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty(CoreConstants.PROP_SYSTEM_SMTP_MAILSERVER);
-    	if (StringUtil.isEmpty(host)) {
-    		return false;
-    	}
-    	
-    	String userName = "Not logged in";
-    	IWContext iwc = CoreUtil.getIWContext();
-    	if (iwc != null && iwc.isLoggedOn()) {
-    		userName = iwc.getCurrentUser().getName();
-    	}
-    	text += "\nUser: " + userName;
-    	
-    	try {
-    		SendMail.send("idegaweb@idega.com", to, null, null, host, subject, text);
-    	} catch(Exception e) {
-			LOGGER.log(Level.WARNING, "Error while sending email ("+text+") to: " + to, e);
-			return false;
-		}
-    	
-    	return true;
     }
     
     public int getNumberOfActiveSessions() {
