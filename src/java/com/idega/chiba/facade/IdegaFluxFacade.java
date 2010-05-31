@@ -16,9 +16,11 @@ import org.w3c.dom.Element;
 import com.idega.chiba.ChibaUtils;
 import com.idega.chiba.web.exception.SessionExpiredException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
+import com.idega.presentation.IWContext;
 import com.idega.servlet.filter.RequestResponseProvider;
 import com.idega.util.CoreUtil;
 import com.idega.util.IWTimestamp;
+import com.idega.util.RequestUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
@@ -135,7 +137,7 @@ public class IdegaFluxFacade extends FluxFacade {
     		if (!StringUtil.isEmpty(sessionKey) && sessionKey.indexOf("@") != -1) {
     			String[] info = sessionKey.split("@");
     			sessionKey = info[0];
-    			if (info.length == 2) {
+    			if (info.length >= 2) {
     				windowKey = info[1];
     			}
     		}
@@ -150,17 +152,30 @@ public class IdegaFluxFacade extends FluxFacade {
 			CoreUtil.sendExceptionNotification(message, e);
 		} finally {
 			if (!error) {
-				IWTimestamp browserWindowOpenedAt = null;
-				if (!StringUtil.isEmpty(windowKey)) {
-					browserWindowOpenedAt = new IWTimestamp(Long.valueOf(windowKey));
-				}
-				String message = "XForm session (" + sessionKey + ") was removed because browser window (" + windowKey + ") was closed.";
-				if (browserWindowOpenedAt != null) {
-					message += " Browser window was opened at: " + browserWindowOpenedAt;
-				}
-				LOGGER.info(message);
+				printSessionEndInfo(sessionKey, windowKey);
 			}
 		}
+    }
+    
+    private void printSessionEndInfo(String sessionKey, String windowKey) {
+    	IWTimestamp browserWindowOpenedAt = null;
+		if (!StringUtil.isEmpty(windowKey)) {
+			browserWindowOpenedAt = new IWTimestamp(Long.valueOf(windowKey));
+		}
+		String message = "XForm session (" + sessionKey + ") was removed because browser window (" + windowKey + ") was closed.";
+		if (browserWindowOpenedAt != null) {
+			message += " Browser window was opened at: " + browserWindowOpenedAt.getTimestamp().toString();
+		}
+		
+		IWContext iwc = CoreUtil.getIWContext();
+		if (iwc != null) {
+			String language = RequestUtil.getBrowserLanguage(iwc.getRequest());
+			if (!StringUtil.isEmpty(language)) {
+				message += ". Browser language: " + language;
+			}
+		}
+		
+		LOGGER.info(message);
     }
     
     public int getNumberOfActiveSessions() {

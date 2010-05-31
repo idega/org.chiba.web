@@ -11,7 +11,7 @@ var skipShutdown = false;
 // ***** Messages to the user - you may overwrite these in your forms with inline script blocks
 var confirmMsg = "There are changed data. Really exit?";
 
-// ***** Localised variables
+// ***** Localized variables
 if(Localization == null) {
 	var Localization = {};
 	Localization.STANDARD_LAYER_MSG 				= 'Processing data...';
@@ -27,6 +27,8 @@ if(Localization == null) {
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
+
+FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
 var chibaXFormsInited = false;
  
@@ -104,17 +106,24 @@ function keepAlive() {
 function closeSession() {
 	var sessionKeyElement = document.getElementById("chibaSessionKey");
 	if (sessionKeyElement != null) {
-    	var sessionKey = sessionKeyElement.value;
-    	dwr.engine.setErrorHandler(function(msg, ex) {});
+    	var originalSessionKey = sessionKeyElement.value;
+    	if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, originalSessionKey)) {
+    		closeAllLoadingMessages();
+    		return;
+    	}
+		
     	dwr.engine.setAsync(false);
     	
+    	var sessionKey = originalSessionKey;
     	if (FluxInterfaceHelper.WINDOW_KEY != null) {
     		sessionKey += '@' + FluxInterfaceHelper.WINDOW_KEY;
     	}
-    	
     	Flux.close(sessionKey, {
     		callback: function() {
     			skipShutdown = true;
+    			FluxInterfaceHelper.CLOSED_SESSIONS.push(originalSessionKey);
+    		},
+    		errorHandler: function(msg, ex) {
     		}
     	});
 	}
