@@ -8,8 +8,12 @@
             <param name="class" value="com.idega.chiba.facade.IdegaFluxFacade" />
         </create>
         
-      <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception" />
-      <convert match="com.idega.chiba.web.exception.IdegaChibaException" converter="exception" />
+      <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception">
+      	<param name='include' value='javaClassName, message, cause, lineNumber' />
+      </convert>
+      <convert match="com.idega.chiba.web.exception.IdegaChibaException" converter="exception">
+      	<param name='include' value='javaClassName, message, cause, lineNumber' />
+      </convert>
       <convert match="java.lang.StackTraceElement" converter="null" /> 
     </allow>
     
