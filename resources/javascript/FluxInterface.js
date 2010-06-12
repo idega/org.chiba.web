@@ -212,16 +212,20 @@ function chibaActivate(target) {
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
     dwr.engine.setErrorHandler(handleExceptions);
-    var target;
-    //forceControll is used to ignore the window.event
-    // => set to true if you want to call this function on a control, other than the source of the event
+    var target = null;
+    
+    //	forceControll is used to ignore the window.event => set to true if you want to call this function on a control, other than the source of the event
     if (window.event && !forceControl) {
         target = window.event.srcElement;
-    }
-    else {
+    } else {
         target = control;
     }
 
+	if (target == null || target.id == null) {
+		IWCORE.sendExceptionNotification('Target or target id is unknown in setXFormsValue method: ' + target, null, null);
+		return;
+	}
+	
     var id = target.id;
     if (id.substring(id.length - 6, id.length) == "-value") {
         // cut off "-value"
