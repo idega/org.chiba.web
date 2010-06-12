@@ -376,7 +376,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
 						invalidateXFormsSession(session, xFormSessionId, "HTTP session " + httpSessionId +
 								" was just invalidated by web application. The last time it was accessed: " + lastTimeAccessed +
-								". It had to be inactive for too long. It is allowed to be inactive for " + maxInactiveInterval + " seconds.");
+								". It was inactive for: " + (System.currentTimeMillis() - lastTimeAccessed.getTime()) +
+								" milliseconds. It is allowed to be inactive for " + maxInactiveInterval + " seconds.");
 					}
 				}
 			}
