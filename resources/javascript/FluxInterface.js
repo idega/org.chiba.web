@@ -213,6 +213,11 @@ function chibaActivate(target) {
 function setXFormsValue(control, forceControl) {
 	var sessionKey = document.getElementById("chibaSessionKey").value;
     if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
+    	redirectForm(Localization.SESSION_EXPIRED, {
+			callback: function (data) {
+				closeAllLoadingMessages();
+			}
+		});
     	return;
     }
 	
@@ -314,6 +319,11 @@ function setRange(id, value) {
 
     var sessionKey = document.getElementById("chibaSessionKey").value;
     if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
+    	redirectForm(Localization.SESSION_EXPIRED, {
+			callback: function (data) {
+				closeAllLoadingMessages();
+			}
+		});
     	return;
     }
 
