@@ -211,6 +211,11 @@ function chibaActivate(target) {
 
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
+	var sessionKey = document.getElementById("chibaSessionKey").value;
+    if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
+    	return;
+    }
+	
     dwr.engine.setErrorHandler(handleExceptions);
     var target = null;
     
@@ -287,7 +292,6 @@ function setXFormsValue(control, forceControl) {
 
     dwr.engine.setOrdered(true);
 	dwr.engine.setErrorHandler(handleExceptions);
-    var sessionKey = document.getElementById("chibaSessionKey").value;
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
     isDirty = true;             
 }
@@ -308,8 +312,12 @@ function setRange(id, value) {
     var newValue = document.getElementById(id + value);
     newValue.className = newValue.className + " rangevalue";
 
-    dwr.engine.setErrorHandler(handleExceptions);
     var sessionKey = document.getElementById("chibaSessionKey").value;
+    if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
+    	return;
+    }
+
+	dwr.engine.setErrorHandler(handleExceptions);    
     Flux.setXFormsValue(id, value, sessionKey, updateUI);
 }
 
