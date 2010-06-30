@@ -36,21 +36,24 @@ import com.idega.presentation.IWContext;
 
 public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
-	private static final AtomicLong sessionId = new AtomicLong();
+	private static final AtomicLong SESSION_COUNTER = new AtomicLong();
 	
 	private String httpSessionId;
 	private String originalKey;
 	
+	private Class<? extends HttpSession> httpSesionClass;
+	
 	private boolean finished;
 	
-	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {		
-		super(request, response, session);
+	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {
+		super(request, response, new IdegaXFormHttpSession(session.getServletContext(), session.getId(), session.getCreationTime()));
 		
 		originalKey = key;
-		//ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
-		this.key = (this.getKey() + sessionId.incrementAndGet());
+		//	Ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
+		this.key = (this.getKey() + SESSION_COUNTER.incrementAndGet());
 		
 		httpSessionId = session.getId();
+		httpSesionClass = httpSession.getClass();
 	}
 	
 	@Override
@@ -119,12 +122,10 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         } catch (URISyntaxException e) {
             throw new XFormsException(e);
         } 
-        WebUtil.printSessionKeys(this.httpSession);
     }
 	
     @Override
 	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
-    	
     	XSLTGenerator generator = (XSLTGenerator) super.createUIGenerator();
     	FacesContext context = FacesContext.getCurrentInstance();
 
@@ -175,7 +176,6 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
     }
     
     public IWBundle getBundle(FacesContext ctx, String bundleIdentifier) {
-    	
     	IWMainApplication iwma = IWMainApplication.getIWMainApplication(ctx);
 		return iwma.getBundle(bundleIdentifier);
     }
@@ -194,6 +194,10 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
 	public void setFinished(boolean finished) {
 		this.finished = finished;
+	}
+	
+	public Class<? extends HttpSession> getSessionClass() {
+		return httpSesionClass;
 	}
 
 	@Override

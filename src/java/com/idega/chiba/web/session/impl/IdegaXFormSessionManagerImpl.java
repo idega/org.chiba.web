@@ -42,6 +42,7 @@ import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.xml.XmlUtil;
@@ -278,17 +279,18 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 				for (String id: ids) {
 					XFormsSession session = getXFormsSession(id);
 					if (session instanceof IdegaXFormsSessionBase) {
-						String httpSession = ((IdegaXFormsSessionBase) session).getHttpSessionId();
-						if (getHttpSessionsManager().isSessionValid(httpSession)) {
+						IdegaXFormsSessionBase xformSession = (IdegaXFormsSessionBase) session;
+						String httpSession = xformSession.getHttpSessionId();
+						if (isXFormSessionReadyToBeDeleted(xformSession)) {
+							//	Removing XForms session because original HTTP session has expired
+							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
+									" already is invalid. It was invalidated by web application earlier.");
+						} else {
 							//	Keeping session alive!
 							session.updateLRU();
 							if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("print_xform_keep_alive", Boolean.TRUE)) {
 								LOGGER.info("Keeping XForm session " + id + " alive for HTTP session: " + httpSession);
 							}
-						} else {
-							//	Removing XForms session because original HTTP session has expired
-							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
-									" already is invalid. It was invalidated by web application earlier.");
 						}
 					}
 				}
@@ -359,6 +361,22 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		return null;
 	}
 	
+	private boolean isXFormSessionReadyToBeDeleted(IdegaXFormsSessionBase xformSession) {
+		if (xformSession == null) {
+			return true;
+		}
+		
+		Class<? extends HttpSession> httpSessionClass = xformSession.getSessionClass();
+		if (httpSessionClass != null && httpSessionClass.equals(IdegaXFormHttpSession.class)) {
+			IWTimestamp lastTimeUsed = new IWTimestamp(xformSession.getLastUseTime());
+			IWTimestamp weekAgo = IWTimestamp.RightNow();
+			weekAgo.setDay(weekAgo.getDay() - 7);
+			return lastTimeUsed.isEarlierThan(weekAgo);	//	Not keeping XForm session if it was not used during last week
+		}
+		
+		return !getHttpSessionsManager().isSessionValid(xformSession.getHttpSessionId());	//	Simply checking if HttpSession is valid
+	}
+	
 	private void invalidateXFormsSessions(String httpSessionId, Date lastTimeAccessed, int maxInactiveInterval) {
 		if (StringUtil.isEmpty(httpSessionId)) {
 			return;
@@ -373,7 +391,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 			for (String xFormSessionId: xFormsSessionsIds) {
 				XFormsSession session = getXFormsSession(xFormSessionId);
 				if (session instanceof IdegaXFormsSessionBase) {
-					if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
+					IdegaXFormsSessionBase xformSession = (IdegaXFormsSessionBase) session;
+					if (httpSessionId.equals(xformSession.getHttpSessionId()) && isXFormSessionReadyToBeDeleted(xformSession)) {
 						invalidateXFormsSession(session, xFormSessionId, "HTTP session " + httpSessionId +
 								" was just invalidated by web application. The last time it was accessed: " + lastTimeAccessed +
 								". It was inactive for: " + (System.currentTimeMillis() - lastTimeAccessed.getTime()) +
