@@ -68,7 +68,7 @@ public class XFormsSessionsCacheGuardian<K, V extends XFormsSession> extends Def
 		}
 		
 		getLogger().info("Nothing bad diagnosted about " + session + ", not allowing to remove!");
-		if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("log_xform_guardian", Boolean.TRUE)) {
+		if (IWMainApplication.getDefaultIWMainApplication().getSettings().getBoolean("log_xform_guardian", Boolean.FALSE)) {
 			try {
 				throw new RuntimeException("Attempted to remove " + session);
 			} catch (Exception e) {
