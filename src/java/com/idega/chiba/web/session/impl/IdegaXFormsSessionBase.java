@@ -2,6 +2,7 @@ package com.idega.chiba.web.session.impl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.faces.context.FacesContext;
@@ -202,6 +203,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
 	@Override
 	public String toString() {
-		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished());
+		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished() +
+				". Last time used: " + (getLastUseTime() < 0 ? "unknown" : new Date(getLastUseTime())));
 	}
 }
