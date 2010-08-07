@@ -70,7 +70,6 @@ public class ExtensionFunctionUtil {
 	}
 		
 	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException{
-		
     	String [] params = paramsExp.split(CoreConstants.COMMA);
     	StringBuilder resolvedParamsExp = new StringBuilder(); 
 
@@ -78,16 +77,15 @@ public class ExtensionFunctionUtil {
     	
     	for (String param : params) {
     		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
-        		
         		param = ELUtil.cleanupExp(param.trim());
       
         		value = getInstanceValueFromExpression(expressionContext, param);	
         		
-        	 	if (value.toString().equals(CoreConstants.EMPTY)){
-        	 		return CoreConstants.SPACE;
+        	 	if (value == null) {
+        	 		value = CoreConstants.EMPTY;
         	 	}
+        	 	
         	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-
         	} else {
         		resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
         	}
