@@ -81,8 +81,8 @@ public class ExtensionFunctionUtil {
       
         		value = getInstanceValueFromExpression(expressionContext, param);	
         		
-        	 	if (value == null) {
-        	 		value = CoreConstants.EMPTY;
+        		if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
+        	 		return CoreConstants.SPACE;
         	 	}
         	 	
         	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
