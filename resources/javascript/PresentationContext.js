@@ -83,8 +83,18 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
     PresentationContext._setControlValue(targetId, value);
     
     var realTarget = document.getElementById(targetId + '-value');
-    if (realTarget != null && realTarget.tagName == 'TEXTAREA') {
-    	jQuery(realTarget).trigger('keydown');
+    if (realTarget != null && (realTarget.tagName == 'TEXTAREA' || realTarget.tagName == 'textarea')) {
+    	var keyDownEvent = jQuery.Event('keydown');
+    	keyDownEvent.callback = function() {
+    		var textValue = jQuery(realTarget).attr('value');
+	    	if (textValue != null && textValue != '') {
+	    		var customTextIndex = textValue.indexOf(' .');
+	    		if (customTextIndex > 0) {
+	    			IWCORE.setCaretToPos(realTarget, (customTextIndex + 1));
+	    		}
+	    	}
+    	}
+    	jQuery(realTarget).trigger(keyDownEvent);
     }
   }
 
