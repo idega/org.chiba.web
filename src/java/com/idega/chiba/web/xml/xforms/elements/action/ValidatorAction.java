@@ -66,7 +66,8 @@ public class ValidatorAction extends AbstractBoundAction {
         super(element, model);
     }
 
-    public void init() throws XFormsException {
+    @Override
+	public void init() throws XFormsException {
         super.init();
         
         String setErrorId = getXFormsAttribute("seterror");
@@ -95,7 +96,7 @@ public class ValidatorAction extends AbstractBoundAction {
         
         if (!componentId.startsWith(XFormsUtil.CTID)) {
         	String xformId = XFormsUtil.getFormId(getContainerObject().getDocument());
-        	Logger.getLogger(ValidatorAction.class.getName()).log(Level.WARNING, "Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
+        	Logger.getLogger(ValidatorAction.class.getName()).warning("Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
         }
         
         setComponentId(componentId);
@@ -120,7 +121,8 @@ public class ValidatorAction extends AbstractBoundAction {
         }
     }
 
-    public void perform() throws XFormsException {
+    @Override
+	public void perform() throws XFormsException {
         super.perform();
         
         Container container = getContainerObject();
