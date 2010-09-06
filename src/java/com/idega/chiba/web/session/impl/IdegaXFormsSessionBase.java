@@ -78,12 +78,10 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         
         try {
             XMLEvent exitEvent = adapter.checkForExitEvent();
-            if (exitEvent != null) {
-                handleExit(exitEvent);
-            }else{
+            if (exitEvent == null) {
                 String referer = null;
 
-                if(updating) {
+                if (updating) {
                     // updating ... - this is only called when ServletAdapter is in use
                     referer = (String) getProperty(XFormsSession.REFERER);
                     setProperty("update","true");
@@ -117,12 +115,14 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     uiGenerator.setOutput(context.getResponseWriter());
                     uiGenerator.generate();
                 }
+            } else {
+            	handleExit(exitEvent);
             }
         } catch (IOException e) {
             throw new XFormsException(e);
         } catch (URISyntaxException e) {
             throw new XFormsException(e);
-        } 
+        }
     }
 	
     @Override

@@ -32,6 +32,7 @@ import org.w3c.dom.Document;
 import com.idega.chiba.ChibaUtils;
 import com.idega.chiba.cache.XFormsSessionsCacheGuardian;
 import com.idega.chiba.cache.XFormsSessionsCacheListener;
+import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.core.cache.CacheMapGuardian;
 import com.idega.core.cache.CacheMapListener;
 import com.idega.core.cache.IWCacheManager2;
@@ -124,6 +125,16 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
     		return;
     	}
 
+    	int currentSize = sessionXForms.size();
+    	int maxSize = getMaxSessions();
+    	if (currentSize >= maxSize) {
+    		String messageToTheUser = ChibaUtils.getInstance()
+    			.getLocalizedString("xforms_limit_reached", "We are very sorry, the limit of max users was reached. Please, try a bit later.");
+    		throw new IdegaChibaException("The limit was reached of XForms sessions! Able to store sessions: " + maxSize + ", now storing: " + currentSize,
+    				messageToTheUser,
+    				Boolean.TRUE);
+    	}
+    	
         sessionXForms.put(xfSession.getKey(), xfSession);
     }
 
@@ -243,7 +254,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 	}
 	
 	public static final int getMaxSessions() {
-		int sessions = Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(100)));
+		int sessions = Integer.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("max_xforms_sessions", String.valueOf(1000)));
 		
 		if (maxSessions != sessions)
 			maxSessions = sessions;
