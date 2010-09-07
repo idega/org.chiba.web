@@ -6,6 +6,18 @@
         <create creator="jsf" javascript="Flux" scope="request">
         	<param name="managedBeanName" value="fluxexhand" />
             <param name="class" value="com.idega.chiba.facade.IdegaFluxFacade" />
+            
+            <include method="fireAction"/>
+            <include method="setXFormsValue"/>
+            <include method="setRepeatIndex"/>
+            <include method="fetchProgress"/>
+            <include method="keepAlive"/>
+            <include method="close"/>
+            <include method="getNumberOfActiveSessions"/>
+            <include method="getKeysOfCurrentSessions"/>
+            <include method="getInfoAboutCurrentSessions"/>
+            <include method="deleteXFormSessionManually"/>
+            <include method="sendInformationAboutXFormsSessions"/>
         </create>
         
       <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception">

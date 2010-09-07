@@ -193,4 +193,8 @@ public class IdegaFluxFacade extends FluxFacade {
     public boolean deleteXFormSessionManually(String key) {
     	return ChibaUtils.getInstance().deleteXFormSessionManually(key);
     }
+    
+    public void sendInformationAboutXFormsSessions(String receiverEmail) {
+    	ChibaUtils.getInstance().sendInformationAboutXForms(receiverEmail);
+    }
 }

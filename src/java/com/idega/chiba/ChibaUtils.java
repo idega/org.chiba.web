@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -29,6 +30,7 @@ import com.idega.user.data.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
+import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
 
 @Service
@@ -101,7 +103,7 @@ public class ChibaUtils extends DefaultSpringBean {
 	}
 	
 	public IdegaChibaException getIdegaChibaException(String sessionKey, String exceptionMessage, String localizationKey, String defaultLocalizationValue) {
-    	return getIdegaChibaException(sessionKey, exceptionMessage, ChibaUtils.getInstance().getLocalizedString(localizationKey, defaultLocalizationValue));
+    	return getIdegaChibaException(sessionKey, exceptionMessage, getLocalizedString(localizationKey, defaultLocalizationValue));
     }
     
     public IdegaChibaException getIdegaChibaException(String sessionKey, String exceptionMessage, String localizedMessage) {
@@ -258,5 +260,21 @@ public class ChibaUtils extends DefaultSpringBean {
 		}
 		
 		LOGGER.warning("Session " + session + " is not of required type, can not mark as " + (finished ? "finished" : "not finished"));
+    }
+    
+    public void sendInformationAboutXForms(String receiver) {
+    	if (StringUtil.isEmpty(receiver) || !isSuperAdmin()) {
+    		LOGGER.warning("Can not send information about XForms sessions");
+    		return;
+    	}
+    	
+    	String info = "Active sessions: " + IdegaXFormSessionManagerImpl.getXFormsSessionManager().getSessionCount() + ".\n";
+    	info += getInfoAboutCurrentSessions();
+    	
+    	try {
+			SendMail.send("idegaweb@idega.com", receiver, null, null, null, null, "Information about XForms sessions", info);
+		} catch (MessagingException e) {
+			LOGGER.log(Level.WARNING, "Error sending information about current XForms sessions:\n" + info, e);
+		}
     }
 }
