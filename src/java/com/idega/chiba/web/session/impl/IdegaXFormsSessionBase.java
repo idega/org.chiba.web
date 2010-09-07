@@ -46,6 +46,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	
 	private boolean finished;
 	
+	private long created;
+	
 	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {
 		super(request, response, new IdegaXFormHttpSession(session.getServletContext(), session.getId(), session.getCreationTime()));
 		
@@ -55,6 +57,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		
 		httpSessionId = session.getId();
 		httpSesionClass = httpSession.getClass();
+		
+		created = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -204,6 +208,6 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	@Override
 	public String toString() {
 		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished() +
-				". Last time used: " + (getLastUseTime() < 0 ? "unknown" : new Date(getLastUseTime())));
+				". Created: " + new Date(created) + ". Last time used: " + (getLastUseTime() < 0 ? "unknown" : new Date(getLastUseTime())));
 	}
 }
