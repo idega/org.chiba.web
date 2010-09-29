@@ -9,6 +9,9 @@ if (djConfig == null) {
 }
 
 XFormsConfig.setConfiguration = function(config) {
+	XFormsConfig.baseScriptUri = config.baseScriptUri;
+	XFormsConfig.locale = config.locale;
+	
 	djConfig.baseScriptUri = config.baseScriptUri;
 	djConfig.locale = config.locale;
 	dojo.locale = config.locale;
