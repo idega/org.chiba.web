@@ -61,12 +61,10 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	private boolean isNodeExists() {
-		
 		String locationPath = getLocationPath();
 		Instance instance = getInstance();
 		if (!instance.existsNode(locationPath)) {
-			getLogger().warn(
-			    this + " perform: nodeset '" + locationPath + "' is empty");
+			getLogger().warn(this + " perform: nodeset '" + locationPath + "' is empty");
 			return false;
 		} else
 			return true;
@@ -74,70 +72,54 @@ public class IdegaSetValueAction extends SetValueAction {
 	
 	@Override
 	public void perform() throws XFormsException {
-		
 		if (isNodeExists()) {
-			
 			String valueAttribute = getValueAttribute();
-			
 			if (valueAttribute != null) {
-				
 				Object value = getValue();
 				
 				if (getLogger().isDebugEnabled()) {
-					getLogger().debug(
-					    this + " perform: setting evaluated value '" + value
-					            + "'");
+					getLogger().debug(this + " perform: setting evaluated value '" + value + "'");
 				}
 				
 				setValue(value);
-				
 			} else {
-				
 				String nodeValue = getNodeValue();
-				
 				if (getLogger().isDebugEnabled()) {
-					getLogger().debug(
-					    this + " perform: setting literal value '" + nodeValue
-					            + "'");
+					getLogger().debug(this + " perform: setting literal value '" + nodeValue + "'");
 				}
 				
 				setValue(nodeValue);
 			}
-			
 			updateBehavior();
 		}
 	}
 	
 	protected void updateBehavior() throws XFormsException {
-		
 		doRecalculate(true);
 		doRevalidate(true);
 		doRefresh(true);
 	}
 	
 	protected Object getValue() throws XFormsException {
-		
 		// since jxpath doesn't provide a means for evaluating an expression
 		// in a certain context, we use a trick here: the expression will be
 		// evaluated during getPointer and the result stored as a variable
 		JXPathContext context = instance.getInstanceContext();
 		
 		String currentPath = getParentContextPath(this.element);
-		context.getVariables().declareVariable("currentContextPath",
-		    currentPath);
+		context.getVariables().declareVariable("currentContextPath", currentPath);
 		try {
 			String locationPath = getLocationPath();
-			context.getPointer(locationPath + "[chiba:declare('node-value', "
-			        + valueAttribute + ")]");
+			context.getPointer(locationPath + "[chiba:declare('node-value', " + valueAttribute + ")]");
 		} catch (Exception e) {
-			throw new XFormsComputeException("invalid value expression at "
-			        + this, e, this.target, valueAttribute);
+			throw new XFormsComputeException("invalid value expression at " + this, e, this.target, valueAttribute);
 		}
+		
 		Object value = context.getValue("chiba:undeclare('node-value')");
 		
-		// check for string conversion to prevent sth. like "5 + 0" to be evaluated to "5.0"
+		// check for string conversion to prevent something like "5 + 0" to be evaluated to "5.0"
 		if (value instanceof Double) {
-			// additionaly check for special cases
+			// Additionally check for special cases
 			double doubleValue = ((Double) value).doubleValue();
 			if (!(Double.isNaN(doubleValue) || Double.isInfinite(doubleValue))) {
 				value = context.getValue("string(" + value + ")");
@@ -149,21 +131,15 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected void setValue(Object value) throws XFormsException {
-		
 		if (value instanceof Document) {
-			
 			setDocumentTypeValue((Document) value);
-			
 		} else {
 			setObjectTypeValue(value);
 		}
 	}
 	
-	protected void setDocumentTypeValue(Document itemListDoc)
-	        throws XFormsException {
-		
+	protected void setDocumentTypeValue(Document itemListDoc) throws XFormsException {
 		Element itemsElem = itemListDoc.getDocumentElement();
-		
 		if (isInserting())
 			insertItems(itemsElem.getChildNodes());
 		else
@@ -171,7 +147,6 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected void setObjectTypeValue(Object value) throws XFormsException {
-		
 		if (!isMultiple()) {
 			setSingleModelItemValue(value);
 		} else {
@@ -180,23 +155,18 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected void setSingleModelItemValue(Object value) throws XFormsException {
-		
 		String locationPath = getLocationPath();
-		instance.setNodeValue(locationPath, value != null ? value.toString()
-		        : CoreConstants.EMPTY);
+		instance.setNodeValue(locationPath, value != null ? value.toString() : CoreConstants.EMPTY);
 	}
 	
 	protected void setModelItemsValue(Object value) throws XFormsException {
-		
 		Instance instance = getInstance();
 		String locationPath = getLocationPath();
 		
 		@SuppressWarnings("unchecked")
-		Iterator<ModelItem> modelItems = instance.iterateModelItems(
-		    locationPath, false);
+		Iterator<ModelItem> modelItems = instance.iterateModelItems(locationPath, false);
 		
-		String valueStr = value != null ? value.toString()
-		        : CoreConstants.EMPTY;
+		String valueStr = value != null ? value.toString() : CoreConstants.EMPTY;
 		
 		while (modelItems.hasNext()) {
 			ModelItem modelItem = modelItems.next();
@@ -205,14 +175,12 @@ public class IdegaSetValueAction extends SetValueAction {
 				modelItem.setValue(valueStr);
 				instance.getModel().addChanged((NodeImpl) modelItem.getNode());
 			} else {
-				getLogger().warn(
-				    this + " set node value: attempt to set readonly value");
+				getLogger().warn(this + " set node value: attempt to set readonly value");
 			}
 		}
 	}
 	
 	protected void insertItems(NodeList items) throws XFormsException {
-		
 		Instance instance = getInstance();
 		String pathExpression = getLocationPath();
 		int contextSize = instance.countNodeset(pathExpression);
@@ -224,17 +192,12 @@ public class IdegaSetValueAction extends SetValueAction {
 		Node item;
 		
 		for (int i = 0; i < items.getLength(); i++) {
-			
-			origin = new StringBuffer(pathExpression).append('[').append(
-			    contextSize).append(']').toString();
-			
-			after = new StringBuffer(pathExpression).append('[').append(
-			    contextSize + 1).append(']').toString();
+			origin = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
+			after = new StringBuffer(pathExpression).append('[').append(contextSize + 1).append(']').toString();
 			
 			instance.insertNode(origin, after);
 			
 			item = items.item(i);
-			
 			label = (Element) item.getFirstChild();
 			value = (Element) item.getLastChild();
 			
@@ -250,7 +213,6 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected void overrideExistingItems(NodeList items) throws XFormsException {
-		
 		Instance instance = getInstance();
 		String pathExpression = getLocationPath();
 		int contextSize = instance.countNodeset(pathExpression);
@@ -261,29 +223,50 @@ public class IdegaSetValueAction extends SetValueAction {
 		Node item;
 		
 		for (int i = 0; i < items.getLength(); i++) {
-			
-			path = new StringBuffer(pathExpression).append('[').append(
-			    contextSize).append(']').toString();
+			path = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
 			
 			instance.createNode(path);
-			
+			ModelItem modelItem = instance.getModelItem(path);
+			if (modelItem == null) {
+				throw new XFormsException("Model item for path '" + path + "' does not exist");
+			}
+
 			item = items.item(i);
 			
 			label = (Element) item.getFirstChild();
 			value = (Element) item.getLastChild();
+			if (setNode(path, instance, modelItem, label) == null) {
+				break;
+			}
+			if (setNode(path, instance, modelItem, value) == null) {
+				break;
+			}
 			
-			instance.setNode(path, label);
-			instance.setNode(path, value);
-			
-			instance.setNodeValue(new StringBuilder().append(path).append(
-			    CoreConstants.SLASH).append(value.getNodeName()).toString(),
-			    value.getTextContent());
-			instance.setNodeValue(new StringBuilder().append(path).append(
-			    CoreConstants.SLASH).append(label.getNodeName()).toString(),
-			    label.getTextContent());
+			instance.setNodeValue(new StringBuilder().append(path).append(CoreConstants.SLASH).append(value.getNodeName()).toString(), value.getTextContent());
+			instance.setNodeValue(new StringBuilder().append(path).append(CoreConstants.SLASH).append(label.getNodeName()).toString(), label.getTextContent());
 			
 			contextSize++;
 		}
+	}
+	
+	private Node setNode(String path, Instance instance, ModelItem modelItem, Element element) throws XFormsException{
+		try {
+			instance.setNode(path, element);
+		} catch (XFormsException e) {
+			throw new XFormsException("Unable to add element " + element + " to " + path, e);
+		} catch (Exception e) {
+			if (modelItem.isReadonly()) {
+				getLogger().warn("Model " + modelItem + " is read only!");
+				return null;
+			}
+			
+			Node importedNode = ((Element)modelItem.getNode()).getOwnerDocument().importNode(element, true);
+			Node appendedChild = ((Element) modelItem.getNode()).appendChild(importedNode);
+			instance.getModel().addChanged((NodeImpl) modelItem.getNode());
+			
+			return appendedChild;
+		}
+		return element;
 	}
 	
 	protected String getInsertAttribute() {
@@ -295,15 +278,11 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected boolean isInserting() {
-		
-		return getInsertAttribute() != null ? evalCondition(getElement(),
-		    getInsertAttribute()) : false;
+		return getInsertAttribute() != null ? evalCondition(getElement(), getInsertAttribute()) : false;
 	}
 	
 	protected boolean isMultiple() {
-		
-		return getMultipleAttribute() != null ? evalCondition(getElement(),
-		    getMultipleAttribute()) : false;
+		return getMultipleAttribute() != null ? evalCondition(getElement(), getMultipleAttribute()) : false;
 	}
 	
 	protected String getMultipleAttribute() {
@@ -315,7 +294,6 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected Instance getInstance() {
-		
 		if (instance == null)
 			instance = this.model.getInstance(getInstanceId());
 		
@@ -324,7 +302,6 @@ public class IdegaSetValueAction extends SetValueAction {
 	
 	@Override
 	public String getLocationPath() {
-		
 		if (locationPath == null)
 			locationPath = super.getLocationPath();
 		
