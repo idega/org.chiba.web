@@ -225,12 +225,15 @@ public class IdegaSetValueAction extends SetValueAction {
 		for (int i = 0; i < items.getLength(); i++) {
 			path = new StringBuffer(pathExpression).append('[').append(contextSize).append(']').toString();
 			
-			instance.createNode(path);
+			if (!instance.existsNode(path)) {
+				instance.createNode(path);
+			}
+			
 			ModelItem modelItem = instance.getModelItem(path);
 			if (modelItem == null) {
 				throw new XFormsException("Model item for path '" + path + "' does not exist");
 			}
-
+			
 			item = items.item(i);
 			
 			label = (Element) item.getFirstChild();
@@ -260,10 +263,11 @@ public class IdegaSetValueAction extends SetValueAction {
 				return null;
 			}
 			
-			Node importedNode = ((Element)modelItem.getNode()).getOwnerDocument().importNode(element, true);
-			Node appendedChild = ((Element) modelItem.getNode()).appendChild(importedNode);
-			instance.getModel().addChanged((NodeImpl) modelItem.getNode());
-			
+			Element currentElement = (Element) modelItem.getNode();
+			Node importedNode = currentElement.getOwnerDocument().importNode(element, true);
+			Node appendedChild = currentElement.appendChild(importedNode);
+			instance.getModel().addChanged((NodeImpl) currentElement);
+
 			return appendedChild;
 		}
 		return element;
