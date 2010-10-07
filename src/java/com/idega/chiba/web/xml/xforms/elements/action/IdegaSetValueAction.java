@@ -15,7 +15,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringUtil;
 
 public class IdegaSetValueAction extends SetValueAction {
 	
@@ -26,6 +28,7 @@ public class IdegaSetValueAction extends SetValueAction {
 	private String valueAttribute;
 	private String insertAttribute;
 	private String multipleAttribute;
+	private String ifCondition;
 	
 	private String locationPath;
 	private Instance instance;
@@ -45,6 +48,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		super.init();
 		
 		this.valueAttribute = getXFormsAttribute(VALUE_ATTRIBUTE);
+		this.ifCondition = getXFormsAttribute("idega-if");
 		
 		setInsertAttribute(getXFormsAttribute(INSERT_ATTRIBUTE));
 		setMultipleAttribute(getXFormsAttribute(MULTIPLE_ATTRIBUTE));
@@ -70,28 +74,63 @@ public class IdegaSetValueAction extends SetValueAction {
 			return true;
 	}
 	
+	private boolean canPerform() {
+		boolean perform = true;
+		if (StringUtil.isEmpty(ifCondition)) {
+			return perform;
+		}
+		
+		Object result = null;
+		try {
+			String beanExpEnd = "',";
+			String beanExp = ifCondition.substring(0, ifCondition.indexOf(beanExpEnd) + (beanExpEnd.length() - 1));
+			beanExp = beanExp.replaceAll("'", CoreConstants.EMPTY);
+			
+			String params = null;
+			int separator = ifCondition.indexOf(beanExpEnd);
+			if (separator != -1) {
+				params = ifCondition.substring(separator + beanExpEnd.length());
+			}
+			
+			result = IdegaExtensionFunctions.resolveExpression(getInstance(), beanExp, params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (result instanceof Boolean) {
+			perform = (Boolean) result;
+		}
+		return perform;
+	}
+	
 	@Override
 	public void perform() throws XFormsException {
-		if (isNodeExists()) {
-			String valueAttribute = getValueAttribute();
-			if (valueAttribute != null) {
-				Object value = getValue();
-				
-				if (getLogger().isDebugEnabled()) {
-					getLogger().debug(this + " perform: setting evaluated value '" + value + "'");
-				}
-				
-				setValue(value);
-			} else {
-				String nodeValue = getNodeValue();
-				if (getLogger().isDebugEnabled()) {
-					getLogger().debug(this + " perform: setting literal value '" + nodeValue + "'");
-				}
-				
-				setValue(nodeValue);
-			}
-			updateBehavior();
+		if (!isNodeExists()) {
+			return;
 		}
+		
+		if (!canPerform()) {
+			return;
+		}
+		
+		String valueAttribute = getValueAttribute();
+		if (valueAttribute != null) {
+			Object value = getValue();
+			
+			if (getLogger().isDebugEnabled()) {
+				getLogger().debug(this + " perform: setting evaluated value '" + value + "'");
+			}
+			
+			setValue(value);
+		} else {
+			String nodeValue = getNodeValue();
+			if (getLogger().isDebugEnabled()) {
+				getLogger().debug(this + " perform: setting literal value '" + nodeValue + "'");
+			}
+			
+			setValue(nodeValue);
+		}
+		updateBehavior();
 	}
 	
 	protected void updateBehavior() throws XFormsException {
