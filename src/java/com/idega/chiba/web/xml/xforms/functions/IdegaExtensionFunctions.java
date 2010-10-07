@@ -7,6 +7,7 @@ import org.apache.commons.jxpath.ExpressionContext;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.jxpath.Variables;
+import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
 
@@ -47,33 +48,26 @@ public class IdegaExtensionFunctions {
     	return null;
     }
     
-    @SuppressWarnings("unchecked")
     public static Object resolveExpression(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
-    	
-    	String resolvedParams = ExtensionFunctionUtil.resolveParams(expressionContext, params);
+    	Instance instance = ExtensionFunctionUtil.getInstance(expressionContext, params);
+    	return resolveExpression(instance, exp, params);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Object resolveExpression(Instance instance, String exp, String params) throws XFormsException {
+    	String resolvedParams = ExtensionFunctionUtil.resolveParams(instance, params);
     	String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
     	
     	try {
-    		
         	Object value = ELUtil.getInstance().evaluateExpression(resolveBeanExp);
-        	
-        		if (value != null){
-        			
-        			if (value instanceof Collection<?>) {
-        				
-    					Collection<Item> list = (Collection<Item>) value;
-    					
-    					return ExtensionFunctionUtil.createItemListDocument(list);
-    					
-    				}
-        		}
-        		
-        		return value;
-    			
-    		} catch (Exception e) {
-    			throw new XFormsException(e);
+        	if (value instanceof Collection<?>) {
+        		Collection<Item> list = (Collection<Item>) value;
+    			return ExtensionFunctionUtil.createItemListDocument(list);
     		}
-    	
+       		return value;
+    	} catch (Exception e) {
+    		throw new XFormsException(e);
+    	}
     }
     
     public static Object resolveBean(String exp)  throws XFormsException {

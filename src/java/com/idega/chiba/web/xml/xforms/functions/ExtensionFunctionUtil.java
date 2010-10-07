@@ -69,7 +69,12 @@ public class ExtensionFunctionUtil {
 		return null;
 	}
 		
-	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException{
+	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException {
+		Instance instance = getInstance(expressionContext, paramsExp);
+		return resolveParams(instance, paramsExp);
+	}
+	
+	public static String resolveParams(Instance instance, String paramsExp) throws XFormsException {
     	String [] params = paramsExp.split(CoreConstants.COMMA);
     	StringBuilder resolvedParamsExp = new StringBuilder(); 
 
@@ -79,7 +84,7 @@ public class ExtensionFunctionUtil {
     		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
         		param = ELUtil.cleanupExp(param.trim());
       
-        		value = getInstanceValueFromExpression(expressionContext, param);	
+        		value = getInstanceValueFromExpression(instance, param);	
         		
         		if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
         	 		return CoreConstants.SPACE;
@@ -95,21 +100,20 @@ public class ExtensionFunctionUtil {
 		return resolvedParamsExp.toString();	
 	}
 	
-	public static String formatExpression(String elExpression, String paramsExpression){
-		
+	public static String formatExpression(String elExpression, String paramsExpression) {
     	String exp = MessageFormat.format(elExpression, (Object[])paramsExpression.split(CoreConstants.JS_STR_PARAM_SEPARATOR));
     	exp = new StringBuilder().append(ELUtil.EXPRESSION_BEGIN).append(exp).append(ELUtil.EXPRESSION_END).toString();
 		return exp;
 	}
 	
-	private static Object getInstanceValueFromExpression(ExpressionContext expressionContext,String exp)  throws XFormsException{
-		
+	public static Instance getInstance(ExpressionContext expressionContext, String exp) {
 		String instanceID = exp.split("`")[1];
+		return XFormsUtil.getInstance(expressionContext, instanceID);
+	}
+	
+	public static Object getInstanceValueFromExpression(Instance instance, String exp) throws XFormsException {
 	 	exp = exp.replaceAll("`", CoreConstants.QOUTE_SINGLE_MARK);
-	 	
-	 	Instance instance = XFormsUtil.getInstance(expressionContext, instanceID);
 	 	Object value = XFormsUtil.getValueFromExpression(exp, instance);
-		
 		return value;
 	}
 	
