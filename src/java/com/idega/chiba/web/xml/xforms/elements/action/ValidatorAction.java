@@ -22,6 +22,7 @@ import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
 import com.idega.chiba.web.xml.xforms.validation.ErrorType;
 import com.idega.core.localisation.business.ICLocaleBusiness;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.xml.NamespaceContextImpl;
 import com.idega.util.xml.XPathUtil;
@@ -37,30 +38,34 @@ import com.idega.util.xml.XPathUtil;
  */
 public class ValidatorAction extends AbstractBoundAction {
 
+	private static final Logger LOGGER = Logger.getLogger(ValidatorAction.class.getName());
+	
 	@Autowired
 	private ErrorMessageHandler errorMessageHandler;
 	
-	private String validateIf;
 	private Locale formLocale;
-	private String setErrorId;
-	private String submissionExp;
-	private String componentId;
+	
+	private String	validateIf,
+					errorIf,
+					setErrorId,
+					submissionExp,
+					componentId;
+	
 	private Map<ErrorType, String> messageValuesByType;
 	
 	private static XPathUtil messageXPUT;
 
-	
 	static {
-		
 		NamespaceContextImpl nmspcContext = new NamespaceContextImpl();
         nmspcContext.addPrefix("idega", "http://idega.com/xforms");
         messageXPUT = new XPathUtil(".//idega:message", nmspcContext);
 	}
 	
-	public static final String VALIDATEIF_ATT = "validateif";
-	public static final String ERRORTYPE_ATT = "errorType";
-	public static final String VALUE_ATT = "value";
-	public static final String COMPONENT_ID_ATT = "componentId";
+	public static final String	VALIDATEIF_ATT = "validateif",
+								ERROR_IF_ATT = "errorif",
+								ERRORTYPE_ATT = "errorType",
+								VALUE_ATT = "value",
+								COMPONENT_ID_ATT = "componentId";
 	
     public ValidatorAction(Element element, Model model) {
         super(element, model);
@@ -71,51 +76,42 @@ public class ValidatorAction extends AbstractBoundAction {
         super.init();
         
         String setErrorId = getXFormsAttribute("seterror");
-        
-        if(setErrorId == null || setErrorId.length() == 0)
+        if (StringUtil.isEmpty(setErrorId))
         	setErrorId = "formSetErrorHandler";
-        
         setSetErrorId(setErrorId);
         
     	String submissionExp = getXFormsAttribute("submission");
-    	
     	setSubmissionExp(submissionExp);
     	
         String validateIf = getXFormsAttribute(VALIDATEIF_ATT);
         setValidateIf(validateIf);
         
-        String componentId = getXFormsAttribute(COMPONENT_ID_ATT);
+        String errorIf = getXFormsAttribute(ERROR_IF_ATT);
+        setErrorIf(errorIf);
         
+        String componentId = getXFormsAttribute(COMPONENT_ID_ATT);
         if (componentId == null) {
-        	
         	XFormsElement parent = getParentObject();
-
         	componentId = parent.getId();
-			
 		}
         
         if (!componentId.startsWith(XFormsUtil.CTID)) {
         	String xformId = XFormsUtil.getFormId(getContainerObject().getDocument());
-        	Logger.getLogger(ValidatorAction.class.getName()).warning("Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
+        	LOGGER.warning("Component ID is _probably_ not correct. The component id resolved = "+componentId +" xform id = "+ xformId);
         }
         
         setComponentId(componentId);
         
         NodeList messages = messageXPUT.getNodeset(getElement());
-        
         if(messages != null && messages.getLength() != 0) {
-        	
         	messageValuesByType = new HashMap<ErrorType, String>(messages.getLength());
-        
         	for (int i = 0; i < messages.getLength(); i++) {
-			
         		Element msgEle = (Element)messages.item(i);
         		
         		String messageType = msgEle.getAttribute(ERRORTYPE_ATT);
         		String messageValue = msgEle.getAttribute(VALUE_ATT);
         		
         		final ErrorType errType = ErrorType.getByStringRepresentation(messageType);
-        		
         		messageValuesByType.put(errType, messageValue);
 			}
         }
@@ -134,6 +130,7 @@ public class ValidatorAction extends AbstractBoundAction {
         String componentId = getComponentId();
         
     	String validateIf = getValidateIf();
+    	String errorIf = getErrorIf();
     	
     	String errMsg = null;
     	
@@ -145,11 +142,9 @@ public class ValidatorAction extends AbstractBoundAction {
     	
     	String instanceId;
     	
-    	if(submissionExp == null || submissionExp.length() == 0) {
-    		
+    	if (StringUtil.isEmpty(submissionExp)) {
     		instanceId = "control-instance";
     		submissionExp = "instance('control-instance')/submission";
-    		
     	} else {
     		instanceId = submissionModel.computeInstanceId(submissionExp);
     	}
@@ -157,118 +152,91 @@ public class ValidatorAction extends AbstractBoundAction {
     	Instance controlInstance = submissionModel.getInstance(instanceId);
 		String submissionPhase = controlInstance.getNodeValue(submissionExp);
 		
-		doRequiredValidation = "true".equals(submissionPhase);
+		doRequiredValidation = Boolean.TRUE.toString().equals(submissionPhase);
     	
-		if(doRequiredValidation && modelItem.isRequired()) {
-			
-//			validating required only after submit button was pressed
-        	
+		if (doRequiredValidation && modelItem.isRequired()) {
+			//	Validating required only after submit button was pressed
         	String val = modelItem.getValue();
         	ErrorType errType = ErrorType.required;
-        	
-        	if(val == null || val.length() == 0) {
-        		
+        	if (StringUtil.isEmpty(val)) {
         		errMsg = getErrorMessage(errType);
         	}
         }
         
-		if(errMsg == null) {
-			
-//			doing standard validation - datatype and constraint
-		
+		if (errMsg == null) {
+			//	Doing standard validation - data type and constraint
 			getModel().getValidator().validate(modelItem);
-        	
-        	if(!modelItem.getLocalUpdateView().isDatatypeValid()) {
-        		
+        	if (!modelItem.getLocalUpdateView().isDatatypeValid()) {
         		errMsg = getErrorMessage(ErrorType.validation);
-        		
-        	} else if(!modelItem.getLocalUpdateView().isConstraintValid()) {
-        		
+        	} else if (!modelItem.getLocalUpdateView().isConstraintValid()) {
         		errMsg = getErrorMessage(ErrorType.constraint);
         	}
 		}
     	
-    	if(errMsg == null && validateIf != null && validateIf.length() != 0) {
-
-//    		doing custom validation
-    		boolean validates = evalCondition(getElement(), validateIf);
-    		
-    		if(!validates) {
-    			errMsg = getErrorMessage(ErrorType.custom);
+    	if (errMsg == null) {
+    		if (!StringUtil.isEmpty(validateIf)) {
+    			boolean validates = evalCondition(getElement(), validateIf);
+    			if (!validates) {
+    				errMsg = getErrorMessage(ErrorType.custom);
+    			}
+    		}
+    		if (!StringUtil.isEmpty(errorIf)) {
+    			boolean error = evalCondition(getElement(), errorIf);
+    			if (error) {
+    				errMsg = getErrorMessage(ErrorType.custom);
+    			}
     		}
     	}
     	
-    	if(errMsg != null) {
-    		
-    		modelItem.getLocalUpdateView().setDatatypeValid(false);
-    	} else {
-    		modelItem.getLocalUpdateView().setDatatypeValid(true);
-    	}
+    	modelItem.getLocalUpdateView().setDatatypeValid(errMsg == null);
     	
-//    	sending error msg, or empty, if everything is valid
-    	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg != null ? errMsg : CoreConstants.EMPTY);
+    	//	Sending error message, or empty, if everything is valid
+    	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg == null ? CoreConstants.EMPTY : errMsg);
     	
-    	if(errMsg != null) {
-
+    	if (errMsg != null) {
     		getEvent().preventDefault();
     		getEvent().stopPropagation();
     	}
     }
     
     protected Locale getFormLocale() {
-		
-    	if(formLocale == null) {
-    	
+    	if (formLocale == null) {
         	try {
         		Model dataModel = getContainerObject().getModel("data_model");
             	Instance instance = dataModel.getInstance("localized_strings");
         		String localeStr = instance.getNodeValue("instance('localized_strings')/current_language");
-        		
-        		if(localeStr != null && localeStr.length() != 0) {
-        			
-        			formLocale = ICLocaleBusiness.getLocaleFromLocaleString(localeStr);
-        			
-        		} else {
-        		
-        			formLocale = new Locale("is", "IS");
+        		if (StringUtil.isEmpty(localeStr)) {
+        			localeStr = "is_IS";
         		}
-    			
+       			formLocale = ICLocaleBusiness.getLocaleFromLocaleString(localeStr);
     		} catch (XFormsException e) {
-
     			formLocale = new Locale("is", "IS");
-    			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while resolving current form language, using default = "+formLocale.toString(), e);
+    			LOGGER.log(Level.WARNING, "Exception while resolving current form language, using default = "+formLocale.toString(), e);
     		}
     	}
-    	
     	return formLocale;
 	}
     
     protected String getErrorMessage(ErrorType errType) {
-    	
     	String message = null;
-		
-    	if(messageValuesByType != null && messageValuesByType.containsKey(errType)) {
-    	
+    	if (messageValuesByType != null && messageValuesByType.containsKey(errType)) {
     		try {
         		Object val = XFormsUtil.getValueFromExpression(messageValuesByType.get(errType), this);
-        		
-        		if(val != null)
+        		if (val != null)
         			message = val.toString();
-        		
     		} catch (XFormsException e) {
-    			Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception while resolving message from message value expression = "+messageValuesByType.get(errType), e);
+    			LOGGER.log(Level.WARNING, "Exception while resolving message from message value expression = "+messageValuesByType.get(errType), e);
     		}
     	}
     	
-    	if(message == null)
+    	if (message == null)
     		message = errType.getDefaultErrorMessage(getFormLocale());
     	
     	return message;
 	}
     
     public ErrorMessageHandler getErrorMessageHandler() {
-
-    	if(errorMessageHandler == null)
+    	if (errorMessageHandler == null)
     		ELUtil.getInstance().autowire(this);
     	
     	return errorMessageHandler;
@@ -302,13 +270,19 @@ public class ValidatorAction extends AbstractBoundAction {
 		this.setErrorId = setErrorId;
 	}
 	
-	
-
 	String getSubmissionExp() {
 		return submissionExp;
 	}
 
 	void setSubmissionExp(String submissionExp) {
 		this.submissionExp = submissionExp;
+	}
+
+	public String getErrorIf() {
+		return errorIf;
+	}
+
+	public void setErrorIf(String errorIf) {
+		this.errorIf = errorIf;
 	}
 }
