@@ -174,18 +174,22 @@ public class ValidatorAction extends AbstractBoundAction {
 		}
     	
     	if (errMsg == null) {
+    		boolean error = false;
     		if (!StringUtil.isEmpty(validateIf)) {
     			boolean validates = evalCondition(getElement(), validateIf);
-    			if (!validates) {
-    				errMsg = getErrorMessage(ErrorType.custom);
+    			
+    			if (StringUtil.isEmpty(errorIf)) {
+    				error = !validates;								//	Checking "validateif" condition
+    			} else if (validates) {
+    				error = evalCondition(getElement(), errorIf);	//	Checking "errorif" only if "validateif" is true
+    			} else {
+    				error = Boolean.FALSE;							//	"validateif" is false, "errorif" is provided, but not checking it. Default value - no error.
     			}
+    		} else if (!StringUtil.isEmpty(errorIf)) {
+    			error = evalCondition(getElement(), errorIf);		//	"validateif" is not provided, checking only "errorif"
     		}
-    		if (!StringUtil.isEmpty(errorIf)) {
-    			boolean error = evalCondition(getElement(), errorIf);
-    			if (error) {
-    				errMsg = getErrorMessage(ErrorType.custom);
-    			}
-    		}
+    		
+    		errMsg = error ? getErrorMessage(ErrorType.custom) : null;
     	}
     	
     	modelItem.getLocalUpdateView().setDatatypeValid(errMsg == null);
