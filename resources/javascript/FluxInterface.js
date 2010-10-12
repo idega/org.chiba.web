@@ -227,12 +227,16 @@ function setXFormsValue(control, forceControl) {
     //	forceControll is used to ignore the window.event => set to true if you want to call this function on a control, other than the source of the event
     if (window.event && !forceControl) {
         target = window.event.srcElement;
+        if (target == null || target.id == null) {
+        	target = control;
+        }
     } else {
         target = control;
     }
 
 	if (target == null || target.id == null) {
-		IWCORE.sendExceptionNotification('Target or target id is unknown in setXFormsValue method: ' + target, null, null);
+		IWCORE.sendExceptionNotification('Target or target id is unknown in setXFormsValue method in FluxInterface.js. Target object: ' + target + ', target ID: ' + target.id,
+			null, null);
 		return;
 	}
 	
