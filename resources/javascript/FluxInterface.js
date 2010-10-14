@@ -31,7 +31,8 @@ FluxInterfaceHelper.WINDOW_KEY = null;
 FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
 var chibaXFormsInited = false;
- 
+FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
+
 function initXForms(){
 	if(!chibaXFormsInited) {
 	    chibaXFormsInited = true;
@@ -434,6 +435,11 @@ function updateUI(data) {
 
         var context = new PresentationContext();
         _handleServerEvent(context, type, targetId, targetName, properties);
+    }
+    
+    if (FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated) {
+    	closeAllLoadingMessages();
+    	FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false;
     }
 }
 
