@@ -23,12 +23,14 @@ public class IdegaSetValueAction extends SetValueAction {
 	
 	private static final String INSERT_ATTRIBUTE = "insert";
 	private static final String MULTIPLE_ATTRIBUTE = "multiple";
+	private static final String placeResponseDocument_ATTRIBUTE = "placeResponseDocument";
 	
 	private String nodeValue;
 	private String valueAttribute;
 	private String insertAttribute;
 	private String multipleAttribute;
 	private String ifCondition;
+	private String placeResponseDocumentAttribute;
 	
 	private String locationPath;
 	private Instance instance;
@@ -50,6 +52,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		this.valueAttribute = getXFormsAttribute(VALUE_ATTRIBUTE);
 		this.ifCondition = getXFormsAttribute("idega-if");
 		
+		setPlaceResponseDocumentAttribute(getXFormsAttribute(placeResponseDocument_ATTRIBUTE));
 		setInsertAttribute(getXFormsAttribute(INSERT_ATTRIBUTE));
 		setMultipleAttribute(getXFormsAttribute(MULTIPLE_ATTRIBUTE));
 		
@@ -92,7 +95,7 @@ public class IdegaSetValueAction extends SetValueAction {
 				params = ifCondition.substring(separator + beanExpEnd.length());
 			}
 			
-			result = IdegaExtensionFunctions.resolveExpression(getInstance(), beanExp, params);
+			result = IdegaExtensionFunctions.resolveExpressionByInstance(getInstance(), beanExp, params);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -178,11 +181,21 @@ public class IdegaSetValueAction extends SetValueAction {
 	}
 	
 	protected void setDocumentTypeValue(Document itemListDoc) throws XFormsException {
-		Element itemsElem = itemListDoc.getDocumentElement();
-		if (isInserting())
-			insertItems(itemsElem.getChildNodes());
-		else
-			overrideExistingItems(itemsElem.getChildNodes());
+		
+		final NodeList children = itemListDoc.getDocumentElement().getChildNodes();
+		
+		if (isInserting()) {
+			
+			insertItems(children);
+			
+		} else if(isPlaceResponseDocument()) {
+			
+			placeResponseDocumentChildren(children);
+			
+		} else {
+			
+			overrideExistingItems(children);
+		}
 	}
 	
 	protected void setObjectTypeValue(Object value) throws XFormsException {
@@ -248,6 +261,28 @@ public class IdegaSetValueAction extends SetValueAction {
 			    label.getTextContent());
 			
 			contextSize++;
+		}
+	}
+	
+	private void placeResponseDocumentChildren(NodeList children) throws XFormsException {
+		
+		final Instance instance = getInstance();
+		final String pathExpression = getLocationPath();
+		
+		for (int i = 0; i < children.getLength(); i++) {
+			
+			final Element child = (Element)children.item(i);
+			
+			final String nodePath = new StringBuffer(pathExpression).append(CoreConstants.SLASH).append(child.getNodeName()).toString();
+			
+			if(!instance.existsNode(nodePath)) {
+				
+				instance.createNode(nodePath);
+				instance.setNode(nodePath, child);
+				
+			}
+			
+			instance.setNodeValue(nodePath, child.getTextContent());
 		}
 	}
 	
@@ -324,6 +359,16 @@ public class IdegaSetValueAction extends SetValueAction {
 		return getInsertAttribute() != null ? evalCondition(getElement(), getInsertAttribute()) : false;
 	}
 	
+	/**
+	 * @return if the returned value (xml) should be placed into the nodeset overriding all it's
+	 *         children
+	 */
+	private boolean isPlaceResponseDocument() {
+		
+		return getPlaceResponseDocumentAttribute() != null ? evalCondition(
+		    getElement(), getPlaceResponseDocumentAttribute()) : false;
+	}
+	
 	protected boolean isMultiple() {
 		return getMultipleAttribute() != null ? evalCondition(getElement(), getMultipleAttribute()) : false;
 	}
@@ -358,4 +403,13 @@ public class IdegaSetValueAction extends SetValueAction {
 	protected String getNodeValue() {
 		return nodeValue;
 	}
+
+	public String getPlaceResponseDocumentAttribute() {
+    	return placeResponseDocumentAttribute;
+    }
+
+	public void setPlaceResponseDocumentAttribute(
+            String placeResponseDocumentAttribute) {
+    	this.placeResponseDocumentAttribute = placeResponseDocumentAttribute;
+    }
 }

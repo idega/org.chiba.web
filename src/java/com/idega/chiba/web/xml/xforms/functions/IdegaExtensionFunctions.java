@@ -10,6 +10,7 @@ import org.apache.commons.jxpath.Variables;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
+import org.w3c.dom.Document;
 
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.presentation.IWContext;
@@ -49,25 +50,80 @@ public class IdegaExtensionFunctions {
     }
     
     public static Object resolveExpression(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
-    	Instance instance = ExtensionFunctionUtil.getInstance(expressionContext, params);
-    	return resolveExpression(instance, exp, params);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static Object resolveExpression(Instance instance, String exp, String params) throws XFormsException {
-    	String resolvedParams = ExtensionFunctionUtil.resolveParams(instance, params);
-    	String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
+    	
+    	final String resolvedParams = params != null ? ExtensionFunctionUtil.resolveParams(expressionContext, params) : null;
+    	final String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
     	
     	try {
-        	Object value = ELUtil.getInstance().evaluateExpression(resolveBeanExp);
-        	if (value instanceof Collection<?>) {
-        		Collection<Item> list = (Collection<Item>) value;
-    			return ExtensionFunctionUtil.createItemListDocument(list);
+    		
+        	final Object value = ELUtil.getInstance().evaluateExpression(resolveBeanExp);
+        	
+        	if (value != null && (value instanceof Collection<?>)) {
+        		@SuppressWarnings("unchecked")
+        		final Collection<Item> items = (Collection<Item>) value;
+    			return ExtensionFunctionUtil.createItemListDocument(items);
     		}
+        	
        		return value;
+       		
     	} catch (Exception e) {
     		throw new XFormsException(e);
     	}
+    }
+    
+    public static Object resolveExpressionByInstance(Instance instance, String exp, String params) throws XFormsException {
+    	
+    	final String resolvedParams = params != null ? ExtensionFunctionUtil.resolveParams(instance, params) : null;
+    	final String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
+    	
+    	try {
+    		
+        	final Object value = ELUtil.getInstance().evaluateExpression(resolveBeanExp);
+        	
+        	if (value != null && (value instanceof Collection<?>)) {
+        		@SuppressWarnings("unchecked")
+        		final Collection<Item> items = (Collection<Item>) value;
+    			return ExtensionFunctionUtil.createItemListDocument(items);
+    		}
+        	
+       		return value;
+       		
+    	} catch (Exception e) {
+    		throw new XFormsException(e);
+    	}
+    }
+    
+    public static Object resolveExpression(ExpressionContext expressionContext, String exp) throws XFormsException {
+    	
+    	return resolveExpression(expressionContext, exp, null);
+    }
+    
+    /**
+     * 
+     * @param expressionContext
+     * @param exp
+     * @param params
+     * @return document with elements of properties of resolved bean
+     * @throws XFormsException
+     */
+    public static Object resolveBeanProperties(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
+    	
+    	final Object bean = resolveExpression(expressionContext, exp, params);
+    	
+    	if(bean instanceof Document) {
+    		return bean;
+    	} else {
+    		
+    		try {
+    			return ExtensionFunctionUtil.createDocumentFromBeanProperties(bean);
+    		} catch (Exception e) {
+    			throw new XFormsException(e);
+    		}
+    	}
+    }
+    
+    public static Object resolveBeanProperties(ExpressionContext expressionContext, String exp) throws XFormsException {
+    	return resolveBeanProperties(expressionContext, exp, null);
     }
     
     public static Object resolveBean(String exp)  throws XFormsException {

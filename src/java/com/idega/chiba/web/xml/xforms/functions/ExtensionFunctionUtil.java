@@ -1,11 +1,15 @@
 package com.idega.chiba.web.xml.xforms.functions;
 
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.jxpath.ExpressionContext;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
@@ -29,7 +33,9 @@ public class ExtensionFunctionUtil {
 	private static final String item_node = "item";
 	private static final String item_node_label = "itemLabel";
 	private static final String item_value_label = "itemValue";
-	private static final String items = "items"; 
+	private static final String items = "items";
+	
+	private static final Object[] emptyArray = new Object[0];
 	
 	public static Document createItemListDocument (Collection<Item> list) {
 		
@@ -70,8 +76,30 @@ public class ExtensionFunctionUtil {
 	}
 		
 	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException {
-		Instance instance = getInstance(expressionContext, paramsExp);
-		return resolveParams(instance, paramsExp);
+		
+    	String [] params = paramsExp.split(CoreConstants.COMMA);
+    	StringBuilder resolvedParamsExp = new StringBuilder(); 
+
+    	Object value;
+    	
+    	for (String param : params) {
+    		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
+        		param = ELUtil.cleanupExp(param.trim());
+      
+        		value = getInstanceValueFromExpression(expressionContext, param);	
+        		
+        		if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
+        	 		return CoreConstants.SPACE;
+        	 	}
+        	 	
+        	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
+        	} else {
+        		resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
+        	}
+        	
+		}
+    	
+		return resolvedParamsExp.toString();
 	}
 	
 	public static String resolveParams(Instance instance, String paramsExp) throws XFormsException {
@@ -101,7 +129,7 @@ public class ExtensionFunctionUtil {
 	}
 	
 	public static String formatExpression(String elExpression, String paramsExpression) {
-    	String exp = MessageFormat.format(elExpression, (Object[])paramsExpression.split(CoreConstants.JS_STR_PARAM_SEPARATOR));
+    	String exp = MessageFormat.format(elExpression, paramsExpression != null? (Object[])paramsExpression.split(CoreConstants.JS_STR_PARAM_SEPARATOR) : emptyArray);
     	exp = new StringBuilder().append(ELUtil.EXPRESSION_BEGIN).append(exp).append(ELUtil.EXPRESSION_END).toString();
 		return exp;
 	}
@@ -117,4 +145,53 @@ public class ExtensionFunctionUtil {
 		return value;
 	}
 	
+	private static Object getInstanceValueFromExpression(ExpressionContext expressionContext,String exp)  throws XFormsException{
+		
+		String instanceID = exp.split("`")[1];
+	 	exp = exp.replaceAll("`", CoreConstants.QOUTE_SINGLE_MARK);
+	 	
+	 	Instance instance = XFormsUtil.getInstance(expressionContext, instanceID);
+	 	Object value = XFormsUtil.getValueFromExpression(exp, instance);
+		
+		return value;
+	}
+	
+	public static Document createDocumentFromBeanProperties(Object bean) {
+		
+		try {
+			
+			final DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
+			final Document document = documentBuilder.newDocument();
+			
+			final Element rootElement = (Element)document.appendChild(document.createElement("result"));
+			
+			final Field[] fields = bean.getClass().getDeclaredFields();
+			
+			for (Field field : fields) {
+	            
+				try {
+					
+					final Object val = BeanUtils.getProperty(bean, field.getName());
+					
+					final Element el = document.createElement(field.getName());
+					rootElement.appendChild(el);
+					
+					if(val != null) {
+					
+						el.setTextContent(String.valueOf(val));
+					}
+	                
+                } catch (Exception e) {
+	                // skipping field
+                	Logger.getLogger(ExtensionFunctionUtil.class.getName()).log(Level.SEVERE, "Error while parsing bean property, and setting it to resulting document. Skipping.", e);
+                }
+            }
+			
+			return document;
+			
+		} catch (ParserConfigurationException e) {
+			Logger.getLogger(ExtensionFunctionUtil.class.getName()).log(Level.SEVERE, "Err", e);
+		}
+		return null;
+	}
 }

@@ -174,7 +174,8 @@
 		<function namespace="http://idega.com/xforms" name="currentLocale" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="hasItem" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="upperCase" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
-		<function namespace="http://idega.com/xforms" name="resolveExpression" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
+		<function namespace="http://idega.com/xforms" name="resolveExpression" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+		<function namespace="http://idega.com/xforms" name="resolveBeanProperties" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
 				
     </extension-functions>
 
