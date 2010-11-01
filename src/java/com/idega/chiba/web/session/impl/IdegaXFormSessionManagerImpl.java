@@ -296,6 +296,8 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 							//	Removing XForms session because original HTTP session has expired
 							invalidateXFormsSession(session, id, "HTTP session " + httpSession +
 									" already is invalid. It was invalidated by web application earlier.");
+						} else if (hasXFormExpired(xformSession)) {
+							invalidateXFormsSession(session, id, "XForm session " + xformSession + " has expired: it was created 7 or more days before and not closed!");
 						} else {
 							//	Keeping session alive!
 							session.updateLRU();
@@ -372,6 +374,17 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		return null;
 	}
 	
+	private boolean isEarlier(long timeStamp) {
+		IWTimestamp date = new IWTimestamp(timeStamp);
+		IWTimestamp weekAgo = IWTimestamp.RightNow();
+		weekAgo.setDay(weekAgo.getDay() - 7);
+		return date.isEarlierThan(weekAgo);
+	}
+	
+	private boolean hasXFormExpired(IdegaXFormsSessionBase xformSession) {
+		return isEarlier(xformSession.getCreatedTimestamp());
+	}
+	
 	private boolean isXFormSessionReadyToBeDeleted(IdegaXFormsSessionBase xformSession) {
 		if (xformSession == null) {
 			return true;
@@ -379,10 +392,7 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		
 		Class<? extends HttpSession> httpSessionClass = xformSession.getSessionClass();
 		if (httpSessionClass != null && httpSessionClass.equals(IdegaXFormHttpSession.class)) {
-			IWTimestamp lastTimeUsed = new IWTimestamp(xformSession.getLastUseTime());
-			IWTimestamp weekAgo = IWTimestamp.RightNow();
-			weekAgo.setDay(weekAgo.getDay() - 7);
-			return lastTimeUsed.isEarlierThan(weekAgo);	//	Not keeping XForm session if it was not used during last week
+			return isEarlier(xformSession.getLastUseTime());	//	Not keeping XForm session if it was not used during last week
 		}
 		
 		return !getHttpSessionsManager().isSessionValid(xformSession.getHttpSessionId());	//	Simply checking if HttpSession is valid

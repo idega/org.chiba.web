@@ -205,6 +205,10 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		return httpSesionClass;
 	}
 
+	public long getCreatedTimestamp() {
+		return created;
+	}
+	
 	@Override
 	public String toString() {
 		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished() +
