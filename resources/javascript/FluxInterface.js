@@ -521,6 +521,14 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         case "xforms-focus":
             context.handleFocus(targetId);
             break;
+        case "xforms-submit-done":
+        	var uri = properties["uri"];
+        	if (uri != null) {
+        		window.setTimeout(function() {
+        			jQuery('#backToCaseOverviewAfterSubmitted').trigger('click');
+        		}, 500);
+        	}
+        	break;
         default:
             dojo.debug("Event " + type + " unknown");
             break;

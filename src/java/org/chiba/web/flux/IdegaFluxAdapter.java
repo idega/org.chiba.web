@@ -2,6 +2,9 @@ package org.chiba.web.flux;
 
 import org.chiba.web.servlet.HttpRequestHandler;
 import org.chiba.web.servlet.IdegaHttpRequestHandler;
+import org.chiba.xml.events.XMLEvent;
+import org.w3c.dom.Element;
+import org.w3c.dom.events.Event;
 
 public class IdegaFluxAdapter extends FluxAdapter {
 
@@ -182,7 +185,19 @@ public class IdegaFluxAdapter extends FluxAdapter {
     	}
     }*/
 
-    @Override
+    public void addSubmissionEvetLog(Event event) {
+    	if (event instanceof XMLEvent) {
+            XMLEvent xmlEvent = (XMLEvent) event;
+            String type = xmlEvent.getType();
+			Element target = (Element) event.getTarget();
+	        String targetId = target.getAttributeNS(null, "id");
+	        String targetName = target.getLocalName();
+	        Element entry = getEventLog().add(type, targetId, targetName);
+	        getEventLog().addProperty(entry, "uri", "goToCaseOverviewAfterSubmitted");
+		}
+    }
+    
+	@Override
 	protected HttpRequestHandler getHttpRequestHandler() {
     	/*chibaBean = getChibaBean();
     	
