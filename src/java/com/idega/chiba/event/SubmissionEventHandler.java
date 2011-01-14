@@ -18,7 +18,7 @@ public class SubmissionEventHandler implements ApplicationListener {
 			if (source instanceof IdegaFluxAdapter) {
 				IdegaFluxAdapter adapter = (IdegaFluxAdapter) source;
 				SubmissionEvent submission = (SubmissionEvent) event;
-				adapter.addSubmissionEvetLog(submission.getEvent());
+				adapter.addSubmissionEventLog(submission.getEvent());
 			}
 		}
 	}

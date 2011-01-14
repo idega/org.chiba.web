@@ -185,7 +185,7 @@ public class IdegaFluxAdapter extends FluxAdapter {
     	}
     }*/
 
-    public void addSubmissionEvetLog(Event event) {
+    public void addSubmissionEventLog(Event event) {
     	if (event instanceof XMLEvent) {
             XMLEvent xmlEvent = (XMLEvent) event;
             String type = xmlEvent.getType();
