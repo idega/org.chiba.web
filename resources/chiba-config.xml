@@ -175,7 +175,8 @@
 		<function namespace="http://idega.com/xforms" name="hasItem" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="upperCase" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
 		<function namespace="http://idega.com/xforms" name="resolveExpression" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
-		<function namespace="http://idega.com/xforms" name="resolveBeanProperties" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
+		<function namespace="http://idega.com/xforms" name="resolveBeanProperties" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+		<function namespace="http://idega.com/xforms" name="separateSelectionLabels" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>			
 				
     </extension-functions>
 
@@ -194,6 +195,7 @@
         <element type="action" namespace="http://idega.com/xforms" name="saveForm" class="com.idega.block.form.save.SaveFormAction" />
         <element type="action" namespace="http://idega.com/xforms" name="setvalue" class="com.idega.chiba.web.xml.xforms.elements.action.IdegaSetValueAction" />
         <element type="action" namespace="http://idega.com/xforms" name="saveFormAndGeneratePdf" class="com.idega.block.form.save.SaveFormAndGeneratePdfAction" />
+        <element type="action" namespace="http://idega.com/xforms" name="separateSelectionLabels" class="com.idega.chiba.web.xml.xforms.elements.action.SeparateSelectionLabelsAction" />
         
         <element namespace="http://idega.com/xforms" name="switch" class="com.idega.chiba.web.xml.xforms.elements.SwitchElement" />
         <element namespace="http://idega.com/xforms" name="case" class="com.idega.chiba.web.xml.xforms.elements.CaseElement" />
