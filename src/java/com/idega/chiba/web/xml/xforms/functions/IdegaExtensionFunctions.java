@@ -1,6 +1,8 @@
 package com.idega.chiba.web.xml.xforms.functions;
 
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jxpath.ExpressionContext;
@@ -8,14 +10,18 @@ import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.NodeSet;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.jxpath.Variables;
+import org.apache.ojb.broker.cache.RuntimeCacheException;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 
+import com.idega.chiba.web.xml.xforms.util.XFormsDateConverter;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 
@@ -24,6 +30,9 @@ import com.idega.util.text.Item;
  * @version $Revision: 1.21 $ Last modified: $Date: 2009/03/18 08:31:44 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
+	
+	@Autowired
+	private XFormsDateConverter xFormsDateConverter;
 	
 	private IdegaExtensionFunctions() {
 	}
@@ -161,11 +170,21 @@ public class IdegaExtensionFunctions {
 		}
 	}
 	
+	public static boolean isBeforeNow(String dateExp) throws XFormsException {
+		
+		try {
+			return !StringUtil.isEmpty(dateExp)
+			        && getxFormsDateConverter().convertStringFromXFormsToDate(
+			            dateExp).before(new Date());
+			
+		} catch (ParseException e) {
+			throw new RuntimeCacheException(e);
+		}
+	}
+	
 	public static String currentLocale() throws XFormsException {
 		
-		String locale = IWContext.getInstance().getCurrentLocale().toString();
-		
-		return locale;
+		return IWContext.getInstance().getCurrentLocale().toString();
 	}
 	
 	public static boolean hasItem(String list, String elem)
@@ -183,7 +202,11 @@ public class IdegaExtensionFunctions {
 	public static String upperCase(String value) throws XFormsException {
 		
 		return value.toUpperCase();
+	}
+	
+	private static XFormsDateConverter getxFormsDateConverter() {
 		
+		return ELUtil.getInstance().getBean("xFormsDateConverter");
 	}
 	
 }
