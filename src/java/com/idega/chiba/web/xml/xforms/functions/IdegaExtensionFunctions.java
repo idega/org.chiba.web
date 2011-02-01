@@ -182,6 +182,18 @@ public class IdegaExtensionFunctions {
 		}
 	}
 	
+	public static boolean isAfterNow(String dateExp) throws XFormsException {
+		
+		try {
+			return !StringUtil.isEmpty(dateExp)
+			        && getxFormsDateConverter().convertStringFromXFormsToDate(
+			            dateExp).after(new Date());
+			
+		} catch (ParseException e) {
+			throw new RuntimeCacheException(e);
+		}
+	}
+	
 	public static String currentLocale() throws XFormsException {
 		
 		return IWContext.getInstance().getCurrentLocale().toString();
