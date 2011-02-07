@@ -3,6 +3,7 @@ package org.chiba.web.flux;
 import org.chiba.web.servlet.HttpRequestHandler;
 import org.chiba.web.servlet.IdegaHttpRequestHandler;
 import org.chiba.xml.events.XMLEvent;
+import org.chiba.xml.xforms.ChibaBean;
 import org.w3c.dom.Element;
 import org.w3c.dom.events.Event;
 
@@ -20,6 +21,10 @@ public class IdegaFluxAdapter extends FluxAdapter {
 		
 //		this.key = key;
 //		putChibaBean();
+	}
+	
+	public ChibaBean getChibaBean() {
+		return chibaBean;
 	}
 	
 	/*//	TODO: finish up IdegaChibaBean!

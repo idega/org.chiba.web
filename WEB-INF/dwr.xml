@@ -18,6 +18,7 @@
             <include method="getInfoAboutCurrentSessions"/>
             <include method="deleteXFormSessionManually"/>
             <include method="sendInformationAboutXFormsSessions"/>
+            <include method="getNodesetValue"/>
         </create>
         
       <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception">

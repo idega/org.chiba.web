@@ -9,7 +9,10 @@ import javax.servlet.http.HttpSession;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
-import org.chiba.xml.dom.DOMUtil;
+import org.chiba.web.flux.IdegaFluxAdapter;
+import org.chiba.web.session.XFormsSession;
+import org.chiba.web.session.XFormsSessionManager;
+import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -25,19 +28,12 @@ import com.idega.util.RequestUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
-/**
- * 
- * @author <a href="anton@idega.com">Anton Makarov</a>
- * @version Revision: 1.0
- * 
- * Last modified: May 27, 2008 by Author: Anton
- * 
- */
 @Scope("request")
 @Service("fluxexhand")
 public class IdegaFluxFacade extends FluxFacade {
 	
-	private static final Logger LOGGER = Logger.getLogger(IdegaFluxFacade.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(IdegaFluxFacade.class
+	        .getName());
 	
 	private HttpSession session;
 	
@@ -45,52 +41,117 @@ public class IdegaFluxFacade extends FluxFacade {
 		super();
 		
 		try {
-			RequestResponseProvider provider = ELUtil.getInstance().getBean(RequestResponseProvider.class);
+			RequestResponseProvider provider = ELUtil.getInstance().getBean(
+			    RequestResponseProvider.class);
 			this.session = provider.getRequest().getSession(Boolean.TRUE);
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Error while trying to get HTTP session object", e);
+			LOGGER.log(Level.WARNING,
+			    "Error while trying to get HTTP session object", e);
 		}
 	}
 	
 	@Override
-	public Element fireAction(String id, String sessionKey) throws FluxException {
+	public Element fireAction(String id, String sessionKey)
+	        throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			
 			return super.fireAction(id, sessionKey);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error firing action", e);
-			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
-					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+			throw new SessionExpiredException(
+			        "Unable to fire action for element: '"
+			                .concat(id)
+			                .concat("' using session: ")
+			                .concat(sessionKey)
+			                .concat(
+			                    ChibaUtils.getInstance().getSessionInformation(
+			                        sessionKey)), e, ChibaUtils.getInstance()
+			                .getSessionExpiredLocalizedString());
 		}
 	}
-
+	
 	@Override
-	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
+	public Element setXFormsValue(String id, String value, String sessionKey)
+	        throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			return super.setXFormsValue(id, value, sessionKey);
 			
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
-			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
-					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
-					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+			throw new SessionExpiredException("Unable to set value '"
+			        .concat(value)
+			        .concat("' for element '")
+			        .concat(id)
+			        .concat("' using session: ")
+			        .concat(sessionKey)
+			        .concat(
+			            ChibaUtils.getInstance().getSessionInformation(
+			                sessionKey)), e, ChibaUtils.getInstance()
+			        .getSessionExpiredLocalizedString());
 		}
 	}
-
+	
+	public String getNodesetValue(String nodeset, String sessionKey)
+	        throws FluxException {
+		
+		try {
+			return getAdapter(sessionKey).getChibaBean().getContainer()
+			        .getModel("submission_model").getInstance("data-instance")
+			        .getNodeValue(nodeset);
+			
+		} catch (XFormsException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private IdegaFluxAdapter getAdapter(String sessionKey) throws FluxException {
+		
+		XFormsSessionManager manager = (XFormsSessionManager) session
+		        .getAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER);
+		if (manager == null) {
+			throw new FluxException("session timed out");
+		}
+		XFormsSession xFormsSession = manager.getXFormsSession(sessionKey);
+		if (xFormsSession == null) {
+			throw new FluxException(
+			        "Your session has expired - Please start again.");
+		}
+		
+		IdegaFluxAdapter adapter = (IdegaFluxAdapter) xFormsSession
+		        .getAdapter();
+		if (adapter != null) {
+			
+			return adapter;
+			
+		} else {
+			// session expired or cookie got lost
+			throw new FluxException("Session expired. Please start again.");
+		}
+	}
+	
 	@Override
-	public Element setRepeatIndex(String id, String position, String sessionKey) throws FluxException {
+	public Element setRepeatIndex(String id, String position, String sessionKey)
+	        throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			
 			return super.setRepeatIndex(id, position, sessionKey);
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting repeat index", e);
-			throw new SessionExpiredException("Unable to set repeat index for element: '".concat(id).concat("', position: '").concat(position)
-					.concat("' using session: ").concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
-					ChibaUtils.getInstance().getSessionExpiredLocalizedString());
-		}	
+			throw new SessionExpiredException(
+			        "Unable to set repeat index for element: '"
+			                .concat(id)
+			                .concat("', position: '")
+			                .concat(position)
+			                .concat("' using session: ")
+			                .concat(sessionKey)
+			                .concat(
+			                    ChibaUtils.getInstance().getSessionInformation(
+			                        sessionKey)), e, ChibaUtils.getInstance()
+			                .getSessionExpiredLocalizedString());
+		}
 	}
 	
 	@Override
@@ -99,19 +160,29 @@ public class IdegaFluxFacade extends FluxFacade {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			
 			if (ChibaUtils.getInstance().isUploadInvalid(session, sessionKey)) {
-				throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, "Upload is marked as failed", "chiba.uploading_failed",
-					"Sorry, uploading failed. Please try again.");
+				throw ChibaUtils.getInstance().getIdegaChibaException(
+				    sessionKey, "Upload is marked as failed",
+				    "chiba.uploading_failed",
+				    "Sorry, uploading failed. Please try again.");
 			}
 			
 			return super.fetchProgress(id, filename, sessionKey);
 		} catch (Exception e) {
-			String message = "Exception while fetching progress for element: '".concat(id).concat("', file: '").concat(filename).concat("' using session: ")
-				.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
+			String message = "Exception while fetching progress for element: '"
+			        .concat(id)
+			        .concat("', file: '")
+			        .concat(filename)
+			        .concat("' using session: ")
+			        .concat(sessionKey)
+			        .concat(
+			            ChibaUtils.getInstance().getSessionInformation(
+			                sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 			
-			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, e.getMessage(), "chiba.uploading_failed",
-					"Sorry, uploading failed. Please try again.");
+			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey,
+			    e.getMessage(), "chiba.uploading_failed",
+			    "Sorry, uploading failed. Please try again.");
 		}
 	}
 	
@@ -122,33 +193,41 @@ public class IdegaFluxFacade extends FluxFacade {
 			
 			super.keepAlive(sessionKey);
 		} catch (Exception e) {
-			String message = "Exception at keep alive, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
+			String message = "Exception at keep alive, session key=".concat(
+			    sessionKey).concat(
+			    ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 			
-			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey, e.getMessage(), ChibaUtils.getInstance().getInternalErrorLocalizedString());
-		}			
+			throw ChibaUtils.getInstance().getIdegaChibaException(sessionKey,
+			    e.getMessage(),
+			    ChibaUtils.getInstance().getInternalErrorLocalizedString());
+		}
 	}
-	 
-    @Override
+	
+	@Override
 	public void close(String sessionKey) {
-    	boolean error = false;
-    	String windowKey = null;
-    	try {
-    		if (!StringUtil.isEmpty(sessionKey) && sessionKey.indexOf("@") != -1) {
-    			String[] info = sessionKey.split("@");
-    			sessionKey = info[0];
-    			if (info.length >= 2) {
-    				windowKey = info[1];
-    			}
-    		}
-    		
-    		ChibaUtils.getInstance().markXFormSessionFinished(sessionKey, Boolean.TRUE);
-    		
+		boolean error = false;
+		String windowKey = null;
+		try {
+			if (!StringUtil.isEmpty(sessionKey)
+			        && sessionKey.indexOf("@") != -1) {
+				String[] info = sessionKey.split("@");
+				sessionKey = info[0];
+				if (info.length >= 2) {
+					windowKey = info[1];
+				}
+			}
+			
+			ChibaUtils.getInstance().markXFormSessionFinished(sessionKey,
+			    Boolean.TRUE);
+			
 			super.close(sessionKey);
 		} catch (Exception e) {
 			error = true;
-			String message = "Exception at close, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
+			String message = "Exception at close, session key=".concat(
+			    sessionKey).concat(
+			    ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 		} finally {
@@ -156,16 +235,19 @@ public class IdegaFluxFacade extends FluxFacade {
 				printSessionEndInfo(sessionKey, windowKey);
 			}
 		}
-    }
-    
-    private void printSessionEndInfo(String sessionKey, String windowKey) {
-    	IWTimestamp browserWindowOpenedAt = null;
+	}
+	
+	private void printSessionEndInfo(String sessionKey, String windowKey) {
+		IWTimestamp browserWindowOpenedAt = null;
 		if (!StringUtil.isEmpty(windowKey)) {
 			browserWindowOpenedAt = new IWTimestamp(Long.valueOf(windowKey));
 		}
-		String message = "XForm session (" + sessionKey + ") was removed because browser window (" + windowKey + ") was closed.";
+		String message = "XForm session (" + sessionKey
+		        + ") was removed because browser window (" + windowKey
+		        + ") was closed.";
 		if (browserWindowOpenedAt != null) {
-			message += " Browser window was opened at: " + browserWindowOpenedAt.getTimestamp().toString();
+			message += " Browser window was opened at: "
+			        + browserWindowOpenedAt.getTimestamp().toString();
 		}
 		
 		IWContext iwc = CoreUtil.getIWContext();
@@ -177,25 +259,26 @@ public class IdegaFluxFacade extends FluxFacade {
 		}
 		
 		LOGGER.info(message);
-    }
-    
-    public int getNumberOfActiveSessions() {
-    	return IdegaXFormSessionManagerImpl.getXFormsSessionManager().getSessionCount();
-    }
-    
-    public Set<String> getKeysOfCurrentSessions() {
-    	return ChibaUtils.getInstance().getKeysOfCurrentSessions();
-    }
-    
-    public List<String> getInfoAboutCurrentSessions() {
-    	return ChibaUtils.getInstance().getInfoAboutCurrentSessions();
-    }
-    
-    public boolean deleteXFormSessionManually(String key) {
-    	return ChibaUtils.getInstance().deleteXFormSessionManually(key);
-    }
-    
-    public void sendInformationAboutXFormsSessions(String receiverEmail) {
-    	ChibaUtils.getInstance().sendInformationAboutXForms(receiverEmail);
-    }
+	}
+	
+	public int getNumberOfActiveSessions() {
+		return IdegaXFormSessionManagerImpl.getXFormsSessionManager()
+		        .getSessionCount();
+	}
+	
+	public Set<String> getKeysOfCurrentSessions() {
+		return ChibaUtils.getInstance().getKeysOfCurrentSessions();
+	}
+	
+	public List<String> getInfoAboutCurrentSessions() {
+		return ChibaUtils.getInstance().getInfoAboutCurrentSessions();
+	}
+	
+	public boolean deleteXFormSessionManually(String key) {
+		return ChibaUtils.getInstance().deleteXFormSessionManually(key);
+	}
+	
+	public void sendInformationAboutXFormsSessions(String receiverEmail) {
+		ChibaUtils.getInstance().sendInformationAboutXForms(receiverEmail);
+	}
 }
