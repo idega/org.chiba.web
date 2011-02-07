@@ -388,6 +388,7 @@ PresentationContext.prototype.handleHelperChanged = function(parentId, type, val
  * Handles chiba-prototype-cloned.
  */
 PresentationContext.prototype.handlePrototypeCloned = function(targetId, type, originalId, prototypeId) {
+	
     dojo.debug("PresentationContext.handlePrototypeCloned: targetId='" + targetId + "',  type='" + type + "',  originalId='" + originalId + "',  prototypeId='" + prototypeId + "'");
     if (type == "itemset") {
         PresentationContext._cloneSelectorPrototype(targetId, originalId, prototypeId);
@@ -1042,7 +1043,7 @@ PresentationContext._cloneRepeatPrototype = function(targetId, originalId, proto
  */
 PresentationContext._cloneSelectorPrototype = function(targetId, originalId, prototypeId) {
 //    dojo.debug("PresentationContext._cloneSelectorPrototype: [" + targetId + "/" + originalId + "]='" + prototypeId + "'");
-
+	
     // clone prototype and make it an item
     var clone;
     var proto = document.getElementById(originalId + "-prototype");

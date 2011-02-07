@@ -212,6 +212,7 @@ function chibaActivate(target) {
 
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
+	
 	var sessionKey = document.getElementById("chibaSessionKey").value;
     if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
     	redirectForm(Localization.SESSION_EXPIRED, {
@@ -403,6 +404,7 @@ function _getEventTarget(event) {
 
 // callback for updating any control
 function updateUI(data) {
+	
     dojo.debug("updateUI: " + data);
     
     var eventLog = null;
@@ -440,6 +442,11 @@ function updateUI(data) {
     if (FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated) {
     	closeAllLoadingMessages();
     	FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false;
+    }
+    
+    if(ChibaWorkarounds && ChibaWorkarounds.publishUIUpdatedEvent) {
+    	
+    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent');
     }
 }
 

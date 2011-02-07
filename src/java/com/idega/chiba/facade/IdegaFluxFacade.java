@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.chiba.web.flux.FluxException;
 import org.chiba.web.flux.FluxFacade;
+import org.chiba.xml.dom.DOMUtil;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Element;
@@ -68,8 +69,8 @@ public class IdegaFluxFacade extends FluxFacade {
 	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
-			
 			return super.setXFormsValue(id, value, sessionKey);
+			
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
