@@ -443,11 +443,12 @@ function updateUI(data) {
     	closeAllLoadingMessages();
     	FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false;
     }
-    
-    if(ChibaWorkarounds && ChibaWorkarounds.publishUIUpdatedEvent) {
-    	
-    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent');
-    }
+
+	try {    
+	    if (typeof ChibaWorkarounds != 'undefined' && ChibaWorkarounds.publishUIUpdatedEvent) {
+	    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent');
+	    }
+	} catch (e) {}
 }
 
 function _handleServerEvent(context, type, targetId, targetName, properties) {
