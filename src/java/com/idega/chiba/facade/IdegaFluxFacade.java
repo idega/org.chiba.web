@@ -12,6 +12,7 @@ import org.chiba.web.flux.FluxFacade;
 import org.chiba.web.flux.IdegaFluxAdapter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
+import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -55,8 +56,8 @@ public class IdegaFluxFacade extends FluxFacade {
 	        throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
-			
 			return super.fireAction(id, sessionKey);
+			
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error firing action", e);
 			throw new SessionExpiredException(

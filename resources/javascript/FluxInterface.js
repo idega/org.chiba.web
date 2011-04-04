@@ -446,7 +446,7 @@ function updateUI(data) {
 
 	try {    
 	    if (typeof ChibaWorkarounds != 'undefined' && ChibaWorkarounds.publishUIUpdatedEvent) {
-	    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent');
+	    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent', [data]);
 	    }
 	} catch (e) {}
 }
