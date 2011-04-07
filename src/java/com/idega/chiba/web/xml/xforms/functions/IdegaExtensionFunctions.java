@@ -7,14 +7,12 @@ import java.util.Date;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jxpath.ExpressionContext;
 import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.NodeSet;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.jxpath.Variables;
 import org.apache.ojb.broker.cache.RuntimeCacheException;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 
 import com.idega.chiba.web.xml.xforms.util.XFormsDateConverter;
@@ -30,9 +28,6 @@ import com.idega.util.text.Item;
  * @version $Revision: 1.21 $ Last modified: $Date: 2009/03/18 08:31:44 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
-	
-	@Autowired
-	private XFormsDateConverter xFormsDateConverter;
 	
 	private IdegaExtensionFunctions() {
 	}

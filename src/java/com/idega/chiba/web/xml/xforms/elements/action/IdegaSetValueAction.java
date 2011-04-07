@@ -3,16 +3,13 @@ package com.idega.chiba.web.xml.xforms.elements.action;
 import java.util.Iterator;
 
 import org.apache.commons.jxpath.JXPathContext;
-import org.apache.commons.jxpath.Pointer;
 import org.apache.xerces.dom.NodeImpl;
-import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.action.SetValueAction;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.core.ModelItem;
 import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
-import org.directwebremoting.util.DomUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -318,7 +315,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		
 		int contextSize = instance.countNodeset(pathExpression);
 		
-		if (false && pathExpression.contains("fbc_6_lds")) {
+		/*if (false && pathExpression.contains("fbc_6_lds")) {
 			
 			pathExpression = "local_src/localizedEntries[@lang=instance('localized_strings')/current_language]/item";
 			
@@ -380,7 +377,7 @@ public class IdegaSetValueAction extends SetValueAction {
 			}
 			*/
 
-			for (int i = 0; i < items.getLength(); i++) {
+			/*for (int i = 0; i < items.getLength(); i++) {
 				final String path = new StringBuffer(pathExpression)
 				        .append('[').append(i + 1).append(']').toString();
 				
@@ -428,7 +425,7 @@ public class IdegaSetValueAction extends SetValueAction {
 			instance.getModel().addChanged(
 			    (NodeImpl) instance.getInstanceDocument());
 			
-		} else {
+		} else {*/
 			
 			String path;
 			Element label;
@@ -475,7 +472,7 @@ public class IdegaSetValueAction extends SetValueAction {
 				contextSize++;
 				
 			}
-		}
+		//}
 	}
 	
 	private Node setNode(String path, Instance instance, ModelItem modelItem,

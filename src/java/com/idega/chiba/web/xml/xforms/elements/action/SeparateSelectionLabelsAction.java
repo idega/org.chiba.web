@@ -4,23 +4,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
-import org.apache.xerces.dom.ElementNSImpl;
 import org.chiba.xml.dom.DOMUtil;
-import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.action.AbstractBoundAction;
-import org.chiba.xml.xforms.core.BindingResolver;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
-import com.idega.chiba.web.xml.xforms.functions.ExtensionFunctionUtil;
-import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
 import com.idega.util.CoreConstants;
-import com.idega.util.FilePathBuilder;
 import com.idega.util.StringUtil;
 
 public class SeparateSelectionLabelsAction extends AbstractBoundAction {
