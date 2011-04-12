@@ -73,9 +73,12 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
 
   var target = document.getElementById(targetId);
   if (target == null) {
-  	throw new Error("Element with ID '" + targetId + "' was not found while trying to set value '" + value +
+  	var errorMessage = "Element with ID '" + targetId + "' was not found while trying to set value '" + value +
   		"' for it in PresentationContext.handleStateChanged method. Parameters: targetName='"+targetName+"', valid='"+valid+"', readonly='"+readonly+
-  		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.", 'PresentationContext.js', 76);
+  		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.";
+  	if (targetId == 'C10' && XFormsConfig)
+  		errorMessage += '\nPROBABLY there are missing some localizations for the form using locale: ' + XFormsConfig.locale;
+  	throw new Error(errorMessage, 'PresentationContext.js', 75);
     return;
   }
 
