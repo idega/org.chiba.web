@@ -237,21 +237,31 @@ function setXFormsValue(control, forceControl) {
     }
 
 	if (target == null || target.id == null) {
-		IWCORE.sendExceptionNotification('Target or target id is unknown in setXFormsValue method in FluxInterface.js. Target object: ' + target + ', target ID: ' + target.id,
-			null, null);
+		IWCORE.sendExceptionNotification('Target or target id is unknown in setXFormsValue method in FluxInterface.js (line 240). Target object: ' + target + ', target ID: ' +
+			target.id, null, null);
 		return;
 	}
-	
-    var id = target.id;
-    if (id.substring(id.length - 6, id.length) == "-value") {
-        // cut off "-value"
-        id = id.substring(0, id.length - 6);
-    }
 
-    var value = jQuery('#' + target.id).attr('value');
-    if (value == null && target.value) {
-        value = target.value;
-    }
+	var id = null;	
+	var value = null;
+	if (target.id == '') {
+		value = jQuery(target).attr('value');
+		var parentElement = jQuery(target).parent();
+		while (parentElement != null && (parentElement.attr('id') == null || parentElement.attr('id') == ''))
+			parentElement = parentElement.parent();
+		id = parentElement.attr('id');
+	} else {
+	    id = target.id;
+	    if (id.substring(id.length - 6, id.length) == "-value") {
+	        // cut off "-value"
+	        id = id.substring(0, id.length - 6);
+	    }
+	
+	    jQuery('#' + target.id).attr('value');
+	    if (value == null && target.value) {
+	        value = target.value;
+	    }
+	}
     if (value == null) {
     	value = '';
     }
