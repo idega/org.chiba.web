@@ -244,6 +244,12 @@ function setXFormsValue(control, forceControl) {
 
 	var id = null;	
 	var value = null;
+	if (target.tagName == 'TEXTAREA' && jQuery(target).parent().hasClass('enableHTMLEditor')) {
+		var frame = jQuery('#' + target.id + '_ifr');
+		if (frame != null && frame.length > 0) {
+			value = frame[0].contentWindow.document.body.innerHTML
+		}
+	}
 	if (target.id == '') {
 		value = jQuery(target).attr('value');
 		var parentElement = jQuery(target).parent();
@@ -257,10 +263,12 @@ function setXFormsValue(control, forceControl) {
 	        id = id.substring(0, id.length - 6);
 	    }
 	
-	    jQuery('#' + target.id).attr('value');
-	    if (value == null && target.value) {
-	        value = target.value;
-	    }
+		if (value == null) {
+		    jQuery('#' + target.id).attr('value');
+		    if (value == null && target.value) {
+		        value = target.value;
+		    }
+		}
 	}
     if (value == null) {
     	value = '';
