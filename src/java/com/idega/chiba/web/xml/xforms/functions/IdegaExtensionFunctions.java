@@ -2,7 +2,6 @@ package com.idega.chiba.web.xml.xforms.functions;
 
 import java.text.ParseException;
 import java.util.Collection;
-import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jxpath.ExpressionContext;
@@ -19,6 +18,7 @@ import com.idega.chiba.web.xml.xforms.util.XFormsDateConverter;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
 import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
+import com.idega.util.IWTimestamp;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
@@ -166,23 +166,27 @@ public class IdegaExtensionFunctions {
 	}
 	
 	public static boolean isBeforeNow(String dateExp) throws XFormsException {
-		
 		try {
+			IWTimestamp now = new IWTimestamp();
+			now.setAsDate();
+			
 			return !StringUtil.isEmpty(dateExp)
-			        && getxFormsDateConverter().convertStringFromXFormsToDate(
-			            dateExp).before(new Date());
+			        && new IWTimestamp(getxFormsDateConverter().convertStringFromXFormsToDate(
+			            dateExp)).isEarlierThan(now);
 			
 		} catch (ParseException e) {
 			throw new RuntimeCacheException(e);
 		}
 	}
-	
+	             
 	public static boolean isAfterNow(String dateExp) throws XFormsException {
-		
 		try {
+			IWTimestamp now = new IWTimestamp();
+			now.setAsDate();
+			
 			return !StringUtil.isEmpty(dateExp)
-			        && getxFormsDateConverter().convertStringFromXFormsToDate(
-			            dateExp).after(new Date());
+			        && new IWTimestamp(getxFormsDateConverter().convertStringFromXFormsToDate(
+			            dateExp)).isLaterThanOrEquals(now);
 			
 		} catch (ParseException e) {
 			throw new RuntimeCacheException(e);
