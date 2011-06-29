@@ -483,7 +483,30 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		humanMsg.displayMsg(Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE);
 				window.location.href = properties["uri"];
 				FluxInterfaceHelper.changingUriManually = false;
-            } else {
+            } if (properties["show"] == "handlemanually_window") {
+            	FluxInterfaceHelper.changingUriManually = true;
+        		
+        		var fancyBoxId = 'idFancyBoxForXFormPreview' + new Date().getTime();
+        		var link = properties["uri"] + '&showPDF=true';
+        		jQuery(document.body).append('<a id="' + fancyBoxId + '" class="pdf" style="display: none;" />');
+        		jQuery('#' + fancyBoxId).fancybox({
+        			autoScale: false,
+					autoDimensions: false,
+					hideOnOverlayClick: false,
+					width: windowinfo.getWindowWidth() * 0.8,
+					height: windowinfo.getWindowHeight() * 0.8,
+					onClosed: function() {
+						jQuery('#' + fancyBoxId).remove();
+					},
+					onComplete : function() {
+						closeAllLoadingMessages();
+					},
+					content: '<embed src="'+link+'#nameddest=self&page=1&view=FitH,0&zoom=80,0,0" type="application/pdf" height="100%" width="100%" />'
+        		});
+        		jQuery('#' + fancyBoxId).trigger('click');
+        		
+        		FluxInterfaceHelper.changingUriManually = false;
+    		} else {
 	            isDirty = false;
 	            if (properties["show"] == "replace") {
 	              skipShutdown = true;
