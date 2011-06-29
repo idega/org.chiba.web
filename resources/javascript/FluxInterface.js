@@ -33,6 +33,10 @@ FluxInterfaceHelper.CLOSED_SESSIONS = [];
 var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
 
+FluxInterfaceHelper.getXFormSessionKey = function() {
+	return jQuery('#chibaSessionKey').attr('value');
+}
+
 function initXForms(){
 	if(!chibaXFormsInited) {
 	    chibaXFormsInited = true;

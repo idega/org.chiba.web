@@ -11,17 +11,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.chiba.web.IWBundleStarter;
+import org.chiba.web.flux.IdegaFluxAdapter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.web.upload.UploadInfo;
+import org.chiba.xml.xforms.XFormsElement;
+import org.directwebremoting.annotations.Param;
+import org.directwebremoting.annotations.RemoteMethod;
+import org.directwebremoting.annotations.RemoteProxy;
+import org.directwebremoting.spring.SpringCreator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.chiba.web.session.impl.IdegaXFormsSessionBase;
 import com.idega.core.business.DefaultSpringBean;
+import com.idega.dwr.business.DWRAnnotationPersistance;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -33,9 +43,13 @@ import com.idega.util.ListUtil;
 import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
 
-@Service
+@Service("chibaUtils")
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class ChibaUtils extends DefaultSpringBean {
+@RemoteProxy(creator=SpringCreator.class, name="ChibaUtils", creatorParams={
+	@Param(name="beanName", value="chibaUtils"),
+	@Param(name="javascript", value="ChibaUtils")
+})
+public class ChibaUtils extends DefaultSpringBean implements DWRAnnotationPersistance {
 	
 	private static final Logger LOGGER = Logger.getLogger(ChibaUtils.class.getName());
 	
@@ -276,5 +290,36 @@ public class ChibaUtils extends DefaultSpringBean {
 		} catch (MessagingException e) {
 			LOGGER.log(Level.WARNING, "Error sending information about current XForms sessions:\n" + info, e);
 		}
+    }
+    
+    @RemoteMethod
+    public String getElementValue(String xformSessionId, String elementId) {
+    	if (StringUtil.isEmpty(xformSessionId) || StringUtil.isEmpty(elementId))
+    		return null;
+    	
+    	XFormsSession session = getXFormSession(xformSessionId);
+    	if (session == null)
+    		return null;
+    	
+    	try {
+			XFormsElement element = ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(elementId);
+			if (element == null) {
+				getLogger().warning("XForm element not found by ID: " + elementId);
+				return null;
+			}
+			
+			String dataElementName = "chiba:data";
+			NodeList nodeList = element.getElement().getChildNodes();
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Node node = nodeList.item(i);
+				if (node instanceof Element && node.getNodeName().equals(dataElementName)) {
+					return node.getTextContent();
+				}
+			}
+		} catch (Exception e) {
+			getLogger().log(Level.WARNING, "Error getting XForm element by ID: " + elementId, e);
+		}
+    	
+    	return null;
     }
 }
