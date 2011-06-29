@@ -12,7 +12,6 @@ import org.chiba.web.flux.FluxFacade;
 import org.chiba.web.flux.IdegaFluxAdapter;
 import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
-import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -73,24 +72,14 @@ public class IdegaFluxFacade extends FluxFacade {
 	}
 	
 	@Override
-	public Element setXFormsValue(String id, String value, String sessionKey)
-	        throws FluxException {
+	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			return super.setXFormsValue(id, value, sessionKey);
-			
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
-			throw new SessionExpiredException("Unable to set value '"
-			        .concat(value)
-			        .concat("' for element '")
-			        .concat(id)
-			        .concat("' using session: ")
-			        .concat(sessionKey)
-			        .concat(
-			            ChibaUtils.getInstance().getSessionInformation(
-			                sessionKey)), e, ChibaUtils.getInstance()
-			        .getSessionExpiredLocalizedString());
+			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
+					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}
 	}
 	
