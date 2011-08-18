@@ -55,18 +55,23 @@ public class IdegaExtensionFunctions {
 		return null;
 	}
 	
-	public static Object resolveExpression(ExpressionContext expressionContext,
-	        String exp, String params) throws XFormsException {
-		
-		final String resolvedParams = params != null ? ExtensionFunctionUtil
-		        .resolveParams(expressionContext, params) : null;
-		final String resolveBeanExp = ExtensionFunctionUtil.formatExpression(
-		    exp, resolvedParams);
-		
+	public static <T> T getValueFromExpression(ExpressionContext expContext, Instance instance, String exp, String params) throws XFormsException {
 		try {
+			String resolvedParams = params == null ? null :
+				expContext == null ? ExtensionFunctionUtil.resolveParams(instance, params) : ExtensionFunctionUtil.resolveParams(expContext, params);
+			String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
 			
-			final Object value = ELUtil.getInstance().evaluateExpression(
-			    resolveBeanExp);
+			@SuppressWarnings("unchecked")
+			T value = (T) ELUtil.getInstance().evaluateExpression(resolveBeanExp);
+			return value;
+		} catch (Exception e) {
+			throw new XFormsException(e);
+		}
+	}
+	
+	public static Object resolveExpression(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
+		try {
+			Object value = getValueFromExpression(expressionContext, null, exp, params);
 			
 			if (value != null && (value instanceof Collection<?>)) {
 				@SuppressWarnings("unchecked")
@@ -81,18 +86,9 @@ public class IdegaExtensionFunctions {
 		}
 	}
 	
-	public static Object resolveExpressionByInstance(Instance instance,
-	        String exp, String params) throws XFormsException {
-		
-		final String resolvedParams = params != null ? ExtensionFunctionUtil
-		        .resolveParams(instance, params) : null;
-		final String resolveBeanExp = ExtensionFunctionUtil.formatExpression(
-		    exp, resolvedParams);
-		
+	public static Object resolveExpressionByInstance(Instance instance, String exp, String params) throws XFormsException {
 		try {
-			
-			final Object value = ELUtil.getInstance().evaluateExpression(
-			    resolveBeanExp);
+			Object value = getValueFromExpression(null, instance, exp, params);
 			
 			if (value != null && (value instanceof Collection<?>)) {
 				@SuppressWarnings("unchecked")
