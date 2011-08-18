@@ -198,6 +198,7 @@
         <element type="action" namespace="http://idega.com/xforms" name="setvalue" class="com.idega.chiba.web.xml.xforms.elements.action.IdegaSetValueAction" />
         <element type="action" namespace="http://idega.com/xforms" name="saveFormAndGeneratePdf" class="com.idega.block.form.save.SaveFormAndGeneratePdfAction" />
         <element type="action" namespace="http://idega.com/xforms" name="separateSelectionLabels" class="com.idega.chiba.web.xml.xforms.elements.action.SeparateSelectionLabelsAction" />
+        <element type="action" namespace="http://idega.com/xforms" name="execute" class="com.idega.block.form.action.ExecuteAction" />
         
         <element namespace="http://idega.com/xforms" name="switch" class="com.idega.chiba.web.xml.xforms.elements.SwitchElement" />
         <element namespace="http://idega.com/xforms" name="case" class="com.idega.chiba.web.xml.xforms.elements.CaseElement" />
