@@ -1,5 +1,10 @@
 package com.idega.chiba.web.xml.xforms.util;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.apache.commons.jxpath.ExpressionContext;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
@@ -18,6 +23,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.idega.data.SimpleQuerier;
 import com.idega.util.xml.XPathUtil;
 
 /**
@@ -228,6 +234,31 @@ public class XFormsUtil {
 		return formIdElementXPath.getNode(context);
 	}
 	
+	private static Long BPM_STRING_VARIABLE_MAX_LENGTH = null;
+	
+	public static long getBPMStringVariableMaxLength() throws SQLException {
+		if (BPM_STRING_VARIABLE_MAX_LENGTH != null)
+			return BPM_STRING_VARIABLE_MAX_LENGTH;
+		
+		Connection conn = null;
+		try {
+			conn = SimpleQuerier.getConnection();
+			DatabaseMetaData meta = conn.getMetaData();
+			ResultSet columnsInfo = meta.getColumns(null, null, "JBPM_VARIABLEINSTANCE", null);
+			while (columnsInfo.next()) {
+				String columnName = columnsInfo.getString("COLUMN_NAME");
+				if (columnName.equalsIgnoreCase("STRINGVALUE_")) {
+					BPM_STRING_VARIABLE_MAX_LENGTH = columnsInfo.getLong("COLUMN_SIZE");
+					return BPM_STRING_VARIABLE_MAX_LENGTH;
+				}
+			}
+		} finally {
+			if (conn != null)
+				conn.close();
+		}
+		
+		return 0;
+	}
 	
 	 public static Instance getInstance(ExpressionContext expressionContext, String instanceID)
 	    {

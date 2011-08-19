@@ -1,5 +1,7 @@
 var XFormsConfig = {};
 
+XFormsConfig.maxStringValueLength = 255;
+
 if (djConfig == null) {	
 	var djConfig = {
 		baseScriptUri:	'/idegaweb/bundles/org.chiba.web.bundle/resources/javascript/dojo-0.4.3/',
@@ -11,6 +13,7 @@ if (djConfig == null) {
 XFormsConfig.setConfiguration = function(config) {
 	XFormsConfig.baseScriptUri = config.baseScriptUri;
 	XFormsConfig.locale = config.locale;
+	XFormsConfig.maxStringValueLength = config.maxStringValueLength;
 	
 	djConfig.baseScriptUri = config.baseScriptUri;
 	djConfig.locale = config.locale;
