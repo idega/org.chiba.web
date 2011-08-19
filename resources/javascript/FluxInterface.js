@@ -708,7 +708,7 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 	jQuery.each(jQuery('textarea'), function() {
 		var textarea = jQuery(this);
 		
-		var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
+		/*var autoResizerInitializedStyleClass = 'autoResizerInitializedStyleClass';
 		if (!FluxInterfaceHelper.isTextAreaHtmlEditor(textarea) && !textarea.hasClass(autoResizerInitializedStyleClass)) {
 			textarea.autoResize({
 				animateDuration: 250,
@@ -720,7 +720,17 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 			}
 			
 			textarea.addClass(autoResizerInitializedStyleClass);
-		}
+		}*/
+		textarea.autoGrow();
+		
+		textarea.blur(function() {
+			var value = jQuery(this).attr('value');
+			if (value != null && value.length > XFormsConfig.maxStringValueLength) {
+				value = value.substring(0, XFormsConfig.maxStringValueLength);
+				jQuery(this).attr('value', value);
+			}
+			textarea.trigger('change');
+		});
 	});
 }
 
