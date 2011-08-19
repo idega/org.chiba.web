@@ -485,6 +485,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		humanMsg.displayMsg(Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE);
 				window.location.href = properties["uri"];
 				FluxInterfaceHelper.changingUriManually = false;
+				
+				break;
             } if (properties["show"] == "handlemanually_window") {
             	FluxInterfaceHelper.changingUriManually = true;
         		
@@ -508,6 +510,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		jQuery('#' + fancyBoxId).trigger('click');
         		
         		FluxInterfaceHelper.changingUriManually = false;
+        		
+        		break;
     		} else {
 	            isDirty = false;
 	            if (properties["show"] == "replace") {
