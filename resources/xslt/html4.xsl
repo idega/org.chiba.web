@@ -34,6 +34,8 @@
 	<xsl:param name="uploadingFailed" select="''"/>
 	<xsl:param name="invalidFileProvidedToUpload"/>
 	<xsl:param name="closingMsg"/>
+	<xsl:param name="errorSavingForm" />
+	<xsl:param name="continueOrStopFillingForm" />
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -158,6 +160,8 @@
                     Localization.UPLOADING_FAILED = '<xsl:value-of select="$uploadingFailed" />';
                     Localization.INVALID_FILE_TO_UPLOAD = '<xsl:value-of select="$invalidFileProvidedToUpload" />';
                     Localization.CLOSING = '<xsl:value-of select="$closingMsg" />';
+                    Localization.ERROR_SAVING_FORM = '<xsl:value-of select="$errorSavingForm" />';
+					Localization.CONTINUE_OR_STOP_FILLING_FORM = '<xsl:value-of select="$continueOrStopFillingForm" />';
                     if (!IE) {
                         showLoadingMessage(Localization.LOADING_MSG);
                     }

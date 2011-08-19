@@ -22,6 +22,8 @@ if(Localization == null) {
 	Localization.UPLOADING_FAILED 					= 'Sorry, uploading failed. Please try again.';
 	Localization.INVALID_FILE_TO_UPLOAD				= 'Invalid file provided to upload!';
 	Localization.CLOSING							= 'Closing...';
+	Localization.ERROR_SAVING_FORM					= 'Unable to save data. Please re-fill form with data';
+	Localization.CONTINUE_OR_STOP_FILLING_FORM		= 'The form was successfully saved. Do you want to continue filling the form?';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -516,8 +518,18 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             }
             break;
         case "chiba-render-message":
-            context.handleRenderMessage(properties["message"], properties["level"]);
-            closeAllLoadingMessages();
+        	closeAllLoadingMessages();
+        	if (properties["level"] == "handlemanually") {
+        		if (properties['message'] == 'true') {
+        			if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
+        				redirectForm(Localization.CLOSING);
+        			}
+        		} else {
+        			redirectForm(Localization.ERROR_SAVING_FORM);
+        		}
+        	} else {
+            	context.handleRenderMessage(properties["message"], properties["level"]);
+        	}
             break;
         case "chiba-replace-all":
             isDirty = false;

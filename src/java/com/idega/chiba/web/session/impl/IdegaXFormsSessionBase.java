@@ -151,6 +151,9 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("uploadingFailed", iwrb.getLocalizedString("chiba.uploading_failed", "Sorry, uploading failed. Please try again."));
 			generator.setParameter("invalidFileProvidedToUpload", iwrb.getLocalizedString("chiba.invalid_file_to_upload", "Invalid file provided to upload!"));
 			generator.setParameter("closingMsg", iwrb.getLocalizedString("chiba.closing", "Closing..."));
+			generator.setParameter("errorSavingForm", iwrb.getLocalizedString("chiba.unable_to_save_form", "Unable to save data. Please re-fill form with data"));
+			generator.setParameter("continueOrStopFillingForm", iwrb.getLocalizedString("chiba.continue_or_stop_filling_form",
+					"The form was successfully saved. Do you want to continue filling the form?"));
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {

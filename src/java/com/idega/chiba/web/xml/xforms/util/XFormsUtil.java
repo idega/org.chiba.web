@@ -36,12 +36,14 @@ public class XFormsUtil {
 
 	/**
 	 * copied from chiba Output implementation
+	 * @param <T>
 	 * @param valueAttribute - value attribute to compute from
 	 * @param action - the action this method is called from
 	 * @return
 	 * @throws XFormsException
 	 */
-	public static Object getValueFromExpression(String valueAttribute, AbstractAction action) throws XFormsException {
+	@SuppressWarnings("unchecked")
+	public static <T> T getValueFromExpression(String valueAttribute, AbstractAction action) throws XFormsException {
 		
         String pathExpression = BindingResolver.getExpressionPath(action, action.getRepeatItemId());
         Instance instance = action.getModel().getInstance(action.getModel().computeInstanceId(pathExpression));
@@ -60,20 +62,19 @@ public class XFormsUtil {
         context.getVariables().declareVariable("contextmodel", action.getModel().getId());
         try {
             context.getPointer(pathExpression + "[chiba:declare('output-value', " + valueAttribute + ")]");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new XFormsComputeException("invalid value expression at " + action, e, action.getTarget(), valueAttribute);
         }
-        Object value = context.getValue("chiba:undeclare('output-value')");
+		T value = (T) context.getValue("chiba:undeclare('output-value')");
         context.getVariables().undeclareVariable("currentContextPath");
         context.getVariables().undeclareVariable("contextmodel");
 
-        // check for string conversion to prevent sth. like "5 + 0" to be evaluated to "5.0"
+        // check for string conversion to prevent smth. like "5 + 0" to be evaluated to "5.0"
         if (value instanceof Double) {
-            // additionaly check for special cases
+            // Additionally check for special cases
             double doubleValue = ((Double) value).doubleValue();
             if (!(Double.isNaN(doubleValue) || Double.isInfinite(doubleValue))) {
-                value = context.getValue("string(" + value + ")");
+                value = (T) context.getValue("string(" + value + ")");
             }
         }
 
