@@ -180,6 +180,8 @@ function submitFunction(control) {
     return false;
 }
 
+FluxInterfaceHelper.afterChibaActivate = null;
+
 // call processor to execute a trigger
 function chibaActivate(target) {
 	if (typeof(target) == 'string') {
@@ -209,7 +211,10 @@ function chibaActivate(target) {
 	var sessionKey = document.getElementById("chibaSessionKey").value;
 	Flux.fireAction(id, sessionKey, {
 		callback: function(data) {
-			updateUI(data);
+			updateUI(data, function() {
+				if (FluxInterfaceHelper.afterChibaActivate != null)
+					FluxInterfaceHelper.afterChibaActivate();
+			});
 		}
 	});
 
@@ -427,7 +432,7 @@ function _getEventTarget(event) {
 }
 
 // callback for updating any control
-function updateUI(data) {
+function updateUI(data, callback) {
 	
     dojo.debug("updateUI: " + data);
     
@@ -452,8 +457,7 @@ function updateUI(data) {
                 nameAtt = eventLog[i].childNodes[j].getAttribute("name");
                 if (eventLog[i].childNodes[j].childNodes.length > 0) {
                     properties[nameAtt] = eventLog[i].childNodes[j].childNodes[0].nodeValue;
-                }
-                else {
+                } else {
                     properties[nameAtt] = "";
                 }
             }
@@ -473,6 +477,9 @@ function updateUI(data) {
 	    	jQuery(document).trigger('ChibaWorkarounds-UIUpdatedEvent', [data]);
 	    }
 	} catch (e) {}
+	
+	if (callback != null)
+		callback();
 }
 
 function _handleServerEvent(context, type, targetId, targetName, properties) {
