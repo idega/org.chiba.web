@@ -175,6 +175,21 @@ public class IdegaExtensionFunctions {
 		}
 	}
 	             
+	public static boolean isBeforeOrEqualsNow(String dateExp) throws XFormsException {
+		try {
+			IWTimestamp now = new IWTimestamp();
+			now.setAsDate();
+			
+			return !StringUtil.isEmpty(dateExp)
+			        && (new IWTimestamp(getxFormsDateConverter().convertStringFromXFormsToDate(
+			            dateExp)).isEarlierThan(now) || new IWTimestamp(getxFormsDateConverter().convertStringFromXFormsToDate(
+					            dateExp)).isEqualTo(now));
+			
+		} catch (ParseException e) {
+			throw new RuntimeCacheException(e);
+		}
+	}
+	             
 	public static boolean isAfterNow(String dateExp) throws XFormsException {
 		try {
 			IWTimestamp now = new IWTimestamp();

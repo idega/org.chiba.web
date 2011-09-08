@@ -178,6 +178,7 @@
 		<function namespace="http://idega.com/xforms" name="resolveBeanProperties" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="separateSelectionLabels" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="isBeforeNow" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
+		<function namespace="http://idega.com/xforms" name="isBeforeOrEqualsNow" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 		<function namespace="http://idega.com/xforms" name="isAfterNow" class="com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions"/>
 				
     </extension-functions>
