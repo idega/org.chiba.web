@@ -20,6 +20,10 @@
             <include method="sendInformationAboutXFormsSessions"/>
             <include method="getNodesetValue"/>
         </create>
+        <create creator="spring" javascript="ChibaUtils">
+        	<param name="beanName" value="chibaUtils" />
+        	<include method="getElementValue" />
+        </create>
         
       <convert match="com.idega.chiba.web.exception.SessionExpiredException" converter="exception">
       	<param name='include' value='javaClassName, message, cause, lineNumber' />

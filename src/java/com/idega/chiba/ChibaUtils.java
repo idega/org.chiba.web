@@ -16,10 +16,6 @@ import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.web.upload.UploadInfo;
 import org.chiba.xml.xforms.XFormsElement;
-import org.directwebremoting.annotations.Param;
-import org.directwebremoting.annotations.RemoteMethod;
-import org.directwebremoting.annotations.RemoteProxy;
-import org.directwebremoting.spring.SpringCreator;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -31,7 +27,6 @@ import com.idega.chiba.web.exception.IdegaChibaException;
 import com.idega.chiba.web.session.impl.IdegaXFormSessionManagerImpl;
 import com.idega.chiba.web.session.impl.IdegaXFormsSessionBase;
 import com.idega.core.business.DefaultSpringBean;
-import com.idega.dwr.business.DWRAnnotationPersistance;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
@@ -45,11 +40,7 @@ import com.idega.util.StringUtil;
 
 @Service("chibaUtils")
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-@RemoteProxy(creator=SpringCreator.class, name="ChibaUtils", creatorParams={
-	@Param(name="beanName", value="chibaUtils"),
-	@Param(name="javascript", value="ChibaUtils")
-})
-public class ChibaUtils extends DefaultSpringBean implements DWRAnnotationPersistance {
+public class ChibaUtils extends DefaultSpringBean {
 	
 	private static final Logger LOGGER = Logger.getLogger(ChibaUtils.class.getName());
 	
@@ -152,13 +143,17 @@ public class ChibaUtils extends DefaultSpringBean implements DWRAnnotationPersis
     	return true;
     }
     
+    private Set<String> getKeysOfCurrentXFormSessions() {
+    	XFormsSessionManager manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
+    	return manager instanceof IdegaXFormSessionManagerImpl ? ((IdegaXFormSessionManagerImpl) manager).getKeysOfActiveSessions() : null;
+    }
+    
     public Set<String> getKeysOfCurrentSessions() {
     	if (!isSuperAdmin()) {
     		return null;
     	}
     	
-    	XFormsSessionManager manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
-    	return manager instanceof IdegaXFormSessionManagerImpl ? ((IdegaXFormSessionManagerImpl) manager).getKeysOfActiveSessions() : null;
+    	return getKeysOfCurrentXFormSessions();
     }
     
     public List<String> getInfoAboutCurrentSessions() {
@@ -195,27 +190,33 @@ public class ChibaUtils extends DefaultSpringBean implements DWRAnnotationPersis
     	return IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(key);
     }
     
-    public int getNumberOfXFormSessionsForHttpSession(String httpSessionId) {
+    public List<String> getKeysOfXFormSessions(String httpSessionId) {
     	if (StringUtil.isEmpty(httpSessionId)) {
-    		return 0;
+    		return null;
     	}
     	
-    	Set<String> xformSessions = getKeysOfCurrentSessions();
+    	Set<String> xformSessions = getKeysOfCurrentXFormSessions();
     	if (ListUtil.isEmpty(xformSessions)) {
-    		return 0;
+    		return null;
     	}
-    	
-    	int number = 0;
+
+    	List<String> keys = new ArrayList<String>();
     	for (String xformSessionId: xformSessions) {
     		XFormsSession session = getXFormSession(xformSessionId);
     		if (session instanceof IdegaXFormsSessionBase) {
-    			if (httpSessionId.equals(((IdegaXFormsSessionBase) session).getHttpSessionId())) {
-    				number++;
+    			IdegaXFormsSessionBase xformSession = (IdegaXFormsSessionBase) session;
+    			if (httpSessionId.equals(xformSession.getHttpSessionId())) {
+    				if (!keys.contains(xformSession.getKey()))
+    					keys.add(xformSession.getKey());
     			}
     		}
     	}
-    	
-    	return number;
+    	return keys;
+    }
+    
+    public int getNumberOfXFormSessionsForHttpSession(String httpSessionId) {
+    	List<String> keys = getKeysOfXFormSessions(httpSessionId);
+    	return ListUtil.isEmpty(keys) ? 0 : keys.size();
     }
     
     private String getUploadInfoKey(String sessionKey) {
@@ -292,7 +293,6 @@ public class ChibaUtils extends DefaultSpringBean implements DWRAnnotationPersis
 		}
     }
     
-    @RemoteMethod
     public String getElementValue(String xformSessionId, String elementId) {
     	if (StringUtil.isEmpty(xformSessionId) || StringUtil.isEmpty(elementId))
     		return null;
