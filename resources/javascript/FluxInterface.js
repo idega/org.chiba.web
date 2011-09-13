@@ -24,6 +24,7 @@ if(Localization == null) {
 	Localization.CLOSING							= 'Closing...';
 	Localization.ERROR_SAVING_FORM					= 'Unable to save data. Please re-fill form with data';
 	Localization.CONTINUE_OR_STOP_FILLING_FORM		= 'The form was successfully saved. Do you want to continue filling the form?';
+	Localization.USER_MUST_BE_LOGGED_IN				= 'Your session has expired, you must to login to continue your work';
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -209,7 +210,7 @@ function chibaActivate(target) {
 	dwr.engine.setErrorHandler(handleExceptions);
 	dwr.engine.setOrdered(true);
 	var sessionKey = document.getElementById("chibaSessionKey").value;
-	Flux.fireAction(id, sessionKey, {
+	Flux.fireAction(id, sessionKey, window.location.href, {
 		callback: function(data) {
 			updateUI(data, function() {
 				if (FluxInterfaceHelper.afterChibaActivate != null)

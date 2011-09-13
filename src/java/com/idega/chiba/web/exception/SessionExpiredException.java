@@ -28,11 +28,17 @@ public class SessionExpiredException extends FluxException {
 		this(msg, exception, CoreConstants.MINUS);
 	}
 	
+	public SessionExpiredException(String msg, String messageToClient) {
+		this(msg, null, messageToClient);
+	}
+	
 	public SessionExpiredException(String msg, Throwable exception, String messageToClient) {
 		super("Session has expired! ".concat(msg));
-		setStackTrace(exception.getStackTrace());
 		
-		CoreUtil.sendExceptionNotification(this);
+		if (exception != null) {
+			setStackTrace(exception.getStackTrace());
+			CoreUtil.sendExceptionNotification(this);
+		}
 		
 		this.messageToClient = messageToClient;
 	}

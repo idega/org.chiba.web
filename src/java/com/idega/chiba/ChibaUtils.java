@@ -2,6 +2,7 @@ package com.idega.chiba;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -321,5 +322,34 @@ public class ChibaUtils extends DefaultSpringBean {
 		}
     	
     	return null;
+    }
+    
+    private Map<String, String> getActionsCache() {
+    	Map<String, String> firedActions = getCache("firedXFormsActions", 86400);
+    	return firedActions;
+    }
+    
+    public void onActionFired(String sessionId, String uri) {
+    	if (StringUtil.isEmpty(sessionId) || StringUtil.isEmpty(uri))
+    		return;
+    	
+    	Map<String, String> firedActions = getActionsCache();
+    	firedActions.put(sessionId, uri);
+    }
+    
+    public void onSessionClosed(String sessionId) {
+    	if (StringUtil.isEmpty(sessionId))
+    		return;
+    	
+    	Map<String, String> firedActions = getActionsCache();
+    	firedActions.remove(sessionId);
+    }
+    
+    public String getXFormActionUri(String sessionId) {
+    	if (StringUtil.isEmpty(sessionId))
+    		return null;
+    	
+    	Map<String, String> firedActions = getActionsCache();
+    	return firedActions.get(sessionId);
     }
 }

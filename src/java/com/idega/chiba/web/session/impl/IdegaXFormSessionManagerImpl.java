@@ -39,6 +39,7 @@ import com.idega.core.cache.IWCacheManager2;
 import com.idega.event.HttpSessionDestroyed;
 import com.idega.event.IWHttpSessionsManager;
 import com.idega.event.PDFGeneratedEvent;
+import com.idega.event.ScriptCallerInterface;
 import com.idega.event.SessionPollerEvent;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
@@ -46,6 +47,7 @@ import com.idega.util.CoreUtil;
 import com.idega.util.IWTimestamp;
 import com.idega.util.ListUtil;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 import com.idega.util.xml.XmlUtil;
 
 /**
@@ -315,6 +317,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 		} else if (event instanceof HttpSessionDestroyed) {
 			HttpSessionDestroyed destroyed = (HttpSessionDestroyed) event;
 			invalidateXFormsSessions(destroyed.getHttpSessionId(), new Date(destroyed.getLastTimeAccessed()), destroyed.getMaxInactiveInterval());
+			
+			ScriptCallerInterface scriptCaller = getScriptCaller();
+			if (scriptCaller != null) {
+				scriptCaller.setSessionId(destroyed.getHttpSessionId());
+				scriptCaller.setScript("if (typeof XFormSessionHelper != 'undefined') {XFormSessionHelper.invalidateForm();}");
+				scriptCaller.run();
+			}
 		} else if (event instanceof PDFGeneratedEvent) {
 			invalidateXFormsSession(((PDFGeneratedEvent) event).getPdfSource());
 		}
@@ -466,5 +475,13 @@ public class IdegaXFormSessionManagerImpl implements XFormsSessionManager, Appli
 			return null;
 		}
 		return sessions.keySet();
+	}
+	
+	private ScriptCallerInterface getScriptCaller() {
+		try {
+			ScriptCallerInterface scriptCaller = ELUtil.getInstance().getBean(ScriptCallerInterface.BEAN_NAME);
+			return scriptCaller;
+		} catch (Exception e) {}
+		return null;
 	}
 }

@@ -36,6 +36,7 @@
 	<xsl:param name="closingMsg"/>
 	<xsl:param name="errorSavingForm" />
 	<xsl:param name="continueOrStopFillingForm" />
+	<xsl:param name="userMustBeLoggedIn" />
 
     <xsl:param name="sessionKey" select="''"/>
 
@@ -162,6 +163,7 @@
                     Localization.CLOSING = '<xsl:value-of select="$closingMsg" />';
                     Localization.ERROR_SAVING_FORM = '<xsl:value-of select="$errorSavingForm" />';
 					Localization.CONTINUE_OR_STOP_FILLING_FORM = '<xsl:value-of select="$continueOrStopFillingForm" />';
+					Localization.USER_MUST_BE_LOGGED_IN = '<xsl:value-of select="$userMustBeLoggedIn" />';
                     if (!IE) {
                         showLoadingMessage(Localization.LOADING_MSG);
                     }

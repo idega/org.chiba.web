@@ -154,6 +154,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			generator.setParameter("errorSavingForm", iwrb.getLocalizedString("chiba.unable_to_save_form", "Unable to save data. Please re-fill form with data"));
 			generator.setParameter("continueOrStopFillingForm", iwrb.getLocalizedString("chiba.continue_or_stop_filling_form",
 					"The form was successfully saved. Do you want to continue filling the form?"));
+			generator.setParameter("userMustBeLoggedIn",
+					iwrb.getLocalizedString("chiba.user_must_be_logged_in", "Your session has expired, you must to login to continue your work"));
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {

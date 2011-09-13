@@ -29,45 +29,53 @@ import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
 
 @Scope("request")
-@Service("fluxexhand")
+@Service(IdegaFluxFacade.BEAN_NAME)
 public class IdegaFluxFacade extends FluxFacade {
 	
-	private static final Logger LOGGER = Logger.getLogger(IdegaFluxFacade.class
-	        .getName());
+	private static final Logger LOGGER = Logger.getLogger(IdegaFluxFacade.class.getName());
+
+	public static final String BEAN_NAME = "fluxexhand";
 	
 	private HttpSession session;
+	
+	private String sessionKey = null, error = null;
+	
+	public String getCurrentXFormSessionKey() {
+		return sessionKey;
+	}
+	
+	public void setError(String error) {
+		this.error = error;
+	}
 	
 	public IdegaFluxFacade() {
 		super();
 		
 		try {
-			RequestResponseProvider provider = ELUtil.getInstance().getBean(
-			    RequestResponseProvider.class);
+			RequestResponseProvider provider = ELUtil.getInstance().getBean(RequestResponseProvider.class);
 			this.session = provider.getRequest().getSession(Boolean.TRUE);
 		} catch (Exception e) {
-			LOGGER.log(Level.WARNING,
-			    "Error while trying to get HTTP session object", e);
+			LOGGER.log(Level.WARNING, "Error while trying to get HTTP session object", e);
 		}
 	}
 	
-	@Override
-	public Element fireAction(String id, String sessionKey)
-	        throws FluxException {
+	public Element fireAction(String id, String sessionKey, String uri) throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
-			return super.fireAction(id, sessionKey);
+			ChibaUtils.getInstance().onActionFired(sessionKey, uri);
 			
+			this.sessionKey = sessionKey;
+			
+			Element element = super.fireAction(id, sessionKey);
+			
+			if (error != null && error.equals(sessionKey + uri))
+				throw new SessionExpiredException("Error firing action on " + id + ", session: " + sessionKey, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+			
+			return element;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error firing action", e);
-			throw new SessionExpiredException(
-			        "Unable to fire action for element: '"
-			                .concat(id)
-			                .concat("' using session: ")
-			                .concat(sessionKey)
-			                .concat(
-			                    ChibaUtils.getInstance().getSessionInformation(
-			                        sessionKey)), e, ChibaUtils.getInstance()
-			                .getSessionExpiredLocalizedString());
+			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
+					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
 		}
 	}
 	
@@ -200,8 +208,7 @@ public class IdegaFluxFacade extends FluxFacade {
 		boolean error = false;
 		String windowKey = null;
 		try {
-			if (!StringUtil.isEmpty(sessionKey)
-			        && sessionKey.indexOf("@") != -1) {
+			if (!StringUtil.isEmpty(sessionKey) && sessionKey.indexOf("@") != -1) {
 				String[] info = sessionKey.split("@");
 				sessionKey = info[0];
 				if (info.length >= 2) {
@@ -209,15 +216,13 @@ public class IdegaFluxFacade extends FluxFacade {
 				}
 			}
 			
-			ChibaUtils.getInstance().markXFormSessionFinished(sessionKey,
-			    Boolean.TRUE);
+			ChibaUtils.getInstance().markXFormSessionFinished(sessionKey, Boolean.TRUE);
+			ChibaUtils.getInstance().onSessionClosed(sessionKey);
 			
 			super.close(sessionKey);
 		} catch (Exception e) {
 			error = true;
-			String message = "Exception at close, session key=".concat(
-			    sessionKey).concat(
-			    ChibaUtils.getInstance().getSessionInformation(sessionKey));
+			String message = "Exception at close, session key=".concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey));
 			LOGGER.log(Level.SEVERE, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
 		} finally {
