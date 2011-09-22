@@ -801,4 +801,15 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		
 		input.mask('99:99');
 	});
+	jQuery.each(jQuery('.xFormInputMask_time_from_to'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.mask('99:99-99:99');
+	});
+	jQuery.each(jQuery('.xFormInputMask_personalId'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		if (XFormsConfig.locale == 'sv_SE')
+			input.mask('9999999999');
+	});
 }
