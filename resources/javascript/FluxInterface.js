@@ -812,4 +812,20 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		if (XFormsConfig.locale == 'sv_SE')
 			input.mask('9999999999');
 	});
+	
+	jQuery.each(jQuery('.xFormInputMask_positiveNumber'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.keypress(function(event) {
+			// Allow only backspace and delete
+			if (event.which == 8 || event.which == 0) {
+				// let it happen, don't do anything
+			} else {
+				// Ensure that it is a number and stop the keypress
+				if (event.which < 48 || event.which > 57) {
+					event.preventDefault();
+				}
+			}
+		});
+	});
 }
