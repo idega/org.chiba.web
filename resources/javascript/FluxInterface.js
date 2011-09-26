@@ -834,15 +834,44 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			callback: function(text) {
 				jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
 					var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
-					textArea.parent().append('<span class="xformTextAreaCharactersCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">1000<span></span>')
-					
-					textArea.keyup(function(event) {
-						FluxInterfaceHelper.countCharacters(event, 1000);
-					});
+					FluxInterfaceHelper.initializeCharactersCounter(textArea, text, 1000);
 				});
 			}
 		});
 	}, null);
+}
+
+FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit) {
+	var hasInitializedMark = textArea.hasClass('xFormTextAreaMask_limit-initialized');
+	var nameWithoutRepeatKeyword = textArea.attr('name').indexOf('repeat') == -1;
+	if (nameWithoutRepeatKeyword) {
+		if (hasInitializedMark)
+			return true;
+	}
+	
+	textArea.addClass('xFormTextAreaMask_limit-initialized');
+	var addCharactersCounter = function(textArea, text) {
+		jQuery('span.xformTextAreaCharactersCounter', textArea.parent()).each(function() {
+			jQuery(this).remove();
+		});
+		var leftCharacters = limit - textArea.attr('value').length;
+		textArea.parent().append('<span class="xformTextAreaCharactersCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">' + leftCharacters + '<span></span>');
+		textArea.keyup(function(event) {
+			FluxInterfaceHelper.countCharacters(event, limit);
+		});
+	};
+	
+	if (text == null) {
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
+			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
+				callback: function(localizedText) {
+					addCharactersCounter(textArea, localizedText);
+				}
+			});
+		}, null);
+	} else {
+		addCharactersCounter(textArea, text);
+	}
 }
 
 FluxInterfaceHelper.countCharacters = function(event, limit) {
