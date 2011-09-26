@@ -818,7 +818,7 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		
 		input.keypress(function(event) {
 			// Allow only backspace and delete
-			if (event.which == 8 || event.which == 0) {
+			if (event.which == 46 || event.which == 8 || event.which == 0) {
 				// let it happen, don't do anything
 			} else {
 				// Ensure that it is a number and stop the keypress
@@ -828,4 +828,41 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			}
 		});
 	});
+	
+	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
+		WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
+			callback: function(text) {
+				jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
+					var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+					textArea.parent().append('<span class="xformTextAreaCharactersCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">1000<span></span>')
+					
+					textArea.keyup(function(event) {
+						FluxInterfaceHelper.countCharacters(event, 1000);
+					});
+				});
+			}
+		});
+	}, null);
+}
+
+FluxInterfaceHelper.countCharacters = function(event, limit) {
+	if (event == null)
+		return false;
+	
+	var textArea = event.target;
+	if (textArea == null)
+		return false;
+	
+	var value = jQuery(textArea).attr('value');
+	if (value == null)
+		return true;
+	
+	if (value.length > limit) {
+		jQuery(textArea).attr('value', value.substring(0, limit));
+		jQuery('#' + textArea.id + '-counter').text(0);
+		event.preventDefault();
+	} else {
+		jQuery('#' + textArea.id + '-counter').text(1000 - value.length);
+		return true;
+	}
 }
