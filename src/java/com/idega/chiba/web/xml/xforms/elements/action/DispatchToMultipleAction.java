@@ -93,7 +93,7 @@ public class DispatchToMultipleAction extends AbstractAction {
     		if (flux != null) {
     			String sessionKey = flux.getCurrentXFormSessionKey();
     			String uri = ChibaUtils.getInstance().getXFormActionUri(sessionKey);
-    			if (getXFormSubmissionValidator().isRequiredToBeLoggedIn(uri)) {
+    			if (!getXFormSubmissionValidator().isPossibleToSubmitXForm(uri)) {
     				ScriptCallerInterface scriptCaller = ELUtil.getInstance().getBean(ScriptCallerInterface.BEAN_NAME);
     				if (scriptCaller != null) {
     					scriptCaller.executeScript(CoreUtil.getIWContext().getSession().getId(),
