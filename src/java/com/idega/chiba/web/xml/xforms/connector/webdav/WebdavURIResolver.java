@@ -3,17 +3,18 @@ package com.idega.chiba.web.xml.xforms.connector.webdav;
 import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.chiba.xml.xforms.connector.AbstractConnector;
 import org.chiba.xml.xforms.connector.URIResolver;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.idegaweb.IWUserContext;
-import com.idega.presentation.IWContext;
-import com.idega.slide.business.IWSlideSession;
-import com.idega.slide.util.WebdavExtendedResource;
+
+import com.idega.repository.RepositoryService;
+import com.idega.repository.jcr.JCRItem;
+import com.idega.util.expression.ELUtil;
 
 /**
  * This class resolves <code>webdav</code> URIs. It treats the denoted
@@ -34,6 +35,9 @@ public class WebdavURIResolver extends AbstractConnector implements URIResolver 
      */
     private static Logger LOGGER = Logger.getLogger(WebdavURIResolver.class.getName());
 
+    @Autowired
+    private RepositoryService repository;
+
     /**
      * Performs link traversal of the <code>webdav</code> URI and returns the
      * result as a DOM document.
@@ -41,18 +45,16 @@ public class WebdavURIResolver extends AbstractConnector implements URIResolver 
      * @return a DOM node parsed from the <code>webdav</code> URI.
      * @throws XFormsException if any error occurred during link traversal.
      */
-    public Object resolve() throws XFormsException {
+    @Override
+	public Object resolve() throws XFormsException {
         try {
             // create uri
             URI uri = new URI(getURI());
 
             String path = uri.getPath();
 
-    		IWUserContext iwuc = IWContext.getInstance();
-            IWSlideSession session = getIWSlideSession(iwuc);
-            
-            WebdavExtendedResource resource = session.getWebdavResource(path);
-            
+            JCRItem resource = getRepositoryService().getRepositoryItem(path);
+
 			if (LOGGER.isLoggable(Level.FINE)) {
                 LOGGER.fine("loading webdav resource '" + path + "'");
             }
@@ -61,7 +63,7 @@ public class WebdavURIResolver extends AbstractConnector implements URIResolver 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             factory.setValidating(false);
-            Document document = factory.newDocumentBuilder().parse(resource.getMethodData());
+            Document document = factory.newDocumentBuilder().parse(resource.getInputStream());
 
             // check for fragment identifier
             if (uri.getFragment() != null) {
@@ -75,16 +77,10 @@ public class WebdavURIResolver extends AbstractConnector implements URIResolver 
         }
     }
 
-	protected static IWSlideSession getIWSlideSession(IWUserContext iwuc) {
-		IWSlideSession session = null;
-		try {
-			session = (IWSlideSession) IBOLookup.getSessionInstance(iwuc, IWSlideSession.class);
-		}
-		catch (IBOLookupException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return session;
+    protected RepositoryService getRepositoryService() {
+		if (repository == null)
+			ELUtil.getInstance().autowire(this);
+		return repository;
 	}
-   
+
 }

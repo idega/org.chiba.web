@@ -7,18 +7,19 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import javax.jcr.RepositoryException;
+
 import org.chiba.xml.dom.DOMUtil;
 import org.chiba.xml.xforms.connector.AbstractConnector;
 import org.chiba.xml.xforms.connector.SubmissionHandler;
 import org.chiba.xml.xforms.core.Submission;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
-import com.idega.idegaweb.IWMainApplication;
-import com.idega.slide.business.IWSlideService;
+import com.idega.repository.RepositoryService;
+import com.idega.util.expression.ELUtil;
 
 /**
  * The file submission driver serializes and submits instance data to a file.
@@ -28,18 +29,20 @@ import com.idega.slide.business.IWSlideService;
  * the file denoted by the connector URI. When this file exists, it will be
  * overwritten silently, otherwise it will be created.
  * <p/>
- * 
+ *
  * @author Gediminas Paulauskas
  * @version $Id: WebdavSubmissionHandler.java,v 1.7 2008/05/01 15:39:40 civilis Exp $
  */
 public class WebdavSubmissionHandler extends AbstractConnector implements SubmissionHandler {
-    
+
 	private static final Logger LOGGER = Logger.getLogger(WebdavSubmissionHandler.class.getName());
 	private static final String form_id_tag = "form_id";
 	private static final String slash = "/";
-	
+
 	public static final String SUBMITTED_DATA_PATH = "/files/forms/submissions";
-	
+
+	@Autowired
+	private RepositoryService repository;
 
     /**
      * Serializes and submits the specified instance data over the
@@ -50,19 +53,20 @@ public class WebdavSubmissionHandler extends AbstractConnector implements Submis
      * @return <code>null</code>.
      * @throws XFormsException if any error occurred during submission.
      */
-    public Map submit(Submission submission, Node instance) throws XFormsException {
+    @Override
+	public Map<?, ?> submit(Submission submission, Node instance) throws XFormsException {
         if (submission.getMethod().equalsIgnoreCase("put")) {
             if (!submission.getReplace().equals("none") && !submission.getReplace().equals("all")) {
                 throw new XFormsException("submission mode '" + submission.getReplace() + "' not supported");
             }
-            
+
             System.out.println("submit: ");
-            
+
             DOMUtil.prettyPrintDOM(instance);
-         
+
             try {
                 String form_id = getFormIdFromSubmissionInstance(instance);
-                
+
                 if(form_id != null) {
                 	ByteArrayOutputStream out = new ByteArrayOutputStream();
     				serialize(submission, instance, out);
@@ -81,49 +85,42 @@ public class WebdavSubmissionHandler extends AbstractConnector implements Submis
 
         throw new XFormsException("submission method '" + submission.getMethod() + "' not supported");
     }
-	
+
 	protected String getFormIdFromSubmissionInstance(Node instance) {
-		
+
 		Element form_id = DOMUtil.getChildElement(instance, form_id_tag);
-		
+
         if (form_id != null) {
         	return DOMUtil.getElementValue(form_id);
         }
         return null;
 	}
-	
+
 	/**
 	 * Save submitted form's instance
-	 * 
+	 *
 	 * @param formId
 	 * @param is instance input stream to save
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	protected void saveSubmittedData(String formId, InputStream is) throws IOException {
-		
-		String path = 
+	protected void saveSubmittedData(String formId, InputStream is) throws RepositoryException {
+
+		String path =
 			new StringBuilder(SUBMITTED_DATA_PATH)
 			.append(slash)
 			.append(formId)
 			.append(slash)
 			.toString()
 		;
-			
-		String fileName = System.currentTimeMillis() + ".xml";
-		
-		//logger.info("Saving submitted instance to webdav path: " + path + fileName);
 
-		IWSlideService service = getIWSlideService();
-		service.uploadFileAndCreateFoldersFromStringAsRoot(path, fileName, is, "text/xml", false);
+		String fileName = System.currentTimeMillis() + ".xml";
+
+		getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(path, fileName, is, "text/xml");
 	}
-	
-	protected IWSlideService getIWSlideService() throws IBOLookupException {
-		
-		try {
-			return (IWSlideService) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), IWSlideService.class);
-		} catch (IBOLookupException e) {
-			//logger.log(Level.SEVERE, "Error getting IWSlideService");
-			throw e;
-		}
+
+	protected RepositoryService getRepositoryService() {
+		if (repository == null)
+			ELUtil.getInstance().autowire(this);
+		return repository;
 	}
 }
