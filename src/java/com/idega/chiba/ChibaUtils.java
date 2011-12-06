@@ -1,6 +1,8 @@
 package com.idega.chiba;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,9 +19,13 @@ import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.web.upload.UploadInfo;
 import org.chiba.xml.xforms.XFormsElement;
+import org.chiba.xml.xforms.core.Model;
+import org.chiba.xml.xforms.core.ModelItem;
+import org.chiba.xml.xforms.ui.BindingElement;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -303,7 +309,7 @@ public class ChibaUtils extends DefaultSpringBean {
     		return null;
     	
     	try {
-			XFormsElement element = ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(elementId);
+			XFormsElement element = getXFormElement(session, elementId);
 			if (element == null) {
 				getLogger().warning("XForm element not found by ID: " + elementId);
 				return null;
@@ -351,5 +357,59 @@ public class ChibaUtils extends DefaultSpringBean {
     	
     	Map<String, String> firedActions = getActionsCache();
     	return firedActions.get(sessionId);
+    }
+    
+    private XFormsElement getXFormElement(XFormsSession session, String id) {
+    	return ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(id);
+    }
+    
+    public String getVariableNameByXFormElementId(String sessionKey, String xFormElementId) {
+    	try {
+	    	XFormsSession session = getXFormSession(sessionKey);
+			Model submissionModel = ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().getModel("submission_model");
+			XFormsElement element = getXFormElement(session, xFormElementId);
+			String variableName = null;
+			if (element instanceof BindingElement && ((BindingElement) element).isBound()) {
+				for (Iterator<?> iter = submissionModel.getInstance("data-instance").iterateModelItems(((BindingElement) element).getLocationPath(), true);
+						(iter.hasNext() && StringUtil.isEmpty(variableName));) {
+					Object item = iter.next();
+					if (item instanceof ModelItem) {
+						Object node = ((ModelItem) item).getNode();
+						if (node instanceof Attr) {
+							Attr attribute = (Attr) node;
+							if (ChibaConstants.MAPPING.equals(attribute.getName()))
+								variableName = attribute.getNodeValue();
+						}
+					}
+				}
+			}
+			return variableName;
+    	} catch (Exception e) {
+    		getLogger().log(Level.WARNING, "Error getting variable name of XForm element " + xFormElementId + " and session " + sessionKey);
+    	}
+    	return null;
+    }
+    
+    private Map<String, Map<String, String>> emptyValues = new HashMap<String, Map<String, String>>();
+    
+    public void addXFormValue(String sessionKey, String elementId, String value) {
+    	Map<String, String> xformValues = emptyValues.get(sessionKey);
+		if (xformValues == null) {
+			xformValues = new HashMap<String, String>();
+			emptyValues.put(sessionKey, xformValues);
+		}
+		
+		if (StringUtil.isEmpty(value)) {
+			xformValues.put(elementId, value);
+			System.out.println("added");
+		}
+		else {
+			xformValues.remove(elementId);
+			System.out.println("removed " + elementId + " " + value);
+		}
+    }
+    
+    public Map<String, String> getEmptyXFormValues(String sessionKey) {
+    	return emptyValues.remove(sessionKey);
     }
 }
