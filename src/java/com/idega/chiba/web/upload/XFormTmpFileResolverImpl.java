@@ -14,6 +14,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.idega.chiba.ChibaConstants;
 import com.idega.core.file.tmp.TmpFileResolver;
 import com.idega.core.file.tmp.TmpFileResolverType;
 import com.idega.core.file.tmp.TmpFilesModifyStrategy;
@@ -187,7 +188,7 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 
 		if (context instanceof Element
 				&& identifier.equals(((Element) context)
-						.getAttribute("mapping"))) {
+						.getAttribute(ChibaConstants.MAPPING))) {
 
 			return (Element) context;
 		}
