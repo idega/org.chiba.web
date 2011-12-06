@@ -88,12 +88,12 @@ public class IdegaFluxFacade extends FluxFacade {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
 					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+		} finally {
+			ChibaUtils.getInstance().addXFormValue(sessionKey, id, value);
 		}
 	}
-	
-	public String getNodesetValue(String nodeset, String sessionKey)
-	        throws FluxException {
-		
+
+	public String getNodesetValue(String nodeset, String sessionKey) throws FluxException {
 		try {
 			return getAdapter(sessionKey).getChibaBean().getContainer()
 			        .getModel("submission_model").getInstance("data-instance")
