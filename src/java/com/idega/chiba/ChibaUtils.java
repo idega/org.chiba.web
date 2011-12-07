@@ -399,14 +399,10 @@ public class ChibaUtils extends DefaultSpringBean {
 			emptyValues.put(sessionKey, xformValues);
 		}
 		
-		if (StringUtil.isEmpty(value)) {
+		if (StringUtil.isEmpty(value))
 			xformValues.put(elementId, value);
-			System.out.println("added");
-		}
-		else {
+		else
 			xformValues.remove(elementId);
-			System.out.println("removed " + elementId + " " + value);
-		}
     }
     
     public Map<String, String> getEmptyXFormValues(String sessionKey) {
