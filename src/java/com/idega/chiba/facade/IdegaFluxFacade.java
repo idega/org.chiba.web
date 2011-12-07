@@ -229,6 +229,8 @@ public class IdegaFluxFacade extends FluxFacade {
 			if (!error) {
 				printSessionEndInfo(sessionKey, windowKey);
 			}
+			
+			ChibaUtils.getInstance().getEmptyXFormValues(sessionKey);
 		}
 	}
 	
