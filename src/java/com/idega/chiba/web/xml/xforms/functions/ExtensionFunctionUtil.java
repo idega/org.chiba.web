@@ -3,6 +3,8 @@ package com.idega.chiba.web.xml.xforms.functions;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,8 +21,12 @@ import org.w3c.dom.Node;
 
 import com.idega.chiba.web.xml.xforms.util.XFormsUtil;
 import com.idega.util.CoreConstants;
+import com.idega.util.ListUtil;
+import com.idega.util.StringUtil;
+import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
+import com.idega.util.text.TableRecord;
 import com.idega.util.xml.XmlUtil;
 /**
  * @author <a href="mailto:arunas@idega.com">Arūnas Vasmanas</a>
@@ -34,54 +40,146 @@ public class ExtensionFunctionUtil {
 	private static final String item_node_label = "itemLabel";
 	private static final String item_value_label = "itemValue";
 	private static final String items = "items";
-	
+	private static final String tableRow = "tableRow";
+	private static final Logger LOGGER = Logger.getLogger(ExtensionFunctionUtil.class.getName());
+
 	private static final Object[] emptyArray = new Object[0];
-	
+
 	public static Document createItemListDocument (Collection<Item> list) {
-		
+
 		try {
-			
+
 			DocumentBuilder documentBuilder = XmlUtil.getDocumentBuilder();
 			Document document = documentBuilder.newDocument();
-			
+
 			Element localeElement = document.createElement(items);
-						
+
 			Element itemElem = document.createElement(item_node);
 			Element itemLabelElem = document.createElement(item_node_label);
 			Element	itemValueElem = document.createElement(item_value_label);
-			
+
 			Node itemNode;
-		
+
 			for (Item item : list) {
-				
+
 				itemLabelElem.setTextContent(item.getItemLabel());
 				itemValueElem.setTextContent(item.getItemValue());
-				
+
 				itemElem.appendChild(itemLabelElem);
 				itemElem.appendChild(itemValueElem);
-				
+
 				itemNode = localeElement.getOwnerDocument().importNode(itemElem, true);
-	    		
 				localeElement.appendChild(itemNode);
-				 
+
 			}
 			document.appendChild(localeElement);
-			
+
 			return document;
-			
+
 		} catch (ParserConfigurationException e) {
 			// TODO: handle exception
 		}
 		return null;
 	}
-		
+	
+	/**
+	 * <p>Creates {@link org.w3.dom.Document} with structure 
+	 * <\tableRow><\ColumName>Value<\/ColumName><\/tableRow>.
+	 * ColumnName's are parsed from 
+	 * {@link com.idega.util.text.TableRecord#getItems()}.
+	 * </p>
+	 * @param list {@link Collection} of {@link com.idega.util.text.TableRecord}.
+	 * @return {@link org.w3.dom.Document} or null if error happen.
+	 */
+	public static Document createTableDocument (Collection<TableRecord> list) {
+		if (ListUtil.isEmpty(list)) {
+			return null;
+		}
+
+		DocumentBuilder documentBuilder = null;
+		try {
+			documentBuilder = XmlUtil.getDocumentBuilder();
+		} catch (ParserConfigurationException e) {
+			LOGGER.log(Level.WARNING, "Unable to create table document.", e);
+			return null;
+		}
+
+		if (documentBuilder == null) {
+			return null;
+		}
+
+		Document document = documentBuilder.newDocument();
+		if (document == null) {
+			return null;
+		}
+
+		Element localeElement = document.createElement(items);			
+		if (localeElement == null) {
+			return null;
+		}
+
+		for (TableRecord tableRecord : list) {
+			Element itemElem = document.createElement(tableRow);
+			if (itemElem == null) {
+				continue;
+			}
+
+			Map<String, String> data = tableRecord.getItems();
+			if (MapUtil.isEmpty(data)) {
+				continue;
+			}
+
+			Iterator<Map.Entry<String, String>> iter = data.entrySet().iterator();
+			if (iter == null) {
+				continue;
+			}
+
+			do {
+				Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+				if (entry == null) {
+					continue;
+				}
+
+				String key = entry.getKey();
+				String value = entry.getValue();
+				if (StringUtil.isEmpty(key) || StringUtil.isEmpty(value)) {
+					continue;
+				}
+
+				Element	itemValueElem = document.createElement(key);
+				if (itemValueElem == null) {
+					continue;
+				}
+
+				itemValueElem.setTextContent(value);
+				itemElem.appendChild(itemValueElem);
+
+			} while (iter.hasNext());
+
+			Document documentOfItemNode = localeElement.getOwnerDocument();
+			if (documentOfItemNode == null) {
+				continue;
+			}
+
+			Node itemNode = documentOfItemNode.importNode(itemElem, true);
+			if (itemNode == null) {
+				continue;
+			}
+
+			localeElement.appendChild(itemNode);
+		}
+
+		document.appendChild(localeElement);
+		return document;
+	}
+	
 	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException {
-		
+
     	String [] params = paramsExp.split(CoreConstants.COMMA);
-    	StringBuilder resolvedParamsExp = new StringBuilder(); 
+    	StringBuilder resolvedParamsExp = new StringBuilder();
 
     	Object value;
-    	
+
     	for (String param : params) {
     		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
         		param = ELUtil.cleanupExp(param.trim());

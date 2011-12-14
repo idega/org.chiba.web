@@ -9,6 +9,7 @@ import org.w3c.dom.Document;
 
 import com.idega.util.IOUtil;
 import com.idega.util.text.Item;
+import com.idega.util.text.TableRecord;
 import com.idega.util.xml.XmlUtil;
 import com.thoughtworks.xstream.XStream;
 
@@ -23,6 +24,7 @@ public class ChoiceListData {
 	private static final String choiceListDataElementName = "choiceListData";
 	private static final String localizedEntriesElementName = "localizedEntries";
 	private static final String itemElementName = "item";
+	private static final String tableElementName = "tableRow";
 	private static final String langAttributeName = "lang";
 	private static final String itemsImplicitCollectionName = "items";
 	private static final String localizedEntriesImplicitCollectionName = "localizedEntries";
@@ -42,12 +44,13 @@ public class ChoiceListData {
     	xstream.alias(choiceListDataElementName, ChoiceListData.class);
     	xstream.alias(localizedEntriesElementName, LocalizedEntries.class);
     	xstream.alias(itemElementName, Item.class);
-    	
+    	xstream.alias(tableElementName, TableRecord.class);
+
     	xstream.useAttributeFor(LocalizedEntries.class, langAttributeName);
-    	
+
     	xstream.addImplicitCollection(LocalizedEntries.class, itemsImplicitCollectionName);
     	xstream.addImplicitCollection(ChoiceListData.class, localizedEntriesImplicitCollectionName);
-    	
+
     	ByteArrayOutputStream output = new ByteArrayOutputStream();
     	try {
     		xstream.toXML(this, output);
