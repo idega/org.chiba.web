@@ -129,13 +129,8 @@ public class ExtensionFunctionUtil {
 				continue;
 			}
 
-			Iterator<Map.Entry<String, String>> iter = data.entrySet().iterator();
-			if (iter == null) {
-				continue;
-			}
-
-			do {
-				Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+			for (Iterator<Map.Entry<String, String>> iter = data.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry<String, String> entry = iter.next();
 				if (entry == null) {
 					continue;
 				}
@@ -154,7 +149,7 @@ public class ExtensionFunctionUtil {
 				itemValueElem.setTextContent(value);
 				itemElem.appendChild(itemValueElem);
 
-			} while (iter.hasNext());
+			}
 
 			Document documentOfItemNode = localeElement.getOwnerDocument();
 			if (documentOfItemNode == null) {
