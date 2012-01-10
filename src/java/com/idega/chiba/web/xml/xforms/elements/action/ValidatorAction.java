@@ -149,28 +149,40 @@ public class ValidatorAction extends AbstractBoundAction {
     		instanceId = submissionModel.computeInstanceId(submissionExp);
     	}
     	
+    	if (modelItem == null) {
+        	LOGGER.warning("ModelItem is undefined at the path: " + pathExpression + ", instance: " + instanceId);
+        }
+    	
     	Instance controlInstance = submissionModel.getInstance(instanceId);
 		String submissionPhase = controlInstance.getNodeValue(submissionExp);
 		
 		doRequiredValidation = Boolean.TRUE.toString().equals(submissionPhase);
     	
-		if (doRequiredValidation && modelItem.isRequired()) {
-			//	Validating required only after submit button was pressed
-        	String val = modelItem.getValue();
-        	ErrorType errType = ErrorType.required;
-        	if (StringUtil.isEmpty(val)) {
-        		errMsg = getErrorMessage(errType);
-        	}
-        }
+		if (doRequiredValidation) {
+			if (modelItem == null) {
+				errMsg = getErrorMessage(ErrorType.required);
+			} else if (modelItem.isRequired()) {
+				//	Validating required only after submit button was pressed
+	        	String val = modelItem.getValue();
+	        	ErrorType errType = ErrorType.required;
+	        	if (StringUtil.isEmpty(val)) {
+	        		errMsg = getErrorMessage(errType);
+	        	}
+	        }
+		}
         
 		if (errMsg == null) {
-			//	Doing standard validation - data type and constraint
-			getModel().getValidator().validate(modelItem);
-        	if (!modelItem.getLocalUpdateView().isDatatypeValid()) {
-        		errMsg = getErrorMessage(ErrorType.validation);
-        	} else if (!modelItem.getLocalUpdateView().isConstraintValid()) {
-        		errMsg = getErrorMessage(ErrorType.constraint);
-        	}
+			if (modelItem == null) {
+				errMsg = getErrorMessage(ErrorType.validation);
+			} else {
+				//	Doing standard validation - data type and constraint
+				getModel().getValidator().validate(modelItem);
+	        	if (!modelItem.getLocalUpdateView().isDatatypeValid()) {
+	        		errMsg = getErrorMessage(ErrorType.validation);
+	        	} else if (!modelItem.getLocalUpdateView().isConstraintValid()) {
+	        		errMsg = getErrorMessage(ErrorType.constraint);
+	        	}
+			}
 		}
     	
     	if (errMsg == null) {
@@ -192,10 +204,14 @@ public class ValidatorAction extends AbstractBoundAction {
     		errMsg = error ? getErrorMessage(ErrorType.custom) : null;
     	}
     	
-    	modelItem.getLocalUpdateView().setDatatypeValid(errMsg == null);
-    	
-    	//	Sending error message, or empty, if everything is valid
-    	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg == null ? CoreConstants.EMPTY : errMsg);
+    	if (modelItem == null) {
+    		LOGGER.warning("The error '" + errMsg + "' should be sent to the model item at " + pathExpression + ", instance: " + instanceId);
+    	} else {
+	    	modelItem.getLocalUpdateView().setDatatypeValid(errMsg == null);
+	    	
+	    	//	Sending error message, or empty, if everything is valid
+	    	getErrorMessageHandler().send(modelItem, container, getSetErrorId(), componentId, errMsg == null ? CoreConstants.EMPTY : errMsg);
+    	}
     	
     	if (errMsg != null) {
     		getEvent().preventDefault();
