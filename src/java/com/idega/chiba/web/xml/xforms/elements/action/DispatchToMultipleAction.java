@@ -1,5 +1,8 @@
 package com.idega.chiba.web.xml.xforms.elements.action;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.action.AbstractAction;
 import org.chiba.xml.xforms.core.Model;
@@ -8,6 +11,7 @@ import org.chiba.xml.xforms.exception.XFormsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.events.EventTarget;
 
@@ -28,11 +32,14 @@ import com.idega.util.xml.XPathUtil;
  */
 public class DispatchToMultipleAction extends AbstractAction {
     
-    private String nameAttribute;
-    private String targetAttribute;
-    private boolean bubbles = false;
-    private boolean cancelable = true;
-    private boolean stopOnError = false;
+	private static final Logger LOGGER = Logger.getLogger(DispatchToMultipleAction.class.getName());
+	
+    private String	nameAttribute,
+    				targetAttribute;
+    
+    private boolean bubbles = false,
+    				cancelable = true,
+    				stopOnError = false;
 
     public DispatchToMultipleAction(Element element, Model model) {
         super(element, model);
@@ -64,7 +71,7 @@ public class DispatchToMultipleAction extends AbstractAction {
         
         String stopOnErrorAttribute = getXFormsAttribute("stopOnError");
         
-        if(stopOnErrorAttribute != null && "true".equals(stopOnErrorAttribute)) {
+        if (stopOnErrorAttribute != null && "true".equals(stopOnErrorAttribute)) {
         	this.stopOnError = true;
         }
     }
@@ -112,17 +119,27 @@ public class DispatchToMultipleAction extends AbstractAction {
     	
     	NodeList components = ut.getNodeset(xform);
     	
-    	if(components != null) {
-    		
+    	if (components != null) {
     		Container container = getContainerObject();
-    		
     		for (int i = 0; i < components.getLength(); i++) {
-				
-    			EventTarget targ = (EventTarget)components.item(i);
-    			boolean cancelled = container.dispatch(targ, nameAttribute, null, bubbles, cancelable);
-    			
-    			if(isStopOnError() && cancelled)
-    				break;
+    			Node node = components.item(i);
+    			if (node instanceof EventTarget) {
+	    			EventTarget targ = (EventTarget) node;
+	    			boolean cancelled = false;
+	    			try {
+	    				cancelled = container.dispatch(targ, nameAttribute, null, bubbles, cancelable);
+	    			} catch (Exception e) {
+	    				LOGGER.log(Level.WARNING, "Error dispatching action to " + targ + ", name: " + nameAttribute + ", bubbles: " + bubbles + ", cancelable: " + cancelable,
+	    						e);
+	    				throw new XFormsException(e);
+	    			}
+	    			
+	    			if (isStopOnError() && cancelled)
+	    				break;
+    			} else {
+    				LOGGER.warning("Node " + node + " is not type of " + EventTarget.class + ", unable to dispatch action. Name: " + nameAttribute + ", bubbles: " + bubbles +
+    						", cancelable: " + cancelable);
+    			}
 			}
     	}
     }
