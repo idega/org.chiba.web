@@ -71,6 +71,9 @@ PresentationContext.prototype.handleReplaceAll = function(webcontext) {
 PresentationContext.prototype.handleStateChanged = function(targetId, targetName, valid, readonly, required, enabled, value, type) {
   dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId + "', targetName='" + targetName + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
 
+	if (targetId == null)
+		return;
+
   var target = document.getElementById(targetId);
   if (target == null) {
   	if (value == null)
@@ -81,6 +84,7 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
   		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.";
   	if (targetId == 'C10' && XFormsConfig)
   		errorMessage += '\nPROBABLY there are missing some localizations for the form using locale: ' + XFormsConfig.locale;
+  	
   	throw new Error(errorMessage, 'PresentationContext.js', 75);
     return;
   }
