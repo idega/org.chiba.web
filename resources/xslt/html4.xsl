@@ -454,6 +454,20 @@
             <xsl:call-template name="buildControl"/>
         </span>
     </xsl:template>
+    <xsl:template match="idega:output">
+        <xsl:variable name="id" select="@id"/>
+        <xsl:variable name="control-classes">
+            <xsl:call-template name="assemble-control-classes"/>
+        </xsl:variable>
+        <xsl:variable name="label-classes">
+            <xsl:call-template name="assemble-label-classes"/>
+        </xsl:variable>
+
+        <span id="{$id}" class="{$control-classes}">
+			<label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
+            <xsl:call-template name="buildControl"/>
+        </span>
+    </xsl:template>
 
     <xsl:template match="xforms:trigger|xforms:submit">
         <xsl:variable name="control-classes">
