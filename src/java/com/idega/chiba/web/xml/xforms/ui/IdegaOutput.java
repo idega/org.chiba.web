@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.jxpath.JXPathContext;
+import org.chiba.xml.ns.NamespaceResolver;
 import org.chiba.xml.xforms.core.BindingResolver;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.core.Model;
@@ -15,12 +16,16 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.idega.util.xml.XPathUtil;
+
 public class IdegaOutput extends Output {
 
 	private static final Logger LOGGER = Logger.getLogger(IdegaOutput.class.getName());
 
 	public IdegaOutput(Element element, Model model) {
         super(element, model);
+
+        this.xformsPrefix = NamespaceResolver.getPrefix(this.element, XPathUtil.IDEGA_XFORM_NS);
     }
 
 	@Override
