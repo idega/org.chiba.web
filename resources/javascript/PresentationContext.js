@@ -73,6 +73,9 @@ PresentationContext.prototype.handleStateChanged = function(targetId, targetName
 
   var target = document.getElementById(targetId);
   if (target == null) {
+  	if (value == null)
+  		return;
+  	
   	var errorMessage = "Element with ID '" + targetId + "' was not found while trying to set value '" + value +
   		"' for it in PresentationContext.handleStateChanged method. Parameters: targetName='"+targetName+"', valid='"+valid+"', readonly='"+readonly+
   		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.";
