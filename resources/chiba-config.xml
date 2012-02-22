@@ -206,6 +206,7 @@
         <element namespace="http://idega.com/xforms" name="switch" class="com.idega.chiba.web.xml.xforms.elements.SwitchElement" />
         <element namespace="http://idega.com/xforms" name="case" class="com.idega.chiba.web.xml.xforms.elements.CaseElement" />
         
+        <element namespace="http://idega.com/xforms" name="output" class="com.idega.chiba.web.xml.xforms.ui.IdegaOutput" />
     </custom-elements>
 
 </chiba-config>
