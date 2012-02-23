@@ -821,8 +821,15 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			//	46:	delete
 			//	8:	backspace
 			//	0:	navigation arrows (up, down, left, right)
-			if (event.which == 46 || event.which == 8 || event.which == 0) {
+			if (event.which == 8 || event.which == 0) {
 				// let it happen, don't do anything
+			} else if (event.which == 46) {
+				if (event.keyCode == 46 && event.charCode == 0) {
+					//	Delete
+				} else {
+					//	Dot button
+					event.preventDefault();
+				}
 			} else {
 				// Ensure that it is a number and stop the keypress
 				if (event.which < 48 || event.which > 57) {
