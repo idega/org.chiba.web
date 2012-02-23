@@ -832,6 +832,12 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		});
 	});
 	
+	jQuery.each(jQuery('.xFormInputMask_year'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.mask('9999');
+	});
+	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
 		WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
 			callback: function(text) {
