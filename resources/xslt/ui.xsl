@@ -369,6 +369,16 @@
             <xsl:call-template name="buildControl"/>
         </div>
     </xsl:template>
+    <xsl:template match="idega:output" mode="compact-repeat">
+        <xsl:variable name="id" select="@id"/>
+        <xsl:variable name="control-classes">
+            <xsl:call-template name="assemble-control-classes"/>
+        </xsl:variable>
+
+        <div id="{$id}" class="{$control-classes}">
+            <xsl:call-template name="buildControl"/>
+        </div>
+    </xsl:template>
 
     <!-- overridden group template for compact repeat -->
     <xsl:template match="xforms:group" mode="compact-repeat">
