@@ -27,9 +27,9 @@ import com.idega.util.IOUtil;
 public class IdegaFluxHelperServlet extends FluxHelperServlet {
 
 	private static final long serialVersionUID = -1460930997890952369L;
-	
+
 	private static final Logger LOGGER = Logger.getLogger(IdegaFluxHelperServlet.class.getName());
-	
+
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String sessionKey = null;
@@ -53,11 +53,11 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 
 	        isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
 	        if (isUpload) {
-	        	long uploadLimit = Long.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_upload_limit", String.valueOf(1024 * 1024 * 100)));
+	        	long uploadLimit = Long.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_upload_limit", String.valueOf(1024 * 1024 * 10)));
 	        	if (IOUtil.isUploadExceedingLimits(request, uploadLimit))
 	        		throw new RuntimeException("Request size (" + FileUtil.getHumanReadableSize(IOUtil.getRequestSize(request)) + ") is exceeding the limit: " +
 	        				FileUtil.getHumanReadableSize(uploadLimit));
-	        	
+
 	        	ServletOutputStream out = response.getOutputStream();
 	            out.println("<html><head><title>status</title></head><body></body></html>");
 	            out.close();
@@ -66,7 +66,7 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 			String message = "Error while handling request: " + request.getRequestURI();
 			LOGGER.log(Level.WARNING, message, e);
 			CoreUtil.sendExceptionNotification(message, e);
-			
+
 			if (isUpload) {
 				ChibaUtils.getInstance().markUploadAsFailed(request.getSession(true), sessionKey);
 			}
