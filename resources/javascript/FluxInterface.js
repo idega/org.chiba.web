@@ -166,7 +166,7 @@ FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 		return false;
 	}
 	
-	if (msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' || msg == 'OK' || msg == 'PresentationContext is not defined')
+	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' || msg == 'OK' || msg == 'PresentationContext is not defined')
 		return;
 	
 	IWCORE.sendExceptionNotification(msg, ex, Localization.RELOAD_PAGE);
