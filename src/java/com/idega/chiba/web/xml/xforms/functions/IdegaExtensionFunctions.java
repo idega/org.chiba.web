@@ -2,6 +2,8 @@ package com.idega.chiba.web.xml.xforms.functions;
 
 import java.text.ParseException;
 import java.util.Collection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jxpath.ExpressionContext;
@@ -13,6 +15,8 @@ import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.xpath.XFormsExtensionFunctions;
 import org.w3c.dom.Document;
+
+import bsh.This;
 
 import com.idega.chiba.web.xml.xforms.util.XFormsDateConverter;
 import com.idega.core.accesscontrol.business.LoginDBHandler;
@@ -29,6 +33,9 @@ import com.idega.util.text.TableRecord;
  * @version $Revision: 1.21 $ Last modified: $Date: 2009/03/18 08:31:44 $ by $Author: arunas $
  */
 public class IdegaExtensionFunctions {
+	
+	private static final Logger LOGGER = Logger.getLogger("IdegaExtensionFunctions");
+	
 
 	private IdegaExtensionFunctions() {
 	}
@@ -56,18 +63,61 @@ public class IdegaExtensionFunctions {
 		return null;
 	}
 
-	public static <T> T getValueFromExpression(ExpressionContext expContext, Instance instance, String exp, String params) throws XFormsException {
-		try {
-			String resolvedParams = params == null ? null :
-				expContext == null ? ExtensionFunctionUtil.resolveParams(instance, params) : ExtensionFunctionUtil.resolveParams(expContext, params);
-			String resolveBeanExp = ExtensionFunctionUtil.formatExpression(exp, resolvedParams);
-
-			@SuppressWarnings("unchecked")
-			T value = (T) ELUtil.getInstance().evaluateExpression(resolveBeanExp);
-			return value;
-		} catch (Exception e) {
-			throw new XFormsException(e);
+	public static <T> T getValueFromExpression(ExpressionContext expContext, 
+			Instance instance, String exp, String params) throws XFormsException {
+		
+		return getValueFromExpression(expContext, instance, exp, params, Boolean.TRUE);
+	}
+	
+	/**
+	 * <p>Evaluates expression given in XForms, for example: idega:resolveTable.</p>
+	 * @param expressionContext path to variable to be evaluated, for example: 
+	 * "Expression context [1] /data[1]/Applicant_name_fbc_66[1]" .
+	 * @param instance
+	 * @param expression is a name and method name of spring bean.
+	 * @param params is variable names given for expression, 
+	 * usually in form "#{instance('data-instance')/Variable_name_fbc_123}", 
+	 * separated by comma.
+	 * @param spaceOnError if <code>true</code> then on error 
+	 * {@link CoreConstants#SPACE} will be used, {@link CoreConstants#EMPTY} in 
+	 * {@link String} otherwise.
+	 * @return
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	public static <T> T getValueFromExpression(
+			ExpressionContext expressionContext, 
+			Instance instance, 
+			String expression, 
+			String params,
+			boolean spaceOnError) {
+		
+		String resolvedParams = null;
+		if (!StringUtil.isEmpty(params)) {
+			if (spaceOnError) {
+				try {
+					resolvedParams = expressionContext == null ? 
+								ExtensionFunctionUtil.resolveParams(instance, params) : 
+								ExtensionFunctionUtil.resolveParams(expressionContext, params);
+				} catch (XFormsException e) {
+					LOGGER.log(Level.WARNING, "Unable to resolve params.", e);
+				}
+			} else {
+				resolvedParams = ExtensionFunctionUtil.resolveParams(
+						expressionContext, instance, params);
+			}
 		}
+		
+		 String resolveBeanExp = ExtensionFunctionUtil
+				 .formatExpression(expression, resolvedParams);
+			
+		T value = null;
+		try {
+			value = (T) ELUtil.getInstance().evaluateExpression(resolveBeanExp);
+		} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Unable to evaluate expression: " + resolveBeanExp, e);
+		}
+			
+		return value;
 	}
 
 	public static Object resolveExpression(ExpressionContext expressionContext, String exp, String params) throws XFormsException {
@@ -102,7 +152,8 @@ public class IdegaExtensionFunctions {
 	public static Object resolveTable(ExpressionContext expressionContext, 
 			String exp, String params) throws XFormsException {
 		try {
-			Object value = getValueFromExpression(expressionContext, null, exp, params);
+			Object value = getValueFromExpression(expressionContext, null, exp, 
+					params, Boolean.FALSE);
 
 			if (value != null && (value instanceof Collection<?>)) {
 				@SuppressWarnings("unchecked")

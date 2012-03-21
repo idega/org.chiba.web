@@ -168,57 +168,120 @@ public class ExtensionFunctionUtil {
 		return document;
 	}
 	
-	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException {
+	/**
+	 * <p>Takes value from given XForms variable.</p>
+	 * @param expressionContext path to variable to be evaluated, for example: 
+	 * "Expression context [1] /data[1]/Applicant_name_fbc_66[1]" .
+	 * @param instance
+	 * @param paramsExp is variable names given for expression, 
+	 * usually in form "#{instance('data-instance')/Variable_name_fbc_123}",.. 
+	 * separated by comma.
+	 * @return Xforms variable values separated by comma. For example:
+	 * paramsExp - #{instance(`data-instance`)/Applicant_name_fbc_53},...
+	 * will return '11', '',... as answer, where 11 is value of given Xforms variable, 
+	 * '' - means no value found or it is value.
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	public static String resolveParams(ExpressionContext expressionContext, 
+			Instance instance, String paramsExp) {
+		return resolveParams(expressionContext, instance, paramsExp, 
+				Boolean.FALSE);
+	}
+	
+	/**
+	 * <p>Takes value from given XForms variable.</p>
+	 * @param expressionContext path to variable to be evaluated, for example: 
+	 * "Expression context [1] /data[1]/Applicant_name_fbc_66[1]" .
+	 * @param instance
+	 * @param paramsExp is variable names given for expression, 
+	 * usually in form "#{instance('data-instance')/Variable_name_fbc_123}",.. 
+	 * separated by comma.
+	 * @param returnsSpaceOnFailure if set to <code>true</code>, then returns 
+	 * {@link CoreConstants#SPACE} on failure, otherwise adds 
+	 * {@link CoreConstants#EMPTY} to places in string, where failures found.
+	 * @return Xforms variable values separated by comma. For example:
+	 * paramsExp - #{instance(`data-instance`)/Applicant_name_fbc_53},...
+	 * will return '11', '',... as answer, where 11 is value of given Xforms variable.
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	private static String resolveParams(ExpressionContext expressionContext, 
+			Instance instance, String paramsExp, boolean returnsSpaceOnFailure) {
 
-    	String [] params = paramsExp.split(CoreConstants.COMMA);
-    	StringBuilder resolvedParamsExp = new StringBuilder();
+		String [] params = paramsExp.split(CoreConstants.COMMA);
+    		StringBuilder resolvedParamsExp = new StringBuilder();
 
-    	Object value;
+    		Object value = null;
 
-    	for (String param : params) {
-    		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
-        		param = ELUtil.cleanupExp(param.trim());
-      
-        		value = getInstanceValueFromExpression(expressionContext, param);	
+    		for (String param : params) {
+    			if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
+    				param = ELUtil.cleanupExp(param.trim());
+     
+    				try {
+    					if (expressionContext != null) {
+    						value = getInstanceValueFromExpression(expressionContext, param);
+    					} else if (instance != null) {
+    						value = getInstanceValueFromExpression(instance, param);
+    					} else {
+    						value = CoreConstants.EMPTY;
+    					}
+    				} catch (XFormsException e) {
+    					LOGGER.log(Level.WARNING, "Unable to get value from parameter: " + param, e);
+    				}	
         		
-        		if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
-        	 		return CoreConstants.SPACE;
-        	 	}
-        	 	
-        	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-        	} else {
-        		resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-        	}
+    				if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
+    					value = CoreConstants.EMPTY;
+    				}
+    				
+    				if (returnsSpaceOnFailure) {
+    					if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
+    	        	 			return CoreConstants.SPACE;
+    					}
+    				}
+    				
+    			} else {
+    				value = param;
+    			}
         	
-		}
+    			resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK)
+    				.append(value)
+    				.append(CoreConstants.QOUTE_SINGLE_MARK)
+    				.append(CoreConstants.JS_STR_PARAM_SEPARATOR);    		
+    		}
     	
 		return resolvedParamsExp.toString();
 	}
 	
+	/**
+	 * <p>Takes value from given XForms variable.</p>
+	 * @param expressionContext path to variable to be evaluated, for example: 
+	 * "Expression context [1] /data[1]/Applicant_name_fbc_66[1]" .
+	 * @param paramsExp is variable names given for expression, 
+	 * usually in form "#{instance('data-instance')/Variable_name_fbc_123}",.. 
+	 * separated by comma.
+	 * @return Xforms variable values separated by comma. For example:
+	 * paramsExp - #{instance(`data-instance`)/Applicant_name_fbc_53},...
+	 * will return '11',... as answer, where 11 is value of given Xforms variable. 
+	 * Returns {@link CoreConstants#SPACE} on failure.
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	public static String resolveParams(ExpressionContext expressionContext, String paramsExp) throws XFormsException {
+		return resolveParams(expressionContext, null, paramsExp, Boolean.TRUE);
+	}
+	
+	/**
+	 * <p>Takes value from given XForms variable.</p>
+	 * @param instance
+	 * @param paramsExp is variable names given for expression, 
+	 * usually in form "#{instance('data-instance')/Variable_name_fbc_123}",.. 
+	 * separated by comma.
+	 * @return Xforms variable values separated by comma. For example:
+	 * paramsExp - #{instance(`data-instance`)/Applicant_name_fbc_53},...
+	 * will return '11',... as answer, where 11 is value of given Xforms variable. 
+	 * Returns {@link CoreConstants#SPACE} on failure.
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
 	public static String resolveParams(Instance instance, String paramsExp) throws XFormsException {
-    	String [] params = paramsExp.split(CoreConstants.COMMA);
-    	StringBuilder resolvedParamsExp = new StringBuilder(); 
-
-    	Object value;
-    	
-    	for (String param : params) {
-    		if (param.contains(ELUtil.EXPRESSION_BEGIN)) {
-        		param = ELUtil.cleanupExp(param.trim());
-      
-        		value = getInstanceValueFromExpression(instance, param);	
-        		
-        		if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
-        	 		return CoreConstants.SPACE;
-        	 	}
-        	 	
-        	 	resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(value).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-        	} else {
-        		resolvedParamsExp.append(CoreConstants.QOUTE_SINGLE_MARK).append(param).append(CoreConstants.QOUTE_SINGLE_MARK).append(CoreConstants.JS_STR_PARAM_SEPARATOR);
-        	}
-        	
-		}
-    	
-		return resolvedParamsExp.toString();	
+		return resolveParams(null, instance, paramsExp, Boolean.TRUE);
 	}
 	
 	public static String formatExpression(String elExpression, String paramsExpression) {
