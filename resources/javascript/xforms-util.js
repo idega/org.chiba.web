@@ -274,15 +274,19 @@ function manageHelpTextIconsForForm() {
 }
 
 XFormsUtil.downloadAgreement = function() {
-	FluxInterfaceHelper.changingUriManually = true;
-	showLoadingMessage(Localization.LOADING_MSG);
 	var processName = null;
-	if (BPMConfiguration) {
+	if (typeof BPMConfiguration != 'undefined') {
 		if (BPMConfiguration.processName) {
 			processName = BPMConfiguration.processName;
 		}
 	}
 	
+	XFormsUtil.downloadAgreementWithProcessName(processName);
+}
+
+XFormsUtil.downloadAgreementWithProcessName = function(processName) {
+	FluxInterfaceHelper.changingUriManually = true;
+	showLoadingMessage(Localization.LOADING_MSG);
 	LazyLoader.loadMultiple(['/dwr/interface/ProcessAgreementProvider.js', '/dwr/engine.js'], function() {
 		try {
 			ProcessAgreementProvider.getAgreementForProcess(processName, {
