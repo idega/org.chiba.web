@@ -812,7 +812,7 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 	jQuery.each(jQuery('.xFormInputMask_personalId'), function() {
 		var input = jQuery(jQuery('input', jQuery(this))[0]);
 		
-		if (XFormsConfig.locale == 'sv_SE')
+		if (XFormsConfig.locale == 'sv_SE' || XFormsConfig.locale == 'is_IS')
 			input.mask('9999999999');
 	});
 	
@@ -846,6 +846,12 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		var input = jQuery(jQuery('input', jQuery(this))[0]);
 		
 		input.mask('9999');
+	});
+	
+	jQuery.each(jQuery('.xFormInputMask_percentage'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.mask('99,99');
 	});
 	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
