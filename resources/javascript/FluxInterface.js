@@ -613,6 +613,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             dojo.debug("Event " + type + " unknown");
             break;
     }
+    
+    FluxInterfaceHelper.initializeMaskedInputs();
 }
 
 var submissionErrors = 0;
@@ -848,10 +850,12 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		input.mask('9999');
 	});
 	
-	jQuery.each(jQuery('.xFormInputMask_percentage'), function() {
-		var input = jQuery(jQuery('input', jQuery(this))[0]);
+	jQuery.mask.definitions['M']='[01]';
+
+	jQuery.each(jQuery('.xFormInputMask_percentage input'), function() {
+		var input = jQuery(this);
 		
-		input.mask('99,99');
+		input.mask('M99,99');
 	});
 	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
