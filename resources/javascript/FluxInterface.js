@@ -36,6 +36,7 @@ FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
 var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
+FluxInterfaceHelper.repeatInputMaskInitialization = true;
 
 FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
@@ -615,7 +616,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             break;
     }
     
-    FluxInterfaceHelper.initializeMaskedInputs();
+    if (FluxInterfaceHelper.repeatInputMaskInitialization)
+    	FluxInterfaceHelper.initializeMaskedInputs();
 }
 
 var submissionErrors = 0;
