@@ -1,6 +1,7 @@
 package com.idega.chiba.web.xml.xforms.elements.action;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;
@@ -24,6 +25,8 @@ import com.idega.util.text.TableRecord;
 
 public class IdegaSetValueAction extends SetValueAction {
 
+	private static final Logger LOGGER = Logger.getLogger(IdegaSetValueAction.class.getName());
+
 	private static final String INSERT_ATTRIBUTE = "insert";
 	private static final String MULTIPLE_ATTRIBUTE = "multiple";
 	private static final String placeResponseDocument_ATTRIBUTE = "placeResponseDocument";
@@ -44,7 +47,7 @@ public class IdegaSetValueAction extends SetValueAction {
 
 	/**
 	 * Performs the <code>setvalue</code> action.
-	 * 
+	 *
 	 * @throws XFormsException
 	 *             if an error occurred during <code>setvalue</code> processing.
 	 */
@@ -74,8 +77,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		String locationPath = getLocationPath();
 		Instance instance = getInstance();
 		if (!instance.existsNode(locationPath)) {
-			getLogger().warn(
-					this + " perform: nodeset '" + locationPath + "' is empty");
+			LOGGER.warning("perform: nodeset '" + locationPath + "' is empty");
 			return false;
 		} else
 			return true;
@@ -128,22 +130,9 @@ public class IdegaSetValueAction extends SetValueAction {
 		String valueAttribute = getValueAttribute();
 		if (valueAttribute != null) {
 			Object value = getValue();
-
-			if (getLogger().isDebugEnabled()) {
-				getLogger().debug(
-						this + " perform: setting evaluated value '" + value
-								+ "'");
-			}
-
 			setValue(value);
 		} else {
 			String nodeValue = getNodeValue();
-			if (getLogger().isDebugEnabled()) {
-				getLogger().debug(
-						this + " perform: setting literal value '" + nodeValue
-								+ "'");
-			}
-
 			setValue(nodeValue);
 		}
 		updateBehavior();
@@ -236,11 +225,9 @@ public class IdegaSetValueAction extends SetValueAction {
 		String locationPath = getLocationPath();
 
 		@SuppressWarnings("unchecked")
-		Iterator<ModelItem> modelItems = instance.iterateModelItems(
-				locationPath, false);
+		Iterator<ModelItem> modelItems = instance.iterateModelItems(locationPath, false);
 
-		String valueStr = value != null ? value.toString()
-				: CoreConstants.EMPTY;
+		String valueStr = value != null ? value.toString() : CoreConstants.EMPTY;
 
 		while (modelItems.hasNext()) {
 			ModelItem modelItem = modelItems.next();
@@ -249,9 +236,7 @@ public class IdegaSetValueAction extends SetValueAction {
 				modelItem.setValue(valueStr);
 				instance.getModel().addChanged((NodeImpl) modelItem.getNode());
 			} else {
-				getLogger()
-						.warn(this
-								+ " set node value: attempt to set readonly value");
+				LOGGER.warning("set node value: attempt to set readonly value");
 			}
 		}
 	}
@@ -370,13 +355,11 @@ public class IdegaSetValueAction extends SetValueAction {
 		}
 
 		/*
-		 * This piece is for deletion of old values. Sorry, but only for 
+		 * This piece is for deletion of old values. Sorry, but only for
 		 * "tabelRow" now.
 		 */
 		if (contextSize2 <= 1) {
-			getLogger().warn(
-					this + " perform: nodeset '" + pathExpression
-							+ "' is empty");
+			LOGGER.warning("perform: nodeset '" + pathExpression + "' is empty");
 		} else {
 
 			String pathExpression2 = getLocationPath();
@@ -388,7 +371,7 @@ public class IdegaSetValueAction extends SetValueAction {
 			pathExpression2 = pathExpression2.split("'")[1];
 			Model dataModel = getModel().getContainer().getModel("data_model");
 			Instance instance2 = dataModel.getInstance(pathExpression2);
-			
+
 			String pathDeletion = null;
 			for (int attribute = 1; attribute < contextSize2; attribute++) {
 				// since jxpath doesn't provide a means for evaluating an
@@ -411,11 +394,8 @@ public class IdegaSetValueAction extends SetValueAction {
 						.getValue("number(chiba:undeclare('delete-position'))"))
 						.doubleValue();
 				long position = Math.round(value);
-				if (Double.isNaN(value) || position < 1
-						|| position > contextSize) {
-					getLogger().warn(
-							this + " perform: expression '" + 2
-									+ "' does not point to an existing node");
+				if (Double.isNaN(value) || position < 1 || position > contextSize) {
+					LOGGER.warning("perform: expression '" + 2 + "' does not point to an existing node");
 					return;
 				}
 
@@ -425,9 +405,9 @@ public class IdegaSetValueAction extends SetValueAction {
 				if (instance2.existsNode(pathDeletion)) {
 					try {
 						instance2.deleteNode(pathDeletion);
-						getLogger().info("Node deleted in override action:" + pathDeletion);
+						LOGGER.info("Node deleted in override action:" + pathDeletion);
 					} catch (JXPathException e) {
-						getLogger().warn("Unable to delete:" + pathDeletion);
+						LOGGER.warning("Unable to delete:" + pathDeletion);
 					}
 				}
 			}
@@ -448,7 +428,7 @@ public class IdegaSetValueAction extends SetValueAction {
 					+ " to " + path, e);
 		} catch (Exception e) {
 			if (modelItem.isReadonly()) {
-				getLogger().warn("Model " + modelItem + " is read only!");
+				LOGGER.warning("Model " + modelItem + " is read only!");
 				return null;
 			}
 
