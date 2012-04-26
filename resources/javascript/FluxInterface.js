@@ -25,6 +25,7 @@ if(Localization == null) {
 	Localization.ERROR_SAVING_FORM					= 'Unable to save data. Please re-fill form with data';
 	Localization.CONTINUE_OR_STOP_FILLING_FORM		= 'The form was successfully saved. Do you want to continue filling the form?';
 	Localization.USER_MUST_BE_LOGGED_IN				= 'Your session has expired, you must to login to continue your work';
+	Localization.CHARACTERS_LEFT					= null;
 }
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
@@ -859,15 +860,23 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 	});
 	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
-		WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
-			callback: function(text) {
-				jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
-					var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
-					FluxInterfaceHelper.initializeCharactersCounter(textArea, text, 1000);
-				});
-			}
-		});
+		if (Localization.CHARACTERS_LEFT == null) {
+			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
+				callback: function(localizedText) {
+					Localization.CHARACTERS_LEFT = localizedText;
+					FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
+				}
+			});
+		} else
+			FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
 	}, null);
+}
+
+FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1000);
+	});
 }
 
 FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit) {
@@ -890,16 +899,17 @@ FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit
 		});
 	};
 	
-	if (text == null) {
+	if (Localization.CHARACTERS_LEFT == null) {
 		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
 			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
 				callback: function(localizedText) {
-					addCharactersCounter(textArea, localizedText);
+					Localization.CHARACTERS_LEFT = localizedText;
+					addCharactersCounter(textArea, Localization.CHARACTERS_LEFT);
 				}
 			});
 		}, null);
 	} else {
-		addCharactersCounter(textArea, text);
+		addCharactersCounter(textArea, Localization.CHARACTERS_LEFT);
 	}
 }
 
