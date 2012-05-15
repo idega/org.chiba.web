@@ -8,6 +8,8 @@
 PresentationContext = function() {
 };
 
+PresentationContext.afterCloneInitialized = null;
+
 // Static member
 
 PresentationContext.CHIBA_PSEUDO_ITEM = "chiba-pseudo-item";
@@ -679,6 +681,9 @@ _updateSelectionOfClone = function(original_id, clone_id){
     for (var i = 0; i < original.options.length; i++){
         clone.options[i].selected = original.options[i].selected;
     }
+    
+    if (PresentationContext.afterCloneInitialized != null)
+    	PresentationContext.afterCloneInitialized(clone_id);
 };
 
 /**
