@@ -847,6 +847,23 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		});
 	});
 	
+	jQuery.each(jQuery('.xFormInputMask_carNumber'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+	    var filter = /^[-_\s]$/;
+	    
+	    input.keypress(function(event) {
+	        var code;
+	        if (!event) var event = window.event;
+	        if (event.keyCode) code = event.keyCode;
+	        else if (event.which) code = event.which;
+	        var character = String.fromCharCode(code);
+	        
+	        if (filter.test(character)) {
+	            event.preventDefault();
+	        }
+	    });
+	});
+	
 	jQuery.each(jQuery('.xFormInputMask_year'), function() {
 		var input = jQuery(jQuery('input', jQuery(this))[0]);
 		
