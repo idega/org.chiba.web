@@ -146,13 +146,22 @@ function closeSession() {
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
-	if (ex != null && ex.messageToClient != null && ex.messageToClient != '-') {
-		humanMsg.displayMsg(ex.messageToClient, {
-			timeout: 5000,
-			callback: function() {
+	var useErrorMessage = IE && msg != null;
+	if (useErrorMessage || (ex != null && ex.messageToClient != null && ex.messageToClient != '-')) {
+		if (IE) {
+			if (useErrorMessage) {
+				ex.messageToClient = msg;
+				ex.reloadPage = true;
+				IWCORE.sendExceptionNotification(msg, ex, msg);
+			} else
 				FluxInterfaceHelper.sendExceptionNotification(msg, ex);
-			}
-		});
+		} else
+			humanMsg.displayMsg(ex.messageToClient, {
+				timeout: 5000,
+				callback: function() {
+					FluxInterfaceHelper.sendExceptionNotification(msg, ex);
+				}
+			});
 	} else {
 		FluxInterfaceHelper.sendExceptionNotification(msg, ex);
 	}

@@ -304,3 +304,11 @@ XFormsUtil.downloadAgreementWithProcessName = function(processName) {
 		}
 	}, null);
 }
+
+jQuery(window).load(function() {
+	window.onerror = function(exception) {
+		exception.reloadPage = true;
+		exception.messageToClient = Localization.RELOAD_PAGE;
+		IWCORE.sendExceptionNotification('Error on XForm', exception, Localization.RELOAD_PAGE);
+	};
+});

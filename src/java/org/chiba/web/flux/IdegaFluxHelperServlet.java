@@ -53,10 +53,11 @@ public class IdegaFluxHelperServlet extends FluxHelperServlet {
 
 	        isUpload = FileUpload.isMultipartContent(new ServletRequestContext(request));
 	        if (isUpload) {
-	        	long uploadLimit = Long.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_upload_limit", String.valueOf(1024 * 1024 * 10)));
+	        	long uploadLimit = Long.valueOf(IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_upload_limit",
+	        			String.valueOf(1024 * 1024 * 10)));
 	        	if (IOUtil.isUploadExceedingLimits(request, uploadLimit))
-	        		throw new RuntimeException("Request size (" + FileUtil.getHumanReadableSize(IOUtil.getRequestSize(request)) + ") is exceeding the limit: " +
-	        				FileUtil.getHumanReadableSize(uploadLimit));
+	        		throw new RuntimeException("Request size (" + FileUtil.getHumanReadableSize(IOUtil.getRequestSize(request)) +
+	        				") is exceeding the limit: " + FileUtil.getHumanReadableSize(uploadLimit));
 
 	        	ServletOutputStream out = response.getOutputStream();
 	            out.println("<html><head><title>status</title></head><body></body></html>");
