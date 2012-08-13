@@ -187,9 +187,31 @@ function submitFunction(control) {
 }
 
 FluxInterfaceHelper.afterChibaActivate = null;
+FluxInterfaceHelper.beforeChibaActivate = null;
+FluxInterfaceHelper.chibaActivateProps = null;
 
 // call processor to execute a trigger
 function chibaActivate(target) {
+	//	Preparing text areas
+	jQuery('textarea').each(function() {
+		var originalElement = this;
+		var textArea = jQuery(originalElement);
+		var id = textArea.attr('id');
+		if (id != null && id != '' && id.indexOf('value') != -1) {
+			var changeEvent = jQuery.Event('change');
+			changeEvent.srcElement = originalElement;
+			changeEvent.forceControl = true;
+			FluxInterfaceHelper.chibaActivateProps = {
+				control: originalElement
+			};
+			textArea.trigger(changeEvent);
+			FluxInterfaceHelper.chibaActivateProps = null;
+		}
+	});
+	//	Executing custom functions
+	if (FluxInterfaceHelper.beforeChibaActivate != null)
+		FluxInterfaceHelper.beforeChibaActivate();
+	
 	if (typeof(target) == 'string') {
 		target = document.getElementById(target);
 	}
@@ -229,7 +251,6 @@ function chibaActivate(target) {
 
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
-	
 	var sessionKey = document.getElementById("chibaSessionKey").value;
     if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
     	redirectForm(Localization.SESSION_EXPIRED, {
@@ -244,7 +265,10 @@ function setXFormsValue(control, forceControl) {
     var target = null;
     
     //	forceControll is used to ignore the window.event => set to true if you want to call this function on a control, other than the source of the event
-    if (window.event && !forceControl) {
+	if (FluxInterfaceHelper.chibaActivateProps != null && FluxInterfaceHelper.chibaActivateProps.control != null) {
+		target = FluxInterfaceHelper.chibaActivateProps.control;
+		FluxInterfaceHelper.chibaActivateProps.control = null;
+	} else if (window.event && !forceControl) {
         target = window.event.srcElement;
         if (target == null || target.id == null) {
         	target = control;
