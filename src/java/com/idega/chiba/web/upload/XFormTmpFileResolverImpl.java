@@ -70,6 +70,7 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		for (int i = 0; i < entries.getLength(); i++) {
 			Node item = entries.item(i).getChildNodes().item(0);
 			String uriStr = item.getTextContent();
+			uriStr = uriStr.trim();
 
 			if (StringUtil.isEmpty(uriStr) || uriStr.startsWith(CoreConstants.NEWLINE)) {
 				LOGGER.warning("Provided URI string is empty or not defined: '" + uriStr + "'");
