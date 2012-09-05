@@ -64,6 +64,10 @@ public class IdegaFluxFacade extends FluxFacade {
 	}
 
 	public Element fireAction(String id, String sessionKey, String uri) throws FluxException {
+		return fireAction(id, sessionKey, uri, true);
+	}
+
+	private Element fireAction(String id, String sessionKey, String uri, boolean reTry) throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
 			ChibaUtils.getInstance().onActionFired(sessionKey, uri);
@@ -73,13 +77,18 @@ public class IdegaFluxFacade extends FluxFacade {
 			Element element = super.fireAction(id, sessionKey);
 
 			if (error != null && error.equals(sessionKey + uri))
-				throw new SessionExpiredException("Error firing action on " + id + ", session: " + sessionKey, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+				throw new SessionExpiredException("Error firing action on " + id + ", session: " + sessionKey, ChibaUtils.getInstance()
+						.getSessionExpiredLocalizedString(), sessionKey);
 
 			return element;
 		} catch (Exception e) {
+			if (reTry)
+				return fireAction(id, sessionKey, uri, false);
+
 			LOGGER.log(Level.WARNING, "Error firing action", e);
 			throw new SessionExpiredException("Unable to fire action for element: '".concat(id).concat("' using session: ").concat(sessionKey)
-					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+					.concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
+					ChibaUtils.getInstance().getSessionExpiredLocalizedString(), sessionKey);
 		}
 	}
 
@@ -91,7 +100,8 @@ public class IdegaFluxFacade extends FluxFacade {
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")
-					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e, ChibaUtils.getInstance().getSessionExpiredLocalizedString());
+					.concat(sessionKey).concat(ChibaUtils.getInstance().getSessionInformation(sessionKey)), e,
+					ChibaUtils.getInstance().getSessionExpiredLocalizedString(), sessionKey);
 		} finally {
 			ChibaUtils.getInstance().addXFormValue(sessionKey, id, value);
 		}
@@ -152,7 +162,7 @@ public class IdegaFluxFacade extends FluxFacade {
 			                .concat(
 			                    ChibaUtils.getInstance().getSessionInformation(
 			                        sessionKey)), e, ChibaUtils.getInstance()
-			                .getSessionExpiredLocalizedString());
+			                .getSessionExpiredLocalizedString(), sessionKey);
 		}
 	}
 
@@ -286,5 +296,12 @@ public class IdegaFluxFacade extends FluxFacade {
 
 	public void sendInformationAboutXFormsSessions(String receiverEmail) {
 		ChibaUtils.getInstance().sendInformationAboutXForms(receiverEmail);
+	}
+
+	public String getXFormDestroyInfo(String id) {
+		return ((IdegaXFormSessionManagerImpl) IdegaXFormSessionManagerImpl.getXFormsSessionManager()).getXFormDestroyInfo(id);
+	}
+	public String doRemoveXFormDestroyInfo(String id) {
+		return ((IdegaXFormSessionManagerImpl) IdegaXFormSessionManagerImpl.getXFormsSessionManager()).doRemoveXFormDestroyInfo(id);
 	}
 }
