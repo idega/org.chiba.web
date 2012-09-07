@@ -217,7 +217,7 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
     	String message = xformsDestroyInfo.get(id);
     	if (message == null)
     		message = "There is no destroy info for XForm session by ID " + id +
-				". It means there was an error in Chiba framework handling user's action with XForm";
+				". It means there was an error in Chiba framework handling user's action with XForm and XForm session has not expired";
     	return message;
     }
 
@@ -231,7 +231,7 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
     	String message = xformsDestroyInfo.remove(id);
     	if (message == null)
     		message = "There is no destroy info for XForm session by ID " + id +
-    			". It means there was an error in Chiba framework handling user's action with XForm";
+    			". It means there was an error in Chiba framework handling user's action with XForm and XForm session has not expired";
     	return message;
     }
 
