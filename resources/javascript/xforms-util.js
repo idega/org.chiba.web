@@ -63,8 +63,12 @@ function _removeClass (element, clazz) {
 
     // surround classes with spaces to guarantee non-ambigous lookups
     if ((" " + element.className + " ").indexOf(" " + clazz + " ") > -1) {
-        var classList = (" " + element.className + " ").replace(new RegExp(" " + clazz + " "), " ");
-        element.className = classList.slice(1, classList.length - 1);
+    	try {
+	        var classList = (" " + element.className + " ").replace(new RegExp(" " + clazz + " "), " ");
+	        element.className = classList.slice(1, classList.length - 1);
+    	} catch (e) {
+    		jQuery(element).removeClass(clazz);
+    	}
         return true;
     }
 
@@ -87,7 +91,10 @@ function _replaceClass (element, current, update) {
     var classUpdate = " " + update + " ";
 
     if (classList.indexOf(classUpdate) == -1) {
-        var newClassName = classList.replace(new RegExp(classCurrent), classUpdate);
+        var newClassName = classUpdate;
+        try {
+        	newClassName = classList.replace(new RegExp(classCurrent), classUpdate);
+        } catch (e) {}
         if (newClassName.indexOf(classUpdate) == -1) {
             // ensure the new class name, even if no replacement happened
             newClassName = classList + update + " ";
