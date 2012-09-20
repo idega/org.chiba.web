@@ -166,8 +166,9 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
         	if (!this.uploadFinished) {
         		return false;
         	}
-        	this.uploadFinished = false;
         	
+			showLoadingMessage(Localization.STANDARD_LAYER_MSG);        	
+        	this.uploadFinished = false;
         	FluxInterfaceHelper.UPLOAD_IN_PROGRESS = true;
             // disable all controls contained in repeat prototypes to avoid inconsistent updates.
             var rPrototypes = document.getElementsByClassName("repeat-prototype", "chibaform");
@@ -216,8 +217,6 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             var widget = this;
             progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 2000);
 
-			showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-			
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
          

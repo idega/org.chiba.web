@@ -68,13 +68,13 @@ window.onbeforeunload = function(e) {
 		return;
 	}
 	
-	var confirmed = false;
+	var confirmedToLeave = FluxInterfaceHelper.SUBMITTED;
 	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
-		confirmed = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
-	if (!confirmed && !FluxInterfaceHelper.SUBMITTED)
-		confirmed = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
+	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
 	
-	if (confirmed) { 
+	if (confirmedToLeave) { 
 		showLoadingMessage(Localization.CLOSING);
 		//	We want to close session on before unload event
 		closeSession();
@@ -497,7 +497,8 @@ function updateUI(data, callback) {
     }
     
     if (eventLog == null || eventLog.length == 0) {
-    	closeAllLoadingMessages();
+    	if (!FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
+    		closeAllLoadingMessages();
     	return;
     }
     
