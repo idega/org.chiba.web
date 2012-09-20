@@ -28,9 +28,15 @@ if(Localization == null) {
 	Localization.CHARACTERS_LEFT					= null;
 }
 
+Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM		= 'Are you sure you want to navigate from unfinished form?';
+Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS	= 'Are you sure you want to navigate from this page while upload is in progress?';
+
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
+
+FluxInterfaceHelper.SUBMITTED = false;
+FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
 
 FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
@@ -62,12 +68,22 @@ window.onbeforeunload = function(e) {
 		return;
 	}
 	
-	showLoadingMessage(Localization.CLOSING);
-	//	We want to close session on before unload event
-	closeSession();
+	var confirmed = false;
+	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
+		confirmed = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
+	if (!confirmed && !FluxInterfaceHelper.SUBMITTED)
+		confirmed = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
 	
-    if (!e) e = event;
-    return unload(e);
+	if (confirmed) { 
+		showLoadingMessage(Localization.CLOSING);
+		//	We want to close session on before unload event
+		closeSession();
+		
+	    if (!e)
+	    	e = event;
+	    return unload(e);
+	} else
+		return false;
 }
 
 function unload(e) {
@@ -637,6 +653,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             context.handleFocus(targetId);
             break;
         case "xforms-submit-done":
+        	FluxInterfaceHelper.SUBMITTED = true;
         	var uri = properties["uri"];
         	if (uri != null) {
         		window.setTimeout(function() {
