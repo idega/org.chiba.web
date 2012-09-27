@@ -64,26 +64,36 @@ registerEvent(window, 'load', function() {
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
-	if (FluxInterfaceHelper.changingUriManually) {
+	if (FluxInterfaceHelper.changingUriManually)
 		return;
-	}
 	
-	var confirmedToLeave = FluxInterfaceHelper.SUBMITTED;
+	if (isChromeBrowser()) {
+		if (!FluxInterfaceHelper.isSafeToLeave()) {
+			return FluxInterfaceHelper.UPLOAD_IN_PROGRESS ?
+				Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS : Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM;
+		}
+	} else if (!FluxInterfaceHelper.isSafeToLeave())
+		return false;
+		
+	showLoadingMessage(Localization.CLOSING);
+	//	We want to close session on before unload event
+	closeSession();
+	
+    if (!e)
+    	e = event;
+    return unload(e);
+}
+
+FluxInterfaceHelper.isSafeToLeave = function() {
+	if (FluxInterfaceHelper.SUBMITTED)
+		return true;
+	
+	var confirmedToLeave = false;
 	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
 		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
 	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
 		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
-	
-	if (confirmedToLeave) { 
-		showLoadingMessage(Localization.CLOSING);
-		//	We want to close session on before unload event
-		closeSession();
-		
-	    if (!e)
-	    	e = event;
-	    return unload(e);
-	} else
-		return false;
+	return confirmedToLeave;
 }
 
 function unload(e) {
@@ -497,7 +507,7 @@ function updateUI(data, callback) {
     }
     
     if (eventLog == null || eventLog.length == 0) {
-    	if (!FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
+    	if (FluxInterfaceHelper.SUBMITTED)
     		closeAllLoadingMessages();
     	return;
     }
