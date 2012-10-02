@@ -88,6 +88,8 @@ FluxInterfaceHelper.isSafeToLeave = function() {
 	if (FluxInterfaceHelper.SUBMITTED)
 		return true;
 	
+	if (isChromeBrowser())
+		closeAllLoadingMessages();
 	var confirmedToLeave = false;
 	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
 		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
