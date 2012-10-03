@@ -75,11 +75,12 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
 	private static int maxSessions;
 	private int timeOut;
 
-    public static XFormsSessionManager getXFormsSessionManager() {
+    @SuppressWarnings("unchecked")
+	public static <T extends XFormsSessionManager> T getXFormsSessionManager() {
     	if (instance == null)
     		new IdegaXFormSessionManagerImpl();
 
-        return instance;
+        return (T) instance;
     }
 
     private IdegaXFormSessionManagerImpl() {

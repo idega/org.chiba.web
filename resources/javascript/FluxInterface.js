@@ -28,9 +28,15 @@ if(Localization == null) {
 	Localization.CHARACTERS_LEFT					= null;
 }
 
+Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM		= 'Are you sure you want to navigate from unfinished form?';
+Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS	= 'Are you sure you want to navigate from this page while upload is in progress?';
+
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
+
+FluxInterfaceHelper.SUBMITTED = false;
+FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
 
 FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
@@ -58,16 +64,38 @@ registerEvent(window, 'load', function() {
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
-	if (FluxInterfaceHelper.changingUriManually) {
+	if (FluxInterfaceHelper.changingUriManually)
 		return;
-	}
 	
+	if (isChromeBrowser()) {
+		if (!FluxInterfaceHelper.isSafeToLeave()) {
+			return FluxInterfaceHelper.UPLOAD_IN_PROGRESS ?
+				Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS : Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM;
+		}
+	} else if (!FluxInterfaceHelper.isSafeToLeave())
+		return false;
+		
 	showLoadingMessage(Localization.CLOSING);
 	//	We want to close session on before unload event
 	closeSession();
 	
-    if (!e) e = event;
+    if (!e)
+    	e = event;
     return unload(e);
+}
+
+FluxInterfaceHelper.isSafeToLeave = function() {
+	if (FluxInterfaceHelper.SUBMITTED)
+		return true;
+	
+	if (isChromeBrowser())
+		closeAllLoadingMessages();
+	var confirmedToLeave = false;
+	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
+	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+	return confirmedToLeave;
 }
 
 function unload(e) {
@@ -481,7 +509,8 @@ function updateUI(data, callback) {
     }
     
     if (eventLog == null || eventLog.length == 0) {
-    	closeAllLoadingMessages();
+    	if (FluxInterfaceHelper.SUBMITTED)
+    		closeAllLoadingMessages();
     	return;
     }
     
@@ -637,6 +666,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             context.handleFocus(targetId);
             break;
         case "xforms-submit-done":
+        	FluxInterfaceHelper.SUBMITTED = true;
         	var uri = properties["uri"];
         	if (uri != null) {
         		window.setTimeout(function() {

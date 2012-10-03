@@ -102,7 +102,11 @@ public class ChibaUtils extends DefaultSpringBean {
 
 		XFormsSession xformSession = IdegaXFormSessionManagerImpl.getXFormsSessionManager().getXFormsSession(chibaSessionKey);
 		if (xformSession == null) {
-			throw new IdegaChibaException("XForm session was not found by key: " + chibaSessionKey, getSessionExpiredLocalizedString(), Boolean.TRUE);
+			IdegaXFormSessionManagerImpl manager = IdegaXFormSessionManagerImpl.getXFormsSessionManager();
+			String sessionDestroyInfo = manager.doRemoveXFormDestroyInfo(chibaSessionKey);
+			throw new IdegaChibaException("XForm session was not found by key: " + chibaSessionKey +
+					(StringUtil.isEmpty(sessionDestroyInfo) ? CoreConstants.EMPTY : ". " + sessionDestroyInfo), getSessionExpiredLocalizedString(),
+					Boolean.TRUE);
 		}
 
 		if (httpSession == null) {
