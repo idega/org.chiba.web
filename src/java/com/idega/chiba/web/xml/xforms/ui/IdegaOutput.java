@@ -16,6 +16,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.xml.XPathUtil;
 
 public class IdegaOutput extends Output {
@@ -73,14 +75,23 @@ public class IdegaOutput extends Output {
 
         // check for string conversion to prevent sth. like "5 + 0" to be evaluated to "5.0"
         if (value instanceof Double) {
+        	Double originalValue = (Double) value;
             // Additionally check for special cases
             double doubleValue = ((Double) value).doubleValue();
             if (!(Double.isNaN(doubleValue) || Double.isInfinite(doubleValue))) {
             	try {
             		value = NumberFormat.getInstance().format(doubleValue);
-            		value = context.getValue("string(" + value + ")");
+            		String valueExpression = "string(" + value + ")";
+            		while (originalValue >= 1000 && valueExpression.indexOf(CoreConstants.DOT) != -1) {
+            			valueExpression = valueExpression.substring(0, valueExpression.lastIndexOf(CoreConstants.DOT)) +
+            				valueExpression.substring(valueExpression.lastIndexOf(CoreConstants.DOT) + 1);
+            			originalValue = originalValue / 1000;
+            		}
+            		value = context.getValue(valueExpression);
             	} catch (Exception e) {
-            		LOGGER.log(Level.WARNING, "Error while trying to get a string value from '" + value + "' using XPath", e);
+            		String message = "Error while trying to get a string value from '" + value + "' using XPath";
+            		LOGGER.log(Level.WARNING, message, e);
+            		CoreUtil.sendExceptionNotification(message, e);
             	}
             }
         }
