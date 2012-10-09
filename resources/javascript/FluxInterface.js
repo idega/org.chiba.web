@@ -36,6 +36,7 @@ FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
 
 FluxInterfaceHelper.SUBMITTED = false;
+FluxInterfaceHelper.FINISHED = false;
 FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
 
 FluxInterfaceHelper.CLOSED_SESSIONS = [];
@@ -58,6 +59,18 @@ function initXForms(){
 registerEvent(window, 'load', function() {
 	var loadedAt = new Date();
 	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
+	
+	//	Checking if a form was submitted previously
+	var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
+	if (taskId != null) {
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
+			BPMProcessAssets.isTaskSubmitted(taskId, {
+				callback: function(result) {
+					FluxInterfaceHelper.FINISHED = result;
+				}
+			});
+		});
+	}
 });
 
 /******************************************************************************
@@ -85,7 +98,7 @@ window.onbeforeunload = function(e) {
 }
 
 FluxInterfaceHelper.isSafeToLeave = function() {
-	if (FluxInterfaceHelper.SUBMITTED)
+	if (FluxInterfaceHelper.SUBMITTED || FluxInterfaceHelper.FINISHED)
 		return true;
 	
 	if (isChromeBrowser())
