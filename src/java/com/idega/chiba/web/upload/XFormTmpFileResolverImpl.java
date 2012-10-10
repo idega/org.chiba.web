@@ -50,7 +50,8 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 
 	protected Collection<URI> resolveReplaceFilesUris(String identifier, Object resource, TmpFilesModifyStrategy replaceStrategy) {
 		if (!(resource instanceof Node)) {
-			LOGGER.warning("Wrong resource provided. Expected of type "	+ Node.class.getName() + ", but got " + (resource == null ? "null" : resource.getClass().getName()));
+			LOGGER.warning("Wrong resource provided. Expected of type "	+ Node.class.getName() + ", but got " +
+					(resource == null ? "null" : resource.getClass().getName()));
 			return new ArrayList<URI>(0);
 		}
 
@@ -85,7 +86,8 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 				if (uri != null)
 					uris.add(uri);
 			} catch (Exception e) {
-				LOGGER.log(Level.WARNING, "Exception while decoding and creating URI object (" + URI.class.getName() + ") from string '" + uriStr + "'. Skipping!", e);
+				LOGGER.log(Level.WARNING, "Exception while decoding and creating URI object (" + URI.class.getName() + ") from string '" + uriStr +
+						"'. Skipping!", e);
 			}
 		}
 
