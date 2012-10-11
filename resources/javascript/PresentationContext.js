@@ -1402,24 +1402,28 @@ PresentationContext._setRepeatIndex = function(targetId, originalId, index) {
         }
 
         var repeatElement = PresentationContext._getRepeatNode(targetElement);
-        var repeatItems = repeatElement.childNodes;
-        for (var i = 0; i < repeatItems.length; i++) {
-            // lookup repeat items
-            if (repeatItems[i].nodeType == 1 && _hasClass(repeatItems[i], "repeat-item")) {
-                currentPosition++;
-
-                if (currentPosition == targetPosition) {
-                    // select item
-                    _addClass(repeatItems[i], "repeat-index");
-                }
-                else {
-                    // deselect item
-                    _removeClass(repeatItems[i], "repeat-index");
-                }
-
-                // remove preselection
-                _removeClass(repeatItems[i], "repeat-index-pre");
-            }
+        if (repeatElement != null) {
+	        var repeatItems = repeatElement.childNodes;
+	        if (repeatItems != null) {
+		        for (var i = 0; i < repeatItems.length; i++) {
+		            // lookup repeat items
+		            if (repeatItems[i].nodeType == 1 && _hasClass(repeatItems[i], "repeat-item")) {
+		                currentPosition++;
+		
+		                if (currentPosition == targetPosition) {
+		                    // select item
+		                    _addClass(repeatItems[i], "repeat-index");
+		                }
+		                else {
+		                    // deselect item
+		                    _removeClass(repeatItems[i], "repeat-index");
+		                }
+		
+		                // remove preselection
+		                _removeClass(repeatItems[i], "repeat-index-pre");
+		            }
+		        }
+	        }
         }
     }
 };
@@ -1450,6 +1454,9 @@ PresentationContext._updateSelectors = function(control, readonly) {
 };
 
 PresentationContext._getRepeatNode = function(element) {
+	if (element == null)
+		return [];
+	
     var items = element.childNodes;
 
     for (var i = 0; i < items.length; i++) {
