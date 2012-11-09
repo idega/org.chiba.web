@@ -551,6 +551,18 @@ PresentationContext._setReadonlyProperty = function(target, readonly, type) {
 // HELPER METHODS - hidden datastructure for options
 //--------------------------------------------------
 
+getParentIDOfSelect = function(element) {
+	var parentElement = element.parentNode;
+	var id = null;
+	
+	if (parentElement != null) {
+		id = parentElement.id;
+	}
+	
+	alert(id);
+	return id;
+}
+
 /**
  * Called on start up to fill in the first values.
  * @param string original_id
@@ -980,6 +992,8 @@ PresentationContext._setControlLabel = function(parentId, value) {
                             if (_hasClass(table, "compact-repeat")) {
                                 // dojo.debug("ignoring label for '" + parentId + "' in compact repeat");
                                 break;
+                            } else {
+                            	return;
                             }
                         }
                     }
@@ -1102,7 +1116,7 @@ PresentationContext._cloneSelectorPrototype = function(targetId, originalId, pro
  * @param value the original id.
  */
 PresentationContext._setGeneratedId = function(targetId, originalId) {
-//    dojo.debug("PresentationContext._setGeneratedId: " + targetId + "='" + originalId + "'");
+    dojo.debug("PresentationContext._setGeneratedId: " + targetId + "='" + originalId + "'");
 
     var array = PresentationContext.GENERATED_IDS[PresentationContext.GENERATED_IDS.length - 1];
     array[originalId] = targetId;
@@ -1110,6 +1124,8 @@ PresentationContext._setGeneratedId = function(targetId, originalId) {
     array[originalId + "-label"] = targetId + "-label";
     array[originalId + "-alert"] = targetId + "-alert";
     array[originalId + "-required"] = targetId + "-required";
+    // Not sure if works martynas@idega.com:
+    array["clone-" + originalId + "-value"] = "clone-" + targetId + "-value";
 
     if (!array[PresentationContext.CHIBA_PSEUDO_ITEM]) {
         // we have to add a special 'chiba-pseudo-item' mapping, since for itemsets
