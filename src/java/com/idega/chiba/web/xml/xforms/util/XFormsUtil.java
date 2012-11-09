@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 import org.apache.commons.jxpath.ExpressionContext;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
+import org.apache.xerces.dom.ElementImpl;
 import org.apache.xerces.dom.NodeImpl;
 import org.chiba.xml.xforms.Container;
 import org.chiba.xml.xforms.XFormsElement;
@@ -39,7 +41,10 @@ public class XFormsUtil {
 	public static final String CTID = "fbc_";
 	
 	private static XPathUtil formIdElementXPath = new XPathUtil(".//data/form_id");
-
+	
+	private static final Logger LOGGER = Logger
+			.getLogger(XFormsUtil.class.getName());
+	
 	/**
 	 * copied from chiba Output implementation
 	 * @param <T>
@@ -273,4 +278,28 @@ public class XFormsUtil {
 	            return null;
 	    }
 	 
+	 /**
+	  * <p>Searches for data about {@link XFormsElement} in given 
+	  * {@link Node}.</p>
+	  * @param node - where to search.
+	  * @return {@link XFormsElement} or <code>null</code> if nothing is found.
+	  * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	  */
+	 public static XFormsElement getXFormsElement(Node node) {
+		org.apache.xerces.dom.ElementImpl element = null;
+		if (node instanceof org.apache.xerces.dom.ElementImpl) {
+			element = (ElementImpl) node;
+		} else {
+			LOGGER.warning("Node is not instance of: " + ElementImpl.class);
+			return null;
+		}
+					
+		Object userData = element.getUserData();
+		if (userData instanceof XFormsElement) {
+			return (XFormsElement) userData;
+		}
+			
+		LOGGER.warning("Node does not have any data about: " + XFormsElement.class);
+		return null;
+	}
 }

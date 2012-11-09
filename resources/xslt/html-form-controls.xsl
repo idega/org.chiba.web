@@ -368,7 +368,11 @@
         <xsl:param name="end"/>
 
         <xsl:if test="$current &lt;= $end">
-            <option id="{$rangeId}-value" value="{$current}" title="{xforms:hint}" class="selector-item">
+            <option 
+            	id="{$rangeId}-value" 
+            	value="{$current}" 
+            	title="{xforms:hint}" 
+            	class="selector-item">
                 <xsl:if test="$value = $current">
                     <xsl:attribute name="selected">selected</xsl:attribute>
                 </xsl:if>
@@ -473,7 +477,9 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">setXFormsValue(this);</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	setXFormsValue(this);
+                        </xsl:attribute>
                     </xsl:if>
                     <xsl:apply-templates select="xforms:hint"/>
                     <xsl:call-template name="build-items">
@@ -481,11 +487,18 @@
                     </xsl:call-template>
                 </xsl:element>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
-                        <xsl:call-template name="build-item-prototype">
-                            <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 
+                    	select="xforms:itemset/chiba:data/xforms:item">
+                        <xsl:call-template 
+                        	name="build-item-prototype">
+                            <xsl:with-param 
+                            	name="item-id" 
+                            	select="@id"/>
+                            <xsl:with-param 
+                            	name="itemset-id" 
+                            	select="../../@id"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:if>
@@ -493,10 +506,16 @@
                 <input type="hidden" name="{$name}" value=""/>
                 
                 <!-- create the dropdown that is shown to the user: the CLONE -->
-                <xsl:variable name="original_id" select="concat($id, '-value')"/>
-                <xsl:variable name="clone_id" select="concat('clone-', $original_id)"/>               
+                <xsl:variable 
+                	name="original_id" 
+                	select="concat($id, '-value')"/>
+                <xsl:variable 
+                	name="clone_id" 
+                	select="concat('clone-', $original_id)"/>               
                 <xsl:element name="select">                	
-                    <xsl:attribute name="id"><xsl:value-of select="$clone_id"/></xsl:attribute>
+                    <xsl:attribute name="id">
+                    	<xsl:value-of select="$clone_id"/>
+                    </xsl:attribute>
                     <xsl:attribute name="name">
                         <xsl:value-of select="$name"/>
                     </xsl:attribute>
@@ -506,12 +525,21 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">updateSelectionOfOriginal('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	updateSelectionOfOriginal(
+                        		this.id.substring(6),
+                        		this.id
+                        	);
+                        </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                                            initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-
+                	initializeClone(
+                		'<xsl:value-of select="$original_id"/>', 
+                		'<xsl:value-of select="$clone_id"/>'
+                		<!-- getParentIDOfSelect(this) + "-value", 
+                		"clone-" + getParentIDOfSelect(this) + "-value" -->
+                	);
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -522,11 +550,14 @@
                     <xsl:with-param name="navindex" select="$navindex"/>
                 </xsl:call-template>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 
+                    	select="xforms:itemset/chiba:data/xforms:item">
                         <xsl:call-template name="build-radiobutton-prototype">
                             <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                            <xsl:with-param 
+                            	name="itemset-id" select="../../@id"/>
                             <xsl:with-param name="name" select="$name"/>
                             <xsl:with-param name="parent" select="$parent"/>
                             <xsl:with-param name="navindex" select="$navindex"/>
@@ -565,11 +596,15 @@
                     </xsl:call-template>
                 </xsl:element>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 
+                    	select="xforms:itemset/chiba:data/xforms:item">
                         <xsl:call-template name="build-item-prototype">
                             <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                            <xsl:with-param 
+                            	name="itemset-id" 
+                            	select="../../@id"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:if>
@@ -590,12 +625,21 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">updateSelectionOfOriginal('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	updateSelectionOfOriginal(
+                        		this.id.substring(6),
+                        		this.id
+                        	);
+                        </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                                       initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-
+                	initializeClone(
+                		'<xsl:value-of select="$original_id"/>', 
+                		'<xsl:value-of select="$clone_id"/>'
+                		<!-- getParentIDOfSelect(this) + "-value", 
+                		"clone-" + getParentIDOfSelect(this) + "-value" -->
+                	);
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -638,7 +682,9 @@
                     </xsl:if>
                     <xsl:attribute name="class">value</xsl:attribute>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">setXFormsValue(this);</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	setXFormsValue(this);
+                        </xsl:attribute>
                     </xsl:if>
                     <xsl:apply-templates select="xforms:hint"/>
                     <xsl:call-template name="build-items">
@@ -646,11 +692,15 @@
                     </xsl:call-template>
                 </xsl:element>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 
+                    	select="xforms:itemset/chiba:data/xforms:item">
                         <xsl:call-template name="build-item-prototype">
                             <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                            <xsl:with-param 
+                            	name="itemset-id" 
+                            	select="../../@id"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:if>
@@ -672,13 +722,19 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">updateSelectionOfOriginal('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                       		updateSelectionOfOriginal(
+                       			'<xsl:value-of select="$original_id"/>', 
+                       			'<xsl:value-of select="$clone_id"/>'
+                       		);
+                       	</xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-	                
-                                                initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-                    
+                	initializeClone(
+                		'<xsl:value-of select="$original_id"/>', 
+                		'<xsl:value-of select="$clone_id"/>'
+                	);
                 </script>
             </xsl:when>
             <xsl:when test="@appearance='full'">
@@ -688,11 +744,15 @@
                     <xsl:with-param name="navindex" select="$navindex"/> 
                 </xsl:call-template>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 
+                    	select="xforms:itemset/chiba:data/xforms:item">
                         <xsl:call-template name="build-checkbox-prototype">
                             <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                            <xsl:with-param 	
+                            	name="itemset-id" 
+                            	select="../../@id"/>
                             <xsl:with-param name="name" select="$name"/>
                             <xsl:with-param name="parent" select="$parent"/>
                         </xsl:call-template>
@@ -723,7 +783,9 @@
                     </xsl:if>
                     <xsl:attribute name="class">value</xsl:attribute>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">setXFormsValue(this);</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	setXFormsValue(this);
+                        </xsl:attribute>
                     </xsl:if>
                     <xsl:apply-templates select="xforms:hint"/>
                     <xsl:call-template name="build-items">
@@ -731,11 +793,15 @@
                     </xsl:call-template>
                 </xsl:element>
                 <!-- handle itemset prototype -->
-                <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
-                    <xsl:for-each select="xforms:itemset/chiba:data/xforms:item">
+                <xsl:if 
+                	test="$scripted='true' and not(ancestor::xforms:repeat)">
+                    <xsl:for-each 	
+                    	select="xforms:itemset/chiba:data/xforms:item">
                         <xsl:call-template name="build-item-prototype">
                             <xsl:with-param name="item-id" select="@id"/>
-                            <xsl:with-param name="itemset-id" select="../../@id"/>
+                            <xsl:with-param 
+                            	name="itemset-id" 
+                            	select="../../@id"/>
                         </xsl:call-template>
                     </xsl:for-each>
                 </xsl:if>
@@ -757,12 +823,19 @@
                         <xsl:attribute name="disabled">disabled</xsl:attribute>
                     </xsl:if>
                     <xsl:if test="$scripted='true'">
-                        <xsl:attribute name="{$handler}">updateSelectionOfOriginal('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');</xsl:attribute>
+                        <xsl:attribute name="{$handler}">
+                        	updateSelectionOfOriginal(
+                        		'<xsl:value-of select="$original_id"/>', 
+                        		'<xsl:value-of select="$clone_id"/>'
+                        		);
+                        </xsl:attribute>
                     </xsl:if>
                 </xsl:element>
                 <script type="text/javascript">
-                		                    	initializeClone('<xsl:value-of select="$original_id"/>', '<xsl:value-of select="$clone_id"/>');
-
+                	initializeClone(
+                		'<xsl:value-of select="$original_id"/>', 
+                		'<xsl:value-of select="$clone_id"/>'
+                		);
                 </script>
             </xsl:otherwise>
         </xsl:choose>
@@ -805,11 +878,17 @@
             <xsl:if test="$scripted='true'">
                 <xsl:choose>
                     <xsl:when test="$incremental='true'">
-                        <xsl:attribute name="onkeyup">setXFormsValue(this);</xsl:attribute>
+                        <xsl:attribute name="onkeyup">
+                        	setXFormsValue(this);
+                        </xsl:attribute>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:attribute name="onkeyup">return keepAlive(this);</xsl:attribute>
-                        <xsl:attribute name="onchange">setXFormsValue(this);</xsl:attribute>
+                        <xsl:attribute name="onkeyup">
+                        	return keepAlive(this);
+                        </xsl:attribute>
+                        <xsl:attribute name="onchange">
+                        	setXFormsValue(this);
+                        </xsl:attribute>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:if>
@@ -920,18 +999,25 @@
                         </xsl:attribute>
                         <xsl:attribute name="class">value</xsl:attribute>
                         <xsl:if test="chiba:data/@chiba:readonly='true'">
-                            <xsl:attribute name="disabled">disabled</xsl:attribute>
+                            <xsl:attribute name="disabled">
+                            	disabled
+                            </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="@accesskey">
                             <xsl:attribute name="accesskey">
                                 <xsl:value-of select="@accesskey"/>
                             </xsl:attribute>
                             <xsl:attribute name="title">
-                                <xsl:value-of select="normalize-space(xforms:hint)"/>- KEY: [ALT]+ <xsl:value-of select="@accesskey"/>
+                                <xsl:value-of 
+                                	select="normalize-space(xforms:hint)"/>
+                                - KEY: [ALT]+ 
+                                <xsl:value-of select="@accesskey"/>
                             </xsl:attribute>
                         </xsl:if>
                         <xsl:if test="$scripted='true'">
-                            <xsl:attribute name="onclick">chibaActivate(this);</xsl:attribute>
+                            <xsl:attribute name="onclick">
+                            	chibaActivate(this);
+                            </xsl:attribute>
                             
                         </xsl:if>
                         <xsl:apply-templates select="xforms:hint"/>
@@ -1008,11 +1094,17 @@
             </div>
         </xsl:if>
         <xsl:if test="xforms:filename">
-            <input type="hidden" id="{xforms:filename/@id}" value="{xforms:filename/chiba:data}"/>
+            <input 
+            	type="hidden" 
+            	id="{xforms:filename/@id}" 
+            	value="{xforms:filename/chiba:data}"/>
         </xsl:if>
         <xsl:if test="@chiba:destination">
             <!-- create hidden parameter for destination -->
-            <input type="hidden" id="{$id}-destination" value="{@chiba:destination}"/>
+            <input 
+            	type="hidden" 
+            	id="{$id}-destination" 
+            	value="{@chiba:destination}"/>
         </xsl:if>
     </xsl:template>
 
@@ -1030,7 +1122,8 @@
 				<xsl:attribute name="selected">selected</xsl:attribute>
 			</xsl:if>
 		</option>
-		<xsl:for-each select="$parent/xforms:itemset|$parent/xforms:item|$parent/xforms:choices">
+		<xsl:for-each 
+			select="$parent/xforms:itemset|$parent/xforms:item|$parent/xforms:choices">
 			<xsl:call-template name="build-items-list"/>
 		</xsl:for-each>
     </xsl:template>
@@ -1064,7 +1157,11 @@
 	</xsl:template>
 	
 	<xsl:template name="build-items-item">
-		<option id="{@id}-value" value="{xforms:value}" title="{xforms:hint}" class="selector-item">
+		<option 
+			id="{@id}-value" 
+			value="{xforms:value}" 
+			title="{xforms:hint}" 
+			class="selector-item">
 			<xsl:if test="@selected='true'">
 				<xsl:attribute name="selected">selected</xsl:attribute>
 			</xsl:if>
@@ -1110,7 +1207,8 @@
         <xsl:param name="parent"/>
         <xsl:param name="navindex"/> 
         <!-- handle items, choices and itemsets -->
-        <xsl:for-each select="$parent/xforms:item|$parent/xforms:choices|$parent/xforms:itemset">
+        <xsl:for-each 
+        	select="$parent/xforms:item|$parent/xforms:choices|$parent/xforms:itemset">
         	<xsl:call-template name="build-checkboxes-list">
         		<xsl:with-param name="name" select="$name"/>
         		<xsl:with-param name="parent" select="$parent"/>
@@ -1226,13 +1324,21 @@
         <xsl:param name="parent"/>
 
         <span id="{$itemset-id}-prototype" class="selector-prototype">
-            <input id="{$item-id}-value" class="value" type="checkbox" name="{$name}">
+            <input 
+            	id="{$item-id}-value" 
+            	class="value" 
+            	type="checkbox" 
+            	name="{$name}">
                 <xsl:choose>
 	       			<xsl:when test="xforms:copy">
-		   				<xsl:attribute name="value"><xsl:value-of select="xforms:copy/@id"/></xsl:attribute>
+		   				<xsl:attribute name="value">
+		   					<xsl:value-of select="xforms:copy/@id"/>
+		   				</xsl:attribute>
 	              	</xsl:when>
     	        	<xsl:otherwise>
-      	 	    		<xsl:attribute name="value"><xsl:value-of select="xforms:value"/></xsl:attribute>
+      	 	    		<xsl:attribute name="value">
+      	 	    			<xsl:value-of select="xforms:value"/>
+      	 	    		</xsl:attribute>
             		</xsl:otherwise>
            	    </xsl:choose>
                 <xsl:attribute name="title">
@@ -1272,7 +1378,8 @@
         <xsl:param name="id"/>
         <xsl:param name="navindex"/> 
         <!-- handle items, choices and itemsets -->
-        <xsl:for-each select="$parent/xforms:item|$parent/xforms:choices|$parent/xforms:itemset">
+        <xsl:for-each 
+        	select="$parent/xforms:item|$parent/xforms:choices|$parent/xforms:itemset">
         	<xsl:call-template name="build-radiobuttons-list">
         		<xsl:with-param name="name" select="$name"/>
         		<xsl:with-param name="parent" select="$parent"/>

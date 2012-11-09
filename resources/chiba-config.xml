@@ -207,6 +207,9 @@
         <element namespace="http://idega.com/xforms" name="case" class="com.idega.chiba.web.xml.xforms.elements.CaseElement" />
         
         <element namespace="http://idega.com/xforms" name="output" class="com.idega.chiba.web.xml.xforms.ui.IdegaOutput" />
+        
+        <element namespace="http://idega.com/xforms" name="itemset" class="org.chiba.xml.xforms.ui.IdegaItemset"/>
+        <element namespace="http://idega.com/xforms" name="select1" class="org.chiba.xml.xforms.ui.IdegaSelector"/>
     </custom-elements>
 
 </chiba-config>

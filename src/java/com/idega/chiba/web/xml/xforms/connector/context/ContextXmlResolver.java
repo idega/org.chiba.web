@@ -6,16 +6,22 @@ import org.w3c.dom.Document;
 
 import com.idega.chiba.web.xml.xforms.connector.context.beans.ChoiceListData;
 import com.idega.chiba.web.xml.xforms.connector.context.beans.LocalizedEntries;
+import com.idega.util.StringUtil;
 import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
+import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 
 /**
@@ -34,29 +40,10 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
 	/**
 	 * resolves object, which is configured in the faces-config.xml, method value
 	 */
-    @SuppressWarnings("unchecked")
 	@Override
 	public Object resolve() throws XFormsException {
         try {
-        	String xpath = new URI(getURI()).getSchemeSpecificPart();
-            FacesContext ctx = FacesContext.getCurrentInstance();
-            
-            Object value = ctx.getApplication().getExpressionFactory().createValueExpression(ctx.getELContext(),
-            		new StringBuilder(faces_exp_part1).append(xpath).append(faces_exp_part2).toString(), Object.class).getValue(ctx.getELContext());
-            
-            if (value == null) {
-            	LOGGER.warning("No value was retrieved from the key: " + xpath);
-            	return XmlUtil.getDocumentBuilder().newDocument();
-            }
-            	
-            if (!(value instanceof Map)) {
-            	LOGGER.warning("Value of wrong type was retrieved from the key: " + xpath +	" value class: " + value.getClass().getName() +
-            			". It must be: Map<Locale, Map<String, String>>. Returning empty XML document");
-            	return XmlUtil.getDocumentBuilder().newDocument();
-            }
-
-            Map<Locale, Map<String, String>> localizedItems = (Map<Locale, Map<String, String>>) value;
-	        return createResponseDocument(localizedItems);
+	        return createResponseDocument(resolveItems(getURI()));
         } catch (Exception e) {
         	LOGGER.log(Level.WARNING, "Error resolving items", e);
         	try {
@@ -82,4 +69,78 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
     	
         return choiceListData.getDocument();
 	}
+    
+    public Map<Locale, Map<String, String>> resolveItems(String uri) {
+    	if (StringUtil.isEmpty(uri)) {
+    		LOGGER.log(Level.WARNING, "No URI was given. Nothing to resolve.");
+    		return null;
+    	}
+    	
+    	setURI(uri);
+    	
+    	String xpath = null;
+		try {
+			xpath = new URI(getURI()).getSchemeSpecificPart();
+		} catch (URISyntaxException e) {
+			LOGGER.log(Level.WARNING, 
+					"Bad URI was given: " + getURI() + 
+					". No items will be resolved.", e);
+		}
+		
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        if (ctx == null) {
+        	LOGGER.log(Level.WARNING, "Unable to get: " + FacesContext.class
+        			+ ". No items will be resolved.");
+        	return null;
+        }
+        
+        ELContext elContext = ctx.getELContext();
+        if (elContext == null) {
+        	LOGGER.log(Level.WARNING, "Unable to get: " + ELContext.class
+        			+ ". No items will be resolved.");
+        	return null;
+        }
+        
+        Application application = ctx.getApplication();
+        if (application == null) {
+        	LOGGER.log(Level.WARNING, "Unable to get: " + Application.class
+        			+ ". No items will be resolved.");
+        	return null;
+        }
+        
+        ExpressionFactory expressionFactory = application.getExpressionFactory();
+        if (expressionFactory == null) {
+        	LOGGER.log(Level.WARNING, "Unable to get: " + 
+        			ExpressionFactory.class + ". No items will be resolved.");
+        	return null;
+        }
+        
+        String expression = new StringBuilder(faces_exp_part1)
+        		.append(xpath)
+        		.append(faces_exp_part2).toString();
+        
+        ValueExpression valueExpression = expressionFactory
+        		.createValueExpression(elContext, expression, Map.class);
+        if (valueExpression == null) {
+        	LOGGER.log(Level.WARNING, "Unable to create: " + 
+        			ValueExpression.class + ". No items will be resolved.");
+        	return null;
+        }
+        
+        Object value = valueExpression.getValue(elContext);
+        if (value == null) {
+        	LOGGER.warning("No value was retrieved from the key: " + xpath);
+        	return null;
+        }
+                
+        if (value instanceof Map) {
+        	return (Map<Locale, Map<String, String>>) value;
+        } else {
+        	LOGGER.warning("Value of wrong type was retrieved from the key: " + 
+        			xpath +	" value class: " + value.getClass().getName() +
+        			". It must be: Map<Locale, Map<String, String>>. " +
+        			"Returning empty XML document");
+        	return null;
+        }
+    }
 }

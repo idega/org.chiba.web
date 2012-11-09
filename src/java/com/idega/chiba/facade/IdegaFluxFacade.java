@@ -31,6 +31,7 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.RequestUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
+import com.idega.util.xml.XmlUtil;
 
 @Scope("request")
 @Service(IdegaFluxFacade.BEAN_NAME)
@@ -80,6 +81,7 @@ public class IdegaFluxFacade extends FluxFacade {
 				throw new SessionExpiredException("Error firing action on " + id + ", session: " + sessionKey, ChibaUtils.getInstance()
 						.getSessionExpiredLocalizedString(), sessionKey);
 
+//			XmlUtil.prettyPrintDOM(element, System.out);
 			return element;
 		} catch (Exception e) {
 			if (reTry)
@@ -96,7 +98,8 @@ public class IdegaFluxFacade extends FluxFacade {
 	public Element setXFormsValue(String id, String value, String sessionKey) throws FluxException {
 		try {
 			ChibaUtils.getInstance().prepareForChibaMethod(session, sessionKey);
-			return super.setXFormsValue(id, value, sessionKey);
+			Element result = super.setXFormsValue(id, value, sessionKey);			
+			return result;
 		} catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error setting value to XForm", e);
 			throw new SessionExpiredException("Unable to set value '".concat(value).concat("' for element '").concat(id).concat("' using session: ")

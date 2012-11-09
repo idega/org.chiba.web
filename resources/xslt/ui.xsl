@@ -7,6 +7,7 @@
     xmlns:idega="http://idega.com/xforms"
     xmlns:chiba="http://chiba.sourceforge.net/xforms"
     exclude-result-prefixes="xhtml xforms chiba xlink">
+    
     <!-- Copyright 2001-2007 ChibaXForms GmbH, $Revision: 1.16 $ -->
     
     <!-- ####################################################################################################### -->
@@ -305,16 +306,24 @@
 
     <!-- header for compact repeat -->
     <xsl:template name="processCompactHeader">
-        <xsl:for-each select="xforms:*">
+        <xsl:for-each select="xforms:* | idega:*">
             <xsl:variable name="col-classes">
                 <xsl:choose>
-                    <xsl:when test="./chiba:data/@chiba:enabled='false'"><xsl:value-of select="concat('col-',position(),' ','disabled')"/></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="concat('col-',position())"/></xsl:otherwise>
+                    <xsl:when test="./chiba:data/@chiba:enabled='false'">
+                    <xsl:value-of 
+                    	select="concat('col-',position(),' ','disabled')"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    	<xsl:value-of select="concat('col-',position())"/>
+                    </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
             <td class="{$col-classes}">
                 <xsl:choose>
-                    <xsl:when test="self::xforms:*[local-name(.)!='trigger' and local-name(.)!='submit'][xforms:label]">
+                	<!-- | self::idega:*[local-name(.)!='trigger' and local-name(.)!='submit'][xforms:label] -->
+                    <xsl:when 
+                    	test="self::xforms:*[local-name(.)!='trigger' and local-name(.)!='submit'][xforms:label] |
+                    		self::idega:*[local-name(.)!='trigger' and local-name(.)!='submit'][xforms:label]">
                         <xsl:variable name="label-classes">
                             <xsl:call-template name="assemble-label-classes"/>
                         </xsl:variable>
@@ -336,7 +345,9 @@
         <xsl:param name="id"/>
 
         <table style="display:none;">
-            <tr id="{$id}-prototype" class="repeat-prototype enabled readwrite optional valid">
+            <tr 
+            	id="{$id}-prototype" 
+            	class="repeat-prototype enabled readwrite optional valid">
                 <xsl:call-template name="processCompactChildren"/>
             </tr>
         </table>
@@ -344,11 +355,16 @@
 
     <!-- children for compact repeat -->
     <xsl:template name="processCompactChildren">
-        <xsl:for-each select="xforms:*">
+        <xsl:for-each select="xforms:* | idega:*">
             <xsl:variable name="col-classes">
                 <xsl:choose>
-                    <xsl:when test="./chiba:data/@chiba:enabled='false'"><xsl:value-of select="concat('col-',position(),' ','disabled')"/></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="concat('col-',position())"/></xsl:otherwise>
+                    <xsl:when test="./chiba:data/@chiba:enabled='false'">
+                    	<xsl:value-of 
+                    		select="concat('col-',position(),' ','disabled')"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    	<xsl:value-of select="concat('col-',position())"/>
+                    </xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
 
@@ -359,7 +375,7 @@
     </xsl:template>
 
     <!-- overridden control template for compact repeat -->
-    <xsl:template match="xforms:input|xforms:output|xforms:range|xforms:secret|xforms:select|xforms:select1|xforms:textarea|xforms:upload" mode="compact-repeat">
+    <xsl:template match="xforms:input|xforms:output|xforms:range|xforms:secret|xforms:select|xforms:select1|idega:select1|xforms:textarea|xforms:upload" mode="compact-repeat">
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="control-classes">
             <xsl:call-template name="assemble-control-classes"/>
@@ -397,7 +413,7 @@
     </xsl:template>
 
     <!-- default templates for compact repeat -->
-    <xsl:template match="xforms:*" mode="compact-repeat">
+    <xsl:template match="xforms:* | idega:*" mode="compact-repeat">
         <xsl:apply-templates select="."/>
     </xsl:template>
 
@@ -414,15 +430,18 @@
 
         <xsl:if test="$scripted='true' and not(ancestor::xforms:repeat)">
             <!-- generate prototype(s) for scripted environment -->
-            <xsl:for-each select="chiba:data/xforms:group[@appearance='repeated']">
+            <xsl:for-each 
+            	select="chiba:data/xforms:group[@appearance='repeated']">
                 <xsl:call-template name="processFullPrototype">
                     <xsl:with-param name="id" select="$repeat-id"/>
                 </xsl:call-template>
             </xsl:for-each>
-            <xsl:for-each select="chiba:data/xforms:group[@appearance='repeated']//xforms:repeat">
+            <xsl:for-each 
+            	select="chiba:data/xforms:group[@appearance='repeated']//xforms:repeat">
                 <xsl:call-template name="processRepeatPrototype"/>
             </xsl:for-each>
-            <xsl:for-each select="chiba:data/xforms:group[@appearance='repeated']//xforms:itemset">
+            <xsl:for-each 
+            	select="chiba:data/xforms:group[@appearance='repeated']//xforms:itemset">
                 <xsl:call-template name="processItemsetPrototype"/>
             </xsl:for-each>
         </xsl:if>
@@ -582,19 +601,25 @@
         easier to maintain the switch cause all relevant markup is kept under the
         same root element.
     -->
-    <xsl:template match="xforms:switch[@appearance='full'] | idega:switch[@appearance='full']" name="full-switch">
+    <xsl:template 
+    	match="xforms:switch[@appearance='full'] | idega:switch[@appearance='full']" 
+    	name="full-switch">
         <xsl:variable name="switch-id" select="@id"/>
         <xsl:variable name="switch-classes">
             <xsl:call-template name="assemble-compound-classes">
                 <xsl:with-param name="appearance" select="'full'"/>
             </xsl:call-template>
         </xsl:variable>
-        <xsl:variable name="selected-id" select="xforms:case[chiba:data/@chiba:selected='true']/@id | idega:case[chiba:data/@chiba:selected='true']/@id"/>
+        <xsl:variable 
+        	name="selected-id" 
+        	select="xforms:case[chiba:data/@chiba:selected='true']/@id | idega:case[chiba:data/@chiba:selected='true']/@id"/>
 
         <table id="{$switch-id}" class="{$switch-classes}">
             <tr>
                 <xsl:for-each select="xforms:case[@id='switch-toggles']/xforms:trigger | idega:case[@id='switch-toggles']/xforms:trigger">
-                    <xsl:variable name="case-id" select=".//xforms:toggle/@xforms:case | .//xforms:toggle/@case"/>
+                    <xsl:variable 
+                    	name="case-id" 
+                    	select=".//xforms:toggle/@xforms:case | .//xforms:toggle/@case"/>
                     <xsl:choose>
                         <xsl:when test="$case-id=$selected-id">
                             <td id="{concat($case-id, '-tab')}" class="active-tab">
@@ -613,7 +638,9 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="{count(xforms:case[@id='switch-toggles']/xforms:trigger) + 1} | {count(idega:case[@id='switch-toggles']/xforms:trigger) + 1}" class="full-switch-body">
+                <td 
+                	colspan="{count(xforms:case[@id='switch-toggles']/xforms:trigger) + 1} | {count(idega:case[@id='switch-toggles']/xforms:trigger) + 1}" 
+                	class="full-switch-body">
                     <xsl:apply-templates select="xforms:case[not(@id='switch-toggles')] | idega:case[not(@id='switch-toggles')]"/>
                 </td>
             </tr>
@@ -635,7 +662,9 @@
     </xsl:template>
 
     <!-- ### SELECTED CASE ### -->
-    <xsl:template match="xforms:case[chiba:data/@chiba:selected='true'] | idega:case[chiba:data/@chiba:selected='true']" name="selected-case">
+    <xsl:template 
+    	match="xforms:case[chiba:data/@chiba:selected='true'] | idega:case[chiba:data/@chiba:selected='true']" 
+    	name="selected-case">
         <xsl:variable name="case-id" select="@id"/>
         <xsl:variable name="case-classes" select="'case selected-case'"/>
 
@@ -645,7 +674,9 @@
     </xsl:template>
 
     <!-- ### DE-SELECTED/NON-SELECTED CASE ### -->
-    <xsl:template match="xforms:case | idega:case" name="deselected-case">
+    <xsl:template 
+    	match="xforms:case | idega:case" 
+    	name="deselected-case">
         <!-- render only in scripted environment -->
         <xsl:if test="$scripted='true'">
             <xsl:variable name="case-id" select="@id"/>
@@ -690,20 +721,24 @@
 
 
         <!-- *** this is to ease styling of repeated controls and scripting *** -->
-        <xsl:variable name="repeat-id" select="ancestor::*[name(.)='xforms:repeat'][1]/@id" />
+        <xsl:variable 
+        	name="repeat-id" 
+        	select="ancestor::*[name(.)='xforms:repeat'][1]/@id" />
         <xsl:variable name="pos" select="position()" />
 
         <xsl:variable name="repeatClasses">
             <xsl:choose>
                 <xsl:when test="boolean(string-length($repeat-id) > 0)">
-                    <xsl:value-of select="concat($repeat-id,'-',$pos,' repeated')"/>
+                    <xsl:value-of 
+                    	select="concat($repeat-id,'-',$pos,' repeated')"/>
                 </xsl:when>
                 <xsl:otherwise/>
             </xsl:choose>
         </xsl:variable>
 
 
-        <xsl:value-of select="normalize-space(concat($name-classes, ' ',$type,' ',$mip-classes, ' ', $author-classes,' ',$incremental,' ',$repeatClasses))"/>
+        <xsl:value-of 
+        	select="normalize-space(concat($name-classes, ' ',$type,' ',$mip-classes, ' ', $author-classes,' ',$incremental,' ',$repeatClasses))"/>
     </xsl:template>
 
     <!-- assembles label classes -->
@@ -721,7 +756,8 @@
                 <xsl:call-template name="get-author-classes"/>
             </xsl:variable>
 
-            <xsl:value-of select="normalize-space(concat($name-classes, ' ', $mip-classes, ' ', $author-classes))"/>
+            <xsl:value-of 
+            	select="normalize-space(concat($name-classes, ' ', $mip-classes, ' ', $author-classes))"/>
         </xsl:for-each>
     </xsl:template>
 
