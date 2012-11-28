@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.jxpath.ExpressionContext;
+import org.chiba.xml.xforms.XFormsElement;
 import org.chiba.xml.xforms.core.Instance;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.w3c.dom.Document;
@@ -301,10 +302,28 @@ public class ExtensionFunctionUtil {
 		return value;
 	}
 	
-	private static Object getInstanceValueFromExpression(ExpressionContext expressionContext,String exp)  throws XFormsException{
+	/**
+	 * 
+	 * @param expressionContext - {@link ExpressionContext} containing 
+	 * formatted XPath expression, like /data[1]/something[2]/...
+	 * @param exp - variable to resolve from {@link XFormsElement}. 
+	 * @return
+	 * @throws XFormsException
+	 * @author <a href="mailto:martynas@idega.com">Martynas Stakė</a>
+	 */
+	private static Object getInstanceValueFromExpression(
+			ExpressionContext expressionContext, 
+			String exp)  throws XFormsException{
 		
-		String instanceID = exp.split("`")[1];
-	 	exp = exp.replaceAll("`", CoreConstants.QOUTE_SINGLE_MARK);
+		String instanceID  = null;
+		if (exp.contains(CoreConstants.GRAVE_ACCENT_MARK)) {
+			instanceID = exp.split(CoreConstants.GRAVE_ACCENT_MARK)[1];
+		 	exp = exp.replaceAll(
+		 			CoreConstants.GRAVE_ACCENT_MARK, 
+		 			CoreConstants.QOUTE_SINGLE_MARK);
+		} else {
+			instanceID = exp;
+		}
 	 	
 	 	Instance instance = XFormsUtil.getInstance(expressionContext, instanceID);
 	 	Object value = XFormsUtil.getValueFromExpression(exp, instance);
