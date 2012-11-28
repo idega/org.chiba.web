@@ -22,7 +22,6 @@ import com.idega.util.CoreConstants;
 import com.idega.util.StringUtil;
 import com.idega.util.text.Item;
 import com.idega.util.text.TableRecord;
-import com.idega.util.xml.XPathUtil;
 
 public class IdegaSetValueAction extends SetValueAction {
 
@@ -168,8 +167,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		if (value == null) {
 			//	 Checking if value is not provided with XPath expression
 			try {
-				XPathUtil util = new XPathUtil(valueAttribute);
-				value = util == null ? null : util.getNode(this.element).getTextContent();
+				value = (new com.idega.util.xml.XPathUtil(valueAttribute)).getNode(this.element).getTextContent();
 			} catch (Exception e) {}
 		}
 
