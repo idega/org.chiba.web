@@ -31,7 +31,6 @@ import com.idega.util.IWTimestamp;
 import com.idega.util.RequestUtil;
 import com.idega.util.StringUtil;
 import com.idega.util.expression.ELUtil;
-import com.idega.util.xml.XmlUtil;
 
 @Scope("request")
 @Service(IdegaFluxFacade.BEAN_NAME)
@@ -81,7 +80,6 @@ public class IdegaFluxFacade extends FluxFacade {
 				throw new SessionExpiredException("Error firing action on " + id + ", session: " + sessionKey, ChibaUtils.getInstance()
 						.getSessionExpiredLocalizedString(), sessionKey);
 
-//			XmlUtil.prettyPrintDOM(element, System.out);
 			return element;
 		} catch (Exception e) {
 			if (reTry)
