@@ -12,23 +12,67 @@ import org.chiba.xml.xforms.core.Model;
 import org.chiba.xml.xforms.exception.XFormsComputeException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.ui.Output;
+import org.chiba.xml.xforms.ui.UIElementState;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.idega.chiba.web.xml.xforms.ui.state.IdegaBoundElementState;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.xml.XPathUtil;
+import com.idega.util.xml.XmlUtil;
 
 public class IdegaOutput extends Output {
 
 	private static final Logger LOGGER = Logger.getLogger(IdegaOutput.class.getName());
 
+	private String resolver;
+
 	public IdegaOutput(Element element, Model model) {
         super(element, model);
 
         this.xformsPrefix = NamespaceResolver.getPrefix(this.element, XPathUtil.IDEGA_XFORM_NS);
+
+        //	Fixing IDs for repeated items
+		if (XmlUtil.getParentElement(element, REPEAT) != null) {
+			String id = this.container.generateId();
+			try {
+				setGeneratedId(id);
+			} catch (XFormsException e) {
+				LOGGER.log(Level.WARNING, "Unable to set generated id: " + id + " for IdegaOutput", e);
+			}
+
+			Element parentElement = XmlUtil.getParentElement(element, GROUP);
+			if (parentElement != null) {
+				try {
+					setRepeatItemId(parentElement.getAttribute("id"));
+				} catch (XFormsException e) {
+					LOGGER.log(Level.WARNING, "Unable to set repeat-item id", e);
+				}
+			}
+		}
     }
+
+	@Override
+	public void init() throws XFormsException {
+		super.init();
+
+		this.resolver = getXFormsAttribute("resolver");
+	}
+
+	@Override
+	protected void dispatchValueChangeSequence() throws XFormsException {
+		super.dispatchValueChangeSequence();
+	}
+
+	public String getResolver() {
+		return resolver;
+	}
+
+	public void setResolver(String resolver) {
+		this.resolver = resolver;
+	}
 
 	@Override
 	public Object computeValueAttribute() throws XFormsException {
@@ -97,6 +141,14 @@ public class IdegaOutput extends Output {
         }
 
         return value;
+    }
+
+	@Override
+	protected UIElementState createElementState() throws XFormsException {
+        if (isBound())
+            return new IdegaBoundElementState();
+
+        return super.createElementState();
     }
 
 }
