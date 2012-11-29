@@ -67,8 +67,9 @@ public class IdegaBoundElementState extends BoundElementState {
 		    if (!updated) {
 		    	//otherwise fallback to a string value
 	    		value = modelItem != null ? modelItem.getValue() : null;
-	    		if (value != null) {
+	    		if (value != null && !((value instanceof java.lang.String && StringUtil.isEmpty((String) value)))) {
 	    			expression = StringHandler.replace(expression, "{0}", "'" + value + "'");
+	    			
 	    			try {
 						value = ELUtil.getInstance().evaluateExpression(expression);
 					} catch (Exception e) {
