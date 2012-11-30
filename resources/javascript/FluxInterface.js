@@ -260,7 +260,7 @@ function chibaActivate(target) {
 	});
 	//	Executing custom functions
 	if (FluxInterfaceHelper.beforeChibaActivate != null)
-		FluxInterfaceHelper.beforeChibaActivate();
+		FluxInterfaceHelper.beforeChibaActivate(target);
 	
 	if (typeof(target) == 'string') {
 		target = document.getElementById(target);
@@ -291,7 +291,7 @@ function chibaActivate(target) {
 		callback: function(data) {
 			updateUI(data, function() {
 				if (FluxInterfaceHelper.afterChibaActivate != null)
-					FluxInterfaceHelper.afterChibaActivate();
+					FluxInterfaceHelper.afterChibaActivate(target);
 			});
 		}
 	});

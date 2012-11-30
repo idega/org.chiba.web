@@ -164,12 +164,13 @@ public class IdegaSetValueAction extends SetValueAction {
 
 		Object value = context.getValue("chiba:undeclare('node-value')");
 
-		// FIXME And what I am thinking...
 		if (value == null) {
-			value = (new com.idega.util.xml.XPathUtil(valueAttribute))
-					.getNode(this.element).getTextContent();
+			//	 Checking if value is not provided with XPath expression
+			try {
+				value = (new com.idega.util.xml.XPathUtil(valueAttribute)).getNode(this.element).getTextContent();
+			} catch (Exception e) {}
 		}
-		
+
 		// check for string conversion to prevent something like "5 + 0" to be
 		// evaluated to "5.0"
  		if (value instanceof Double) {

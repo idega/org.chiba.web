@@ -82,28 +82,8 @@
  */
 package org.chiba.xml.xforms.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.apache.commons.jxpath.JXPathContext;
-import org.chiba.xml.dom.DOMUtil;
-import org.chiba.xml.events.ChibaEventNames;
-import org.chiba.xml.ns.NamespaceConstants;
-import org.chiba.xml.xforms.XFormsConstants;
 import org.chiba.xml.xforms.core.Model;
-import org.chiba.xml.xforms.exception.XFormsException;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.idega.chiba.web.xml.xforms.connector.context.ContextXmlResolver;
-import com.idega.util.ListUtil;
-import com.idega.util.xml.XmlUtil;
 
 /**
  * <p>Idega extension for {@link Itemset}. Adds support for spring expressions.
@@ -120,111 +100,5 @@ public class IdegaItemset extends Itemset {
 	public IdegaItemset(Element element, Model model) {
 		super(element, model);
 	}
-	
-//	@Override
-//	protected void initializeItemset() throws XFormsException {
-//		/*super.initializeItemset();
-//		if (true) {
-//			return;
-//		}*/
-//		// initialize positional items
-//		List<Element> items = getConvertedItems(getAllItemNodes());
-//		
-//        int count = items.size();
-//        this.items = new ArrayList(count);
-//
-//        if (getLogger().isDebugEnabled()) {
-//            getLogger().debug(this + " init: initializing " + count + " selector item(s)");
-//        }
-//        
-//        for (int position = 1; position < count + 1; position++) {
-//            this.items.add(initializeSelectorItem(position, items.get(position-1)));
-//        }
-//        
-//        System.out.println("");
-//	}
-
-
-	
-	
-//	private void disposeSelectorItem(Item item) throws XFormsException {
-//        // dispose selector item
-//        Element element = item.getElement();
-//        int position = item.getPosition();
-//        item.dispose();
-//        this.element.removeChild(element);
-//
-//        if (this.model.isReady()) {
-//            // dispatch internal chiba event
-//            HashMap map = new HashMap();
-//            map.put("originalId", this.originalId != null ? this.originalId : this.id);
-//            map.put("position", String.valueOf(position));
-//            this.container.dispatch(this.target, ChibaEventNames.ITEM_DELETED, map);
-//        }
-//    }
-	
-//	@Override
-//	protected void updateItemset() throws XFormsException {
-//		/*super.updateItemset();
-//		if (true) {
-//			return;
-//		}*/
-//        List<Element> items = getConvertedItems(getAllItemNodes());
-//		
-//		// check nodeset count
-//        int count = items.size();
-//        int size = this.items.size();
-//
-//        if (count < size) {
-//            // remove obsolete selector items
-//            if (getLogger().isDebugEnabled()) {
-//                getLogger().debug(this + " update: disposing " + (size - count) + " selector item(s)");
-//            }
-//            for (int position = size; position > count; position--) {
-//                disposeSelectorItem((Item) this.items.remove(position - 1));
-//            }
-//        }
-//
-//        if (count > size) {
-//            // add missing selector items
-//            if (getLogger().isDebugEnabled()) {
-//                getLogger().debug(this + " update: initializing " + (count - size) + " selector item(s)");
-//            }
-//            
-//            for (int position = size + 1; position <= count; position++) {
-//                this.items.add(initializeSelectorItem(position, items.get(position-1)));
-//            }
-//        }
-//	}
-
-	@Override
-	protected void initializePrototype() {
-		super.initializePrototype();
-		
-		// remove itemset prototype
-//        DOMUtil.removeAllChildren(getPrototype());
-//		
-//		List<Element> items = getConvertedItems(getAllItemNodes());
-//		if (ListUtil.isEmpty(items)) {
-//			return;
-//		}
-//		
-//		for (Element item : items) {
-//			try {
-//				initializeSelectorItem(items.indexOf(item) + 1, item);
-//			} catch (XFormsException e) {
-//				LOGGER.warn("Unable to initialize item: " + item, e);
-//			}
-//			
-//			Document owner = getPrototype().getOwnerDocument();
-//	        Node nodeToImport = null;
-//	        if (owner != null) {
-//	        	nodeToImport = owner.importNode(item, true);
-//	        }
-//			
-//			getPrototype().insertBefore(nodeToImport, null);
-//		}
-	}
-	
 	
 }

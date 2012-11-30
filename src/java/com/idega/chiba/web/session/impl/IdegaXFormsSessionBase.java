@@ -38,35 +38,35 @@ import com.idega.presentation.IWContext;
 public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
 	private static final AtomicLong SESSION_COUNTER = new AtomicLong();
-	
+
 	private String httpSessionId;
 	private String originalKey;
-	
+
 	private Class<? extends HttpSession> httpSesionClass;
-	
+
 	private boolean finished;
-	
+
 	private long created;
-	
+
 	public IdegaXFormsSessionBase(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws XFormsException {
 		super(request, response, new IdegaXFormHttpSession(session.getServletContext(), session.getId(), session.getCreationTime()));
-		
+
 		originalKey = key;
 		//	Ensure uniqueness - System.CurrentTimeMills might not be unique for different threads.
 		this.key = (this.getKey() + SESSION_COUNTER.incrementAndGet());
-		
+
 		httpSessionId = session.getId();
 		httpSesionClass = httpSession.getClass();
-		
+
 		created = System.currentTimeMillis();
 	}
-	
+
 	@Override
 	protected void createAdapter() {
 		this.adapter = isScripted() ? new IdegaFluxAdapter(key) /*new FluxAdapter()*/ : new ServletAdapter();
 		adapter.setXFormsSession(this);
 	}
-	
+
 	/**
      * processes the request after init.
      * @throws IOException
@@ -79,7 +79,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         updateLRU();
 
         WebUtil.nonCachingResponse(response);
-        
+
         try {
             XMLEvent exitEvent = adapter.checkForExitEvent();
             if (exitEvent == null) {
@@ -103,7 +103,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     setProperty(XFormsSession.REFERER, request.getContextPath() + request.getServletPath() + "?" + referer);
                     //actually register the XFormsSession with the manager
                     getManager().addXFormsSession(this);
-                   
+
                     /* The XFormsSessionManager is kept in the http-session though it is accessible as singleton. Subsequent
                     servlets should access the manager through the http-session attribute as below to ensure the http-session
                     is refreshed.*/
@@ -113,9 +113,9 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     	httpSession.setAttribute(XFormsSessionManager.XFORMS_SESSION_MANAGER, IdegaXFormSessionManagerImpl.getXFormsSessionManager());
                     }
 
+                    //	Converting XForm to the HTML
                     FacesContext context = FacesContext.getCurrentInstance();
-                    
-                    uiGenerator.setInput(this.getAdapter().getXForms());
+                    uiGenerator.setInput(getAdapter().getXForms());
                     uiGenerator.setOutput(context.getResponseWriter());
                     uiGenerator.generate();
                 }
@@ -128,7 +128,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
             throw new XFormsException(e);
         }
     }
-	
+
     @Override
 	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
     	XSLTGenerator generator = (XSLTGenerator) super.createUIGenerator();
@@ -141,7 +141,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		try {
 			IWContext iwc = IWContext.getIWContext(context);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
-	
+
 			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data..."));
 			generator.setParameter("loadingLayerMsg", iwrb.getLocalizedString("chiba.loading_layer_message", "Loading..."));
 			generator.setParameter("reloadPageBecauseOfErrorMsg", iwrb.getLocalizedString("chiba.reload_page_because_of_error_message",
@@ -161,13 +161,13 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		return generator;
     }
-    
+
     @Override
 	protected void initChibaConfig() throws XFormsException {
-		//Configuration is done once on application startup. 
+		//Configuration is done once on application startup.
     	//No need to do it for each session.
 	}
 
@@ -184,7 +184,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 			return null;
 		}
     }
-    
+
     public IWBundle getBundle(FacesContext ctx, String bundleIdentifier) {
     	IWMainApplication iwma = IWMainApplication.getIWMainApplication(ctx);
 		return iwma.getBundle(bundleIdentifier);
@@ -197,7 +197,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	public String getOriginalKey() {
 		return originalKey;
 	}
-	
+
 	public boolean isFinished() {
 		return finished;
 	}
@@ -205,7 +205,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	public void setFinished(boolean finished) {
 		this.finished = finished;
 	}
-	
+
 	public Class<? extends HttpSession> getSessionClass() {
 		return httpSesionClass;
 	}
@@ -213,7 +213,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 	public long getCreatedTimestamp() {
 		return created;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "XForm session. Key: ".concat(getKey()).concat(" for HTTP session: ").concat(getHttpSessionId() + ". Ready to be deleted: " + isFinished() +
