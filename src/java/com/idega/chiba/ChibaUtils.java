@@ -367,8 +367,13 @@ public class ChibaUtils extends DefaultSpringBean {
     	return firedActions.get(sessionId);
     }
 
-    private XFormsElement getXFormElement(XFormsSession session, String id) {
-    	return ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(id);
+    public XFormsElement getXFormElement(XFormsSession session, String id) {
+    	try {
+    		return ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(id);
+    	} catch (Exception e) {
+    		getLogger().log(Level.WARNING, "Error getting XFormsElement by session " + session + " and ID " + id, e);
+    	}
+    	return null;
     }
 
     public String getVariableNameByXFormElementId(String sessionKey, String xFormElementId) {

@@ -247,7 +247,7 @@ function chibaActivate(target) {
 		var originalElement = this;
 		var textArea = jQuery(originalElement);
 		var id = textArea.attr('id');
-		if (id != null && id != '' && id.indexOf('value') != -1) {
+		if (id != null && id != '' && id.indexOf('value') != -1 && id.indexOf('repeat') == -1) {
 			var changeEvent = jQuery.Event('change');
 			changeEvent.srcElement = originalElement;
 			changeEvent.forceControl = true;
