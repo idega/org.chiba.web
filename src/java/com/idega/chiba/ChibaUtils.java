@@ -378,8 +378,17 @@ public class ChibaUtils extends DefaultSpringBean {
 			XFormsElement element = getXFormElement(session, xFormElementId);
 			String variableName = null;
 			if (element instanceof BindingElement && ((BindingElement) element).isBound()) {
-				for (Iterator<?> iter = submissionModel.getInstance("data-instance").iterateModelItems(((BindingElement) element).getLocationPath(), true);
-						(iter.hasNext() && StringUtil.isEmpty(variableName));) {
+				Iterator<?> items = null;
+				try {
+					items = submissionModel.getInstance("data-instance").iterateModelItems(((BindingElement) element).getLocationPath(), true);
+				} catch (Exception e) {
+					getLogger().log(Level.WARNING, "Error getting model items for element " + element, e);
+				}
+
+				if (items == null)
+					return null;
+
+				for (Iterator<?> iter = items; (iter.hasNext() && StringUtil.isEmpty(variableName));) {
 					Object item = iter.next();
 					if (item instanceof ModelItem) {
 						Object node = ((ModelItem) item).getNode();
