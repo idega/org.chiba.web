@@ -147,6 +147,9 @@ function getXFormsControlValue(xformsControl){
             value = widget.innerText;
         } else {
         	value = jQuery(widget).text();
+        	if (value == null || value == '')
+        		return null;
+        	return value;
         }
     }else if (_hasClass(xformsControl,"range")){
         value = widget.value;
