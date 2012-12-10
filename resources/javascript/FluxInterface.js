@@ -184,6 +184,11 @@ function closeSession() {
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 
+window.onerror = function(msg, url, line) {
+	handleExceptions(msg, {lineNumber: line, url: url, message: msg});
+	return true;	//	Browser will not respond to the error
+}
+
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
@@ -218,7 +223,8 @@ FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 		return false;
 	}
 	
-	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' || msg == 'OK' || msg == 'PresentationContext is not defined')
+	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' ||
+		msg == 'OK' || msg == 'PresentationContext is not defined')
 		return;
 	
 	IWCORE.sendExceptionNotification(msg, ex, Localization.RELOAD_PAGE);
