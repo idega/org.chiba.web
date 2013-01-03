@@ -41,11 +41,11 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 
 	@Override
 	public URI executeMove(URI uri, Object resource) {
+		if (!(resource instanceof Node))
+			throw new IllegalArgumentException("Wrong type resource argument provided = "+resource.getClass().getName()+" instead of " +
+					Node.class.getName());
 
-		if(!(resource instanceof Node))
-			throw new IllegalArgumentException("Wrong type resource argument provided = "+resource.getClass().getName()+" instead of "+Node.class.getName());
-
-		Node item = (Node)resource;
+		Node item = (Node) resource;
 
 		FileURIHandler furihandler = getFileURIHandlerFactory().getHandler(uri);
 		InputStream fis = null;

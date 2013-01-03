@@ -275,6 +275,7 @@
         <div id="chiba-body">
             <xsl:copy-of select="@*"/>
        
+       	<!-- | .//idega:*[not(xforms:model)][not(ancestor::xforms:*)] | .//idega:*[not(xforms:model)][not(ancestor::idega:*)] -->
             <xsl:variable name="outermostNodeset"
                 select=".//xforms:*[not(xforms:model)][not(ancestor::xforms:*)]"/>
 
@@ -307,7 +308,13 @@
     match outermost group of XForms markup. An outermost group is necessary to allow standard HTML forms
     to coexist with XForms markup and still produce non-nested form tags in the output.
     -->
-    <xsl:template match="xforms:group[not(ancestor::xforms:*)][1] | xforms:repeat[not(ancestor::xforms:*)][1] | xforms:switch[not(ancestor::xforms:*)][1] | idega:switch[not(ancestor::xforms:*)][1]" mode="inline">
+    <xsl:template 
+    	match="
+    		xforms:group[not(ancestor::xforms:*)][1] | 
+    		xforms:repeat[not(ancestor::xforms:*)][1] | 
+    		xforms:switch[not(ancestor::xforms:*)][1] | 
+    		idega:switch[not(ancestor::xforms:*)][1]" 
+    	mode="inline">
         <xsl:element name="form">
             <xsl:attribute name="name">
                 <xsl:value-of select="$form-id"/>
@@ -415,13 +422,23 @@
     <xsl:template match="xforms:model" mode="inline"/>
     
     <!-- ### skip idega ns elements ### -->
-    <xsl:template match="idega:*"/>
+    <!-- <xsl:template match="idega:*"/> -->
 
     <!-- ######################################################################################################## -->
     <!-- #####################################  CONTROLS ######################################################## -->
     <!-- ######################################################################################################## -->
 
-    <xsl:template match="xforms:input|xforms:range|xforms:secret|xforms:select|xforms:select1|xforms:textarea|xforms:upload">
+    <xsl:template 
+    	match="
+    		xforms:input|
+    		xforms:range|
+    		xforms:secret|
+    		xforms:select|
+    		xforms:select1|
+    		xforms:textarea|
+    		xforms:upload|
+    		idega:select1">
+    
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="control-classes">
             <xsl:call-template name="assemble-control-classes"/>
@@ -432,9 +449,13 @@
 
         <div id="{$id}" class="{$control-classes}">
 			<xsl:if test="@style">
-				<xsl:attribute name="style"><xsl:value-of select="@style"/></xsl:attribute>
+				<xsl:attribute name="style">
+					<xsl:value-of select="@style"/>
+				</xsl:attribute>
 			</xsl:if>
-            <label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
+            <label for="{$id}-value" id="{$id}-label" class="{$label-classes}">
+            	<xsl:apply-templates select="xforms:label"/>
+            </label>
             <xsl:call-template name="buildControl"/>
         </div>
     </xsl:template>
@@ -450,7 +471,25 @@
         </xsl:variable>
 
         <span id="{$id}" class="{$control-classes}">
-			<label for="{$id}-value" id="{$id}-label" class="{$label-classes}"><xsl:apply-templates select="xforms:label"/></label>
+			<label for="{$id}-value" id="{$id}-label" class="{$label-classes}">
+				<xsl:apply-templates select="xforms:label"/>
+			</label>
+            <xsl:call-template name="buildControl"/>
+        </span>
+    </xsl:template>
+    <xsl:template match="idega:output">
+        <xsl:variable name="id" select="@id"/>
+        <xsl:variable name="control-classes">
+            <xsl:call-template name="assemble-control-classes"/>
+        </xsl:variable>
+        <xsl:variable name="label-classes">
+            <xsl:call-template name="assemble-label-classes"/>
+        </xsl:variable>
+
+        <span id="{$id}" class="{$control-classes}">
+			<label for="{$id}-value" id="{$id}-label" class="{$label-classes}">
+				<xsl:apply-templates select="xforms:label"/>
+			</label>
             <xsl:call-template name="buildControl"/>
         </span>
     </xsl:template>
@@ -475,7 +514,9 @@
         <xsl:apply-templates/>
 
         <!-- check for requiredness -->
-        <xsl:if test="../chiba:data/@chiba:required='true'"><span class="required-symbol">*</span></xsl:if>
+        <xsl:if test="../chiba:data/@chiba:required='true'">
+        	<span class="required-symbol">*</span>
+        </xsl:if>
     </xsl:template>
 
     <!-- ### handle hint ### -->

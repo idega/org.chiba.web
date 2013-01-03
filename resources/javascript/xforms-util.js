@@ -63,8 +63,12 @@ function _removeClass (element, clazz) {
 
     // surround classes with spaces to guarantee non-ambigous lookups
     if ((" " + element.className + " ").indexOf(" " + clazz + " ") > -1) {
-        var classList = (" " + element.className + " ").replace(new RegExp(" " + clazz + " "), " ");
-        element.className = classList.slice(1, classList.length - 1);
+    	try {
+	        var classList = (" " + element.className + " ").replace(new RegExp(" " + clazz + " "), " ");
+	        element.className = classList.slice(1, classList.length - 1);
+    	} catch (e) {
+    		jQuery(element).removeClass(clazz);
+    	}
         return true;
     }
 
@@ -87,7 +91,10 @@ function _replaceClass (element, current, update) {
     var classUpdate = " " + update + " ";
 
     if (classList.indexOf(classUpdate) == -1) {
-        var newClassName = classList.replace(new RegExp(classCurrent), classUpdate);
+        var newClassName = classUpdate;
+        try {
+        	newClassName = classList.replace(new RegExp(classCurrent), classUpdate);
+        } catch (e) {}
         if (newClassName.indexOf(classUpdate) == -1) {
             // ensure the new class name, even if no replacement happened
             newClassName = classList + update + " ";
@@ -116,15 +123,15 @@ function getClassComponent(className, position){
 function getXFormsControlValue(xformsControl){
     var widget = $(xformsControl.id + "-value");
     dojo.debug("getXFormsControlValue: xfromsControl: " + widget);
-    if(!widget){
+    if (widget == null) 
         return null;
-    }
+
     var value = null;
     if (_hasClass(xformsControl,"input")){
         if(_hasClass(xformsControl,"date")){
             var dateWidget = dojo.widget.byId(xformsControl.id + "-value");
             value = dateWidget.getValue();
-        } else if(widget.type.toLowerCase() == "checkbox") {
+        } else if(widget.type != null && widget.type.toLowerCase() == "checkbox") {
             if(widget.checked){
                 value = "true";
             }else{
@@ -134,10 +141,15 @@ function getXFormsControlValue(xformsControl){
             value = widget.value;
         }
     }else if (_hasClass(xformsControl,"output")){
-        if (widget.type.toLowerCase() == "a") {
+        if (widget.type != null && widget.type.toLowerCase() == "a") {
             value = widget.href;
-        }else if (widget.type.toLowerCase() == "span"){
+        } else if (widget.type != null && widget.type.toLowerCase() == "span"){
             value = widget.innerText;
+        } else {
+        	value = jQuery(widget).text();
+        	if (value == null || value == '')
+        		return null;
+        	return value;
         }
     }else if (_hasClass(xformsControl,"range")){
         value = widget.value;
@@ -145,7 +157,7 @@ function getXFormsControlValue(xformsControl){
         value = widget.value;
     }else if (_hasClass(xformsControl,"select")){
         var result="";
-        if (widget.type.toLowerCase() == "select-multiple") {
+        if (widget.type != null && widget.type.toLowerCase() == "select-multiple") {
             var options = widget.options.length;
             var option;
             for (var i = 0; i < options; i++) {
@@ -166,7 +178,7 @@ function getXFormsControlValue(xformsControl){
             value=result;
         }
     }else if (_hasClass(xformsControl,"select1")){
-        if (widget.type.toLowerCase() == "select-one") {
+        if (widget.type != null && widget.type.toLowerCase() == "select-one") {
             var options = widget.options.length;
             var option;
             for (var i = 0; i < options; i++) {
@@ -274,15 +286,19 @@ function manageHelpTextIconsForForm() {
 }
 
 XFormsUtil.downloadAgreement = function() {
-	FluxInterfaceHelper.changingUriManually = true;
-	showLoadingMessage(Localization.LOADING_MSG);
 	var processName = null;
-	if (BPMConfiguration) {
+	if (typeof BPMConfiguration != 'undefined') {
 		if (BPMConfiguration.processName) {
 			processName = BPMConfiguration.processName;
 		}
 	}
 	
+	XFormsUtil.downloadAgreementWithProcessName(processName);
+}
+
+XFormsUtil.downloadAgreementWithProcessName = function(processName) {
+	FluxInterfaceHelper.changingUriManually = true;
+	showLoadingMessage(Localization.LOADING_MSG);
 	LazyLoader.loadMultiple(['/dwr/interface/ProcessAgreementProvider.js', '/dwr/engine.js'], function() {
 		try {
 			ProcessAgreementProvider.getAgreementForProcess(processName, {
@@ -300,3 +316,11 @@ XFormsUtil.downloadAgreement = function() {
 		}
 	}, null);
 }
+
+jQuery(window).load(function() {
+	window.onerror = function(exception) {
+		exception.reloadPage = true;
+		exception.messageToClient = Localization.RELOAD_PAGE;
+		IWCORE.sendExceptionNotification('Error on XForm', exception, Localization.RELOAD_PAGE);
+	};
+});

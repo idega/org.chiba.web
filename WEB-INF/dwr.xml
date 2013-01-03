@@ -19,6 +19,8 @@
             <include method="deleteXFormSessionManually"/>
             <include method="sendInformationAboutXFormsSessions"/>
             <include method="getNodesetValue"/>
+            <include method="getXFormDestroyInfo"/>
+            <include method="doRemoveXFormDestroyInfo"/>
         </create>
         <create creator="spring" javascript="ChibaUtils">
         	<param name="beanName" value="chibaUtils" />

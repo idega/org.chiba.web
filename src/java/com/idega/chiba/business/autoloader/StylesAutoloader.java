@@ -16,7 +16,7 @@ import com.idega.core.file.util.MimeTypeUtil;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.idegaweb.IWMainSlideStartedEvent;
+import com.idega.idegaweb.RepositoryStartedEvent;
 import com.idega.util.IOUtil;
 
 /**
@@ -37,8 +37,8 @@ public class StylesAutoloader extends DefaultSpringBean implements ApplicationLi
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent applicationEvent) {
-		if (applicationEvent instanceof IWMainSlideStartedEvent) {
-			IWMainApplication iwma = ((IWMainSlideStartedEvent)applicationEvent).getIWMA();
+		if (applicationEvent instanceof RepositoryStartedEvent) {
+			IWMainApplication iwma = ((RepositoryStartedEvent)applicationEvent).getIWMA();
 			IWApplicationContext iwac = iwma.getIWApplicationContext();
 
 			String path = IWBundleStarter.SLIDE_STYLES_PATH + IWBundleStarter.CHIBA_CSS;

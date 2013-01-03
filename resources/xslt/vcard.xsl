@@ -66,12 +66,15 @@
     <xsl:template match="xforms:model"/>
 
     <xsl:template match="xforms:group[@id='group-tabsheet']">
-        <xsl:variable name="selected-case" select="xforms:switch/xforms:case[@xforms:selected='true'] | idega:switch/xforms:case[@xforms:selected='true']"/>
+        <xsl:variable 
+        	name="selected-case" 
+        	select="xforms:switch/xforms:case[@xforms:selected='true'] | idega:switch/xforms:case[@xforms:selected='true']"/>
         <table>
             <tr>
                 <xsl:for-each select="xforms:trigger">
                     <xsl:choose>
-                        <xsl:when test="xforms:action/xforms:toggle/@xforms:case=$selected-case/@id">
+                        <xsl:when 
+                        	test="xforms:action/xforms:toggle/@xforms:case=$selected-case/@id">
                             <td class="active-tab">
                                 <xsl:apply-templates select="xforms:label"/>
                             </td>
@@ -79,14 +82,20 @@
                         <xsl:otherwise>
                             <td class="inactive-tab">
                                 <!--                                <input type="submit" name="{chiba:data/@chiba:name}" value="{xforms:label}" class="inactive-tab-button"/>-->
-                                <input type="submit" name="{concat('t_',@id)}" value="{xforms:label}" class="inactive-tab-button"/>
+                                <input 
+                                	type="submit" 
+                                	name="{concat('t_',@id)}" 
+                                	value="{xforms:label}" 
+                                	class="inactive-tab-button"/>
                             </td>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:for-each>
                 <td class="filler-tab">
                     <a href="http://chiba.sourceforge.net">
-                        <xsl:value-of disable-output-escaping="yes" select="'&amp;copy;'"/> 2003 Chiba Project
+                        <xsl:value-of 
+                        	disable-output-escaping="yes" 
+                        	select="'&amp;copy;'"/> 2003 Chiba Project
                     </a>
                 </td>
             </tr>
@@ -105,7 +114,11 @@
         <div class="action-panel">
             <xsl:for-each select="xforms:trigger">
                 <!--                <input type="submit" name="{chiba:data/@chiba:name}" value="{xforms:label}" class="action-button"/>-->
-                <input type="submit" name="{concat('t_',@id)}" value="{xforms:label}" class="action-button"/>
+                <input 
+                	type="submit" 
+                	name="{concat('t_',@id)}" 
+                	value="{xforms:label}" 
+                	class="action-button"/>
             </xsl:for-each>
         </div>
     </xsl:template>
@@ -117,7 +130,8 @@
                     <xsl:apply-templates select="xforms:label"/>
                 </td>
             </tr>
-            <xsl:for-each select="xforms:input|xforms:select1|xforms:textarea">
+            <xsl:for-each 
+            	select="xforms:input|xforms:select1|idega:select1|xforms:textarea">
                 <tr>
                     <td class="control-label">
                         <xsl:apply-templates select="xforms:label"/>
@@ -132,7 +146,8 @@
 
     <xsl:template match="xforms:group">
         <table class="hidden-table">
-            <xsl:for-each select="xforms:input|xforms:select1|xforms:textarea">
+            <xsl:for-each 
+            	select="xforms:input|xforms:select1|idega:select1|xforms:textarea">
                 <tr>
                     <td class="control-label">
                         <xsl:apply-templates select="xforms:label"/>
@@ -145,7 +160,7 @@
         </table>
     </xsl:template>
 
-    <xsl:template match="xforms:select1">
+    <xsl:template match="xforms:select1 | idega:select1">
         <xsl:call-template name="select1">
             <!--            <xsl:with-param name="name" select="chiba:data/@chiba:name"/>-->
             <xsl:with-param name="name" select="concat('d_',@id)"/>

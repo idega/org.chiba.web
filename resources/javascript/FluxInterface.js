@@ -25,16 +25,25 @@ if(Localization == null) {
 	Localization.ERROR_SAVING_FORM					= 'Unable to save data. Please re-fill form with data';
 	Localization.CONTINUE_OR_STOP_FILLING_FORM		= 'The form was successfully saved. Do you want to continue filling the form?';
 	Localization.USER_MUST_BE_LOGGED_IN				= 'Your session has expired, you must to login to continue your work';
+	Localization.CHARACTERS_LEFT					= null;
 }
+
+Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM		= 'Are you sure you want to navigate from unfinished form?';
+Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS	= 'Are you sure you want to navigate from this page while upload is in progress?';
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
 
+FluxInterfaceHelper.SUBMITTED = false;
+FluxInterfaceHelper.FINISHED = false;
+FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
+
 FluxInterfaceHelper.CLOSED_SESSIONS = [];
 
 var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
+FluxInterfaceHelper.repeatInputMaskInitialization = true;
 
 FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
@@ -50,22 +59,56 @@ function initXForms(){
 registerEvent(window, 'load', function() {
 	var loadedAt = new Date();
 	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
+	
+	//	Checking if a form was submitted previously
+	var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
+	if (taskId != null) {
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
+			BPMProcessAssets.isTaskSubmitted(taskId, {
+				callback: function(result) {
+					FluxInterfaceHelper.FINISHED = result;
+				}
+			});
+		});
+	}
 });
 
 /******************************************************************************
  SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 window.onbeforeunload = function(e) {
-	if (FluxInterfaceHelper.changingUriManually) {
+	if (FluxInterfaceHelper.changingUriManually)
 		return;
-	}
 	
+	if (isChromeBrowser()) {
+		if (!FluxInterfaceHelper.isSafeToLeave()) {
+			return FluxInterfaceHelper.UPLOAD_IN_PROGRESS ?
+				Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS : Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM;
+		}
+	} else if (!FluxInterfaceHelper.isSafeToLeave())
+		return false;
+		
 	showLoadingMessage(Localization.CLOSING);
 	//	We want to close session on before unload event
 	closeSession();
 	
-    if (!e) e = event;
+    if (!e)
+    	e = event;
     return unload(e);
+}
+
+FluxInterfaceHelper.isSafeToLeave = function() {
+	if (FluxInterfaceHelper.SUBMITTED || FluxInterfaceHelper.FINISHED)
+		return true;
+	
+	if (isChromeBrowser())
+		closeAllLoadingMessages();
+	var confirmedToLeave = false;
+	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
+	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
+		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+	return confirmedToLeave;
 }
 
 function unload(e) {
@@ -141,16 +184,30 @@ function closeSession() {
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 
+window.onerror = function(msg, url, line) {
+	handleExceptions(msg, {lineNumber: line, url: url, message: msg});
+	return true;	//	Browser will not respond to the error
+}
+
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
-	if (ex != null && ex.messageToClient != null && ex.messageToClient != '-') {
-		humanMsg.displayMsg(ex.messageToClient, {
-			timeout: 5000,
-			callback: function() {
+	var useErrorMessage = IE && msg != null;
+	if (useErrorMessage || (ex != null && ex.messageToClient != null && ex.messageToClient != '-')) {
+		if (IE) {
+			if (useErrorMessage) {
+				ex.messageToClient = msg;
+				ex.reloadPage = true;
+				IWCORE.sendExceptionNotification(msg, ex, msg);
+			} else
 				FluxInterfaceHelper.sendExceptionNotification(msg, ex);
-			}
-		});
+		} else
+			humanMsg.displayMsg(ex.messageToClient, {
+				timeout: 5000,
+				callback: function() {
+					FluxInterfaceHelper.sendExceptionNotification(msg, ex);
+				}
+			});
 	} else {
 		FluxInterfaceHelper.sendExceptionNotification(msg, ex);
 	}
@@ -165,6 +222,10 @@ FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 		});
 		return false;
 	}
+	
+	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' ||
+		msg == 'OK' || msg == 'PresentationContext is not defined')
+		return;
 	
 	IWCORE.sendExceptionNotification(msg, ex, Localization.RELOAD_PAGE);
 	
@@ -182,9 +243,31 @@ function submitFunction(control) {
 }
 
 FluxInterfaceHelper.afterChibaActivate = null;
+FluxInterfaceHelper.beforeChibaActivate = null;
+FluxInterfaceHelper.chibaActivateProps = null;
 
 // call processor to execute a trigger
 function chibaActivate(target) {
+	//	Preparing text areas
+	jQuery('textarea').each(function() {
+		var originalElement = this;
+		var textArea = jQuery(originalElement);
+		var id = textArea.attr('id');
+		if (id != null && id != '' && id.indexOf('value') != -1 && id.indexOf('repeat') == -1) {
+			var changeEvent = jQuery.Event('change');
+			changeEvent.srcElement = originalElement;
+			changeEvent.forceControl = true;
+			FluxInterfaceHelper.chibaActivateProps = {
+				control: originalElement
+			};
+			textArea.trigger(changeEvent);
+			FluxInterfaceHelper.chibaActivateProps = null;
+		}
+	});
+	//	Executing custom functions
+	if (FluxInterfaceHelper.beforeChibaActivate != null)
+		FluxInterfaceHelper.beforeChibaActivate(target);
+	
 	if (typeof(target) == 'string') {
 		target = document.getElementById(target);
 	}
@@ -214,7 +297,7 @@ function chibaActivate(target) {
 		callback: function(data) {
 			updateUI(data, function() {
 				if (FluxInterfaceHelper.afterChibaActivate != null)
-					FluxInterfaceHelper.afterChibaActivate();
+					FluxInterfaceHelper.afterChibaActivate(target);
 			});
 		}
 	});
@@ -224,7 +307,6 @@ function chibaActivate(target) {
 
 // call processor to update a controls' value
 function setXFormsValue(control, forceControl) {
-	
 	var sessionKey = document.getElementById("chibaSessionKey").value;
     if (existsElementInArray(FluxInterfaceHelper.CLOSED_SESSIONS, sessionKey)) {
     	redirectForm(Localization.SESSION_EXPIRED, {
@@ -239,7 +321,10 @@ function setXFormsValue(control, forceControl) {
     var target = null;
     
     //	forceControll is used to ignore the window.event => set to true if you want to call this function on a control, other than the source of the event
-    if (window.event && !forceControl) {
+	if (FluxInterfaceHelper.chibaActivateProps != null && FluxInterfaceHelper.chibaActivateProps.control != null) {
+		target = FluxInterfaceHelper.chibaActivateProps.control;
+		FluxInterfaceHelper.chibaActivateProps.control = null;
+	} else if (window.event && !forceControl) {
         target = window.event.srcElement;
         if (target == null || target.id == null) {
         	target = control;
@@ -443,7 +528,8 @@ function updateUI(data, callback) {
     }
     
     if (eventLog == null || eventLog.length == 0) {
-    	closeAllLoadingMessages();
+    	if (FluxInterfaceHelper.SUBMITTED)
+    		closeAllLoadingMessages();
     	return;
     }
     
@@ -599,6 +685,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             context.handleFocus(targetId);
             break;
         case "xforms-submit-done":
+        	FluxInterfaceHelper.SUBMITTED = true;
         	var uri = properties["uri"];
         	if (uri != null) {
         		window.setTimeout(function() {
@@ -610,6 +697,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
             dojo.debug("Event " + type + " unknown");
             break;
     }
+    
+    if (FluxInterfaceHelper.repeatInputMaskInitialization)
+    	FluxInterfaceHelper.initializeMaskedInputs();
 }
 
 var submissionErrors = 0;
@@ -809,7 +899,7 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 	jQuery.each(jQuery('.xFormInputMask_personalId'), function() {
 		var input = jQuery(jQuery('input', jQuery(this))[0]);
 		
-		if (XFormsConfig.locale == 'sv_SE')
+		if (XFormsConfig.locale == 'sv_SE' || XFormsConfig.locale == 'is_IS')
 			input.mask('9999999999');
 	});
 	
@@ -818,8 +908,18 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		
 		input.keypress(function(event) {
 			// Allow only backspace and delete
-			if (event.which == 46 || event.which == 8 || event.which == 0) {
+			//	46:	delete
+			//	8:	backspace
+			//	0:	navigation arrows (up, down, left, right)
+			if (event.which == 8 || event.which == 0) {
 				// let it happen, don't do anything
+			} else if (event.which == 46) {
+				if (event.keyCode == 46 && event.charCode == 0) {
+					//	Delete
+				} else {
+					//	Dot button
+					event.preventDefault();
+				}
 			} else {
 				// Ensure that it is a number and stop the keypress
 				if (event.which < 48 || event.which > 57) {
@@ -829,16 +929,55 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		});
 	});
 	
+	jQuery.each(jQuery('.xFormInputMask_carNumber'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+	    var filter = /^[-_\s]$/;
+	    
+	    input.keypress(function(event) {
+	        var code;
+	        if (!event) var event = window.event;
+	        if (event.keyCode) code = event.keyCode;
+	        else if (event.which) code = event.which;
+	        var character = String.fromCharCode(code);
+	        
+	        if (filter.test(character)) {
+	            event.preventDefault();
+	        }
+	    });
+	});
+	
+	jQuery.each(jQuery('.xFormInputMask_year'), function() {
+		var input = jQuery(jQuery('input', jQuery(this))[0]);
+		
+		input.mask('9999');
+	});
+	
+	jQuery.mask.definitions['M']='[01]';
+
+	jQuery.each(jQuery('.xFormInputMask_percentage input'), function() {
+		var input = jQuery(this);
+		
+		input.mask('M99,99');
+	});
+	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
-		WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
-			callback: function(text) {
-				jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
-					var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
-					FluxInterfaceHelper.initializeCharactersCounter(textArea, text, 1000);
-				});
-			}
-		});
+		if (Localization.CHARACTERS_LEFT == null) {
+			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
+				callback: function(localizedText) {
+					Localization.CHARACTERS_LEFT = localizedText;
+					FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
+				}
+			});
+		} else
+			FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
 	}, null);
+}
+
+FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-1000'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1000);
+	});
 }
 
 FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit) {
@@ -861,16 +1000,17 @@ FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit
 		});
 	};
 	
-	if (text == null) {
+	if (Localization.CHARACTERS_LEFT == null) {
 		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
 			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
 				callback: function(localizedText) {
-					addCharactersCounter(textArea, localizedText);
+					Localization.CHARACTERS_LEFT = localizedText;
+					addCharactersCounter(textArea, Localization.CHARACTERS_LEFT);
 				}
 			});
 		}, null);
 	} else {
-		addCharactersCounter(textArea, text);
+		addCharactersCounter(textArea, Localization.CHARACTERS_LEFT);
 	}
 }
 

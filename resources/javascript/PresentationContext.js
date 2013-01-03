@@ -8,6 +8,8 @@
 PresentationContext = function() {
 };
 
+PresentationContext.afterCloneInitialized = null;
+
 // Static member
 
 PresentationContext.CHIBA_PSEUDO_ITEM = "chiba-pseudo-item";
@@ -71,13 +73,20 @@ PresentationContext.prototype.handleReplaceAll = function(webcontext) {
 PresentationContext.prototype.handleStateChanged = function(targetId, targetName, valid, readonly, required, enabled, value, type) {
   dojo.debug("PresentationContext.handleStateChanged: targetId='" + targetId + "', targetName='" + targetName + "',  valid='" + valid + "',  readonly='" + readonly + "',  required='" + required + "',  enabled='" + enabled + "',  value='" + value + "'");
 
+	if (targetId == null)
+		return;
+
   var target = document.getElementById(targetId);
   if (target == null) {
+  	if (value == null)
+  		return;
+  	
   	var errorMessage = "Element with ID '" + targetId + "' was not found while trying to set value '" + value +
   		"' for it in PresentationContext.handleStateChanged method. Parameters: targetName='"+targetName+"', valid='"+valid+"', readonly='"+readonly+
   		"', required='"+required+"', enabled='"+enabled+"', type='"+type+"'.";
   	if (targetId == 'C10' && XFormsConfig)
   		errorMessage += '\nPROBABLY there are missing some localizations for the form using locale: ' + XFormsConfig.locale;
+  	
   	throw new Error(errorMessage, 'PresentationContext.js', 75);
     return;
   }
@@ -542,6 +551,18 @@ PresentationContext._setReadonlyProperty = function(target, readonly, type) {
 // HELPER METHODS - hidden datastructure for options
 //--------------------------------------------------
 
+getParentIDOfSelect = function(element) {
+	var parentElement = element.parentNode;
+	var id = null;
+	
+	if (parentElement != null) {
+		id = parentElement.id;
+	}
+	
+	alert(id);
+	return id;
+}
+
 /**
  * Called on start up to fill in the first values.
  * @param string original_id
@@ -672,6 +693,9 @@ _updateSelectionOfClone = function(original_id, clone_id){
     for (var i = 0; i < original.options.length; i++){
         clone.options[i].selected = original.options[i].selected;
     }
+    
+    if (PresentationContext.afterCloneInitialized != null)
+    	PresentationContext.afterCloneInitialized(clone_id);
 };
 
 /**
@@ -968,6 +992,8 @@ PresentationContext._setControlLabel = function(parentId, value) {
                             if (_hasClass(table, "compact-repeat")) {
                                 // dojo.debug("ignoring label for '" + parentId + "' in compact repeat");
                                 break;
+                            } else {
+                            	return;
                             }
                         }
                     }
@@ -1090,7 +1116,7 @@ PresentationContext._cloneSelectorPrototype = function(targetId, originalId, pro
  * @param value the original id.
  */
 PresentationContext._setGeneratedId = function(targetId, originalId) {
-//    dojo.debug("PresentationContext._setGeneratedId: " + targetId + "='" + originalId + "'");
+    dojo.debug("PresentationContext._setGeneratedId: " + targetId + "='" + originalId + "'");
 
     var array = PresentationContext.GENERATED_IDS[PresentationContext.GENERATED_IDS.length - 1];
     array[originalId] = targetId;
@@ -1098,6 +1124,8 @@ PresentationContext._setGeneratedId = function(targetId, originalId) {
     array[originalId + "-label"] = targetId + "-label";
     array[originalId + "-alert"] = targetId + "-alert";
     array[originalId + "-required"] = targetId + "-required";
+    // Not sure if works martynas@idega.com:
+    array["clone-" + originalId + "-value"] = "clone-" + targetId + "-value";
 
     if (!array[PresentationContext.CHIBA_PSEUDO_ITEM]) {
         // we have to add a special 'chiba-pseudo-item' mapping, since for itemsets
@@ -1390,24 +1418,28 @@ PresentationContext._setRepeatIndex = function(targetId, originalId, index) {
         }
 
         var repeatElement = PresentationContext._getRepeatNode(targetElement);
-        var repeatItems = repeatElement.childNodes;
-        for (var i = 0; i < repeatItems.length; i++) {
-            // lookup repeat items
-            if (repeatItems[i].nodeType == 1 && _hasClass(repeatItems[i], "repeat-item")) {
-                currentPosition++;
-
-                if (currentPosition == targetPosition) {
-                    // select item
-                    _addClass(repeatItems[i], "repeat-index");
-                }
-                else {
-                    // deselect item
-                    _removeClass(repeatItems[i], "repeat-index");
-                }
-
-                // remove preselection
-                _removeClass(repeatItems[i], "repeat-index-pre");
-            }
+        if (repeatElement != null) {
+	        var repeatItems = repeatElement.childNodes;
+	        if (repeatItems != null) {
+		        for (var i = 0; i < repeatItems.length; i++) {
+		            // lookup repeat items
+		            if (repeatItems[i].nodeType == 1 && _hasClass(repeatItems[i], "repeat-item")) {
+		                currentPosition++;
+		
+		                if (currentPosition == targetPosition) {
+		                    // select item
+		                    _addClass(repeatItems[i], "repeat-index");
+		                }
+		                else {
+		                    // deselect item
+		                    _removeClass(repeatItems[i], "repeat-index");
+		                }
+		
+		                // remove preselection
+		                _removeClass(repeatItems[i], "repeat-index-pre");
+		            }
+		        }
+	        }
         }
     }
 };
@@ -1438,6 +1470,9 @@ PresentationContext._updateSelectors = function(control, readonly) {
 };
 
 PresentationContext._getRepeatNode = function(element) {
+	if (element == null)
+		return [];
+	
     var items = element.childNodes;
 
     for (var i = 0; i < items.length; i++) {

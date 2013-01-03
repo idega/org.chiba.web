@@ -42,7 +42,44 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             if (this.xfreadonly == "true") {
                 this.inputNode.disabled = true;
             } else {
-            	this._submitFile(this.inputNode);
+            	if (this.inputNode.files == null) {
+            		this._submitFile(this.inputNode);
+            	} else {
+            		//	Will check the size of file
+            		var attemptingToUpload = 0;
+            		for (var fileIndex = 0; fileIndex < this.inputNode.files.length; fileIndex++) {
+            			attemptingToUpload += this.inputNode.files[fileIndex].size;
+            		}
+            		
+            		var uploadWidget = this;
+            		LazyLoader.load('/dwr/interface/WebUtil.js', function() {
+            			WebUtil.getApplicationProperty('xform_upload_limit', {
+            				callback: function(maxSize) {
+            					if (maxSize == null || maxSize <= 0) {
+            						uploadWidget._submitFile(uploadWidget.inputNode);
+            						return true;
+            					} else {
+            						maxSize--;
+            						maxSize++;
+            					}
+            					
+            					if (attemptingToUpload < maxSize) {
+            						uploadWidget._submitFile(uploadWidget.inputNode);
+            						return true;
+            					} else {
+            						WebUtil.getLocalizedString('org.chiba.web', 'exceeded_max_upload_limit', 'Sorry, file can not be uploaded: it exceeds maximum allowed size (' + ((maxSize / 1024) / 1024) + ' MB)', {
+            							callback: function(message) {
+            								alert(message);
+            							}
+            						});
+            						jQuery(uploadWidget.inputNode).attr('value', '');
+            						FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
+            						return false;
+            					}
+            				}
+            			});
+            		});
+            	}
             }
         },
         updateProgress: function (value) {
@@ -61,6 +98,8 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             }
         },
         _doActionsAfterUpload: function() {
+        	FluxInterfaceHelper.UPLOAD_IN_PROGRESS = false;
+        	
         	// stop polling
             this.uploadFinished = true;
             if (progressUpdate != null) {
@@ -127,15 +166,17 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
         	if (!this.uploadFinished) {
         		return false;
         	}
-        	this.uploadFinished = false;
         	
+			showLoadingMessage(Localization.STANDARD_LAYER_MSG);        	
+        	this.uploadFinished = false;
+        	FluxInterfaceHelper.UPLOAD_IN_PROGRESS = true;
             // disable all controls contained in repeat prototypes to avoid inconsistent updates.
             var rPrototypes = document.getElementsByClassName("repeat-prototype", "chibaform");
             for (var p = 0; p < rPrototypes.length; p++) {
                 var rControls = document.getElementsByClassName("value", rPrototypes[p].id);
                 for (var c = 0; c < rControls.length; c++) {
                     var rControl = dojo.byId(rControls[c]);
-                    if (rControl) {
+                    if (rControl && this.id != rControl.id) {
                         // disable control and store for later state restoring
                         rControl.disabled = true;
                         this.disabledNodes.push(rControl);
@@ -176,8 +217,6 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             var widget = this;
             progressUpdate = setInterval(function() {widget._fetchUploadProgress(xfomsId, filename, sessionKey);}, 2000);
 
-			showLoadingMessage(Localization.STANDARD_LAYER_MSG);
-			
             document.forms["chibaform"].target = "UploadTarget";
             document.forms["chibaform"].submit();
          

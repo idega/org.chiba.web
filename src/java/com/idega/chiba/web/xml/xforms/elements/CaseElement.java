@@ -43,17 +43,18 @@ public class CaseElement extends AbstractUIElement{
 	        UIElementStateUtil.setStateAttribute(state, "selected", String.valueOf(selected));
 	    }
 
-	    public void init()
-	        throws XFormsException
-	    {
-	        if(getLogger().isDebugEnabled())
+	    @Override
+		public void init() throws XFormsException {
+	        if (getLogger().isDebugEnabled())
 	            getLogger().debug((new StringBuilder()).append(this).append(" init").toString());
+
 	        initializeCase();
 	        initializeChildren();
 	        initializeActions();
 	    }
 
-	    public void dispose()
+	    @Override
+		public void dispose()
 	        throws XFormsException
 	    {
 	        if(getLogger().isDebugEnabled())
@@ -68,7 +69,8 @@ public class CaseElement extends AbstractUIElement{
 	        state = UIElementStateUtil.createStateElement(element);
 	    }
 
-	    protected void updateChildren()
+	    @Override
+		protected void updateChildren()
 	        throws XFormsException
 	    {
 	        if(isSelected())
@@ -83,6 +85,6 @@ public class CaseElement extends AbstractUIElement{
 	    private boolean selected;
 	    private Element state;
 
-	
+
 
 }
