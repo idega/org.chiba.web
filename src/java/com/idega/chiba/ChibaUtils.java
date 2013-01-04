@@ -135,6 +135,10 @@ public class ChibaUtils extends DefaultSpringBean {
 		return new IdegaChibaException(exceptionMessage, messageToTheClient, reloadPage);
     }
 
+    public IdegaChibaException getIdegaChibaException(String exceptionMessage, String localizedMessage, boolean reloadPage) {
+    	return new IdegaChibaException(exceptionMessage, localizedMessage, reloadPage);
+    }
+
     public String getSessionInformation(String sessionKey) {
     	XFormsSession session = getXFormSession(sessionKey);
     	return session == null ? CoreConstants.EMPTY : ". Object found for this key: " + session;
