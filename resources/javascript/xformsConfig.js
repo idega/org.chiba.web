@@ -15,6 +15,7 @@ XFormsConfig.setConfiguration = function(config) {
 	XFormsConfig.baseScriptUri = config.baseScriptUri;
 	XFormsConfig.locale = config.locale;
 	XFormsConfig.maxStringValueLength = config.maxStringValueLength;
+	XFormsConfig.displayFullForm = config.displayFullForm;
 	
 	djConfig.baseScriptUri = config.baseScriptUri;
 	djConfig.locale = config.locale;
@@ -23,6 +24,16 @@ XFormsConfig.setConfiguration = function(config) {
 
 jQuery(window).load(function() {
 	FluxInterfaceHelper.startUsingXForm();
+	
+	if (XFormsConfig.displayFullForm == 'true') {
+		jQuery('.fbc_button_area').each(function() {
+			jQuery(this).hide();
+		});
+		
+		jQuery('.case').each(function() {
+			jQuery(this).show();
+		});
+	}
 });
 
 XFormSessionHelper.invalidateForm = function() {
