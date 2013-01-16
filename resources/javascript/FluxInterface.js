@@ -174,11 +174,7 @@ FluxInterfaceHelper.isSafeToLeave = function() {
 	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED) {
 		if (jQuery('.xforms_save_button').length > 0 && FluxInterfaceHelper.doShowSavingSuggestion) {
 			confirmedToLeave = true;
-			var saveConfirmed = window.confirm(Localization.CONFIRM_TO_SAVE_FORM);
-			if (saveConfirmed == true) {
-				FluxInterfaceHelper.doSaveForm();
-			}
-			
+			FluxInterfaceHelper.doSaveForm();
 		} else {
 			confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
 		}
