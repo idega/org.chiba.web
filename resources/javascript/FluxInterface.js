@@ -875,7 +875,7 @@ function redirectForm(msg) {
 	humanMsg.displayMsg(msg, {
 		timeout: 3000,
 		callback: function() {
-			window.location.href = '/pages';
+			window.location.href = FluxInterfaceHelper.HOME_PAGE_LINK == null ? '/pages' : FluxInterfaceHelper.HOME_PAGE_LINK;
 		}
 	});
 }
