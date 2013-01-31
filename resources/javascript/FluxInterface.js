@@ -65,19 +65,20 @@ registerEvent(window, 'load', function() {
 	var loadedAt = new Date();
 	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
 	
-	//	Checking if a form was submitted previously
-	var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
-	if (taskId != null) {
-		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
-			BPMProcessAssets.isTaskSubmitted(taskId, {
-				callback: function(result) {
-					FluxInterfaceHelper.FINISHED = result;
-				}
-			});
-		});
-	}
-	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
+		if (!FluxInterfaceHelper.SUBMITTED) {
+			//	Checking if a form was submitted previously
+			var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
+			if (taskId != null) {
+				BPMProcessAssets.isTaskSubmitted(taskId, {
+					callback: function(result) {
+						FluxInterfaceHelper.SUBMITTED = result;
+						FluxInterfaceHelper.FINISHED = result;
+					}
+				});
+			}
+		}
+		
 		BPMProcessAssets.doShowSuggestionForSaving({
 			callback: function(result) {
 				FluxInterfaceHelper.doShowSavingSuggestion = result;
@@ -693,7 +694,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         	closeAllLoadingMessages();
         	if (properties["level"] == "handlemanually") {
         		if (properties['message'] == 'true') {
-        			if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
+        			if (FluxInterfaceHelper.FINISHED) {
+        				redirectForm(Localization.CLOSING);
+        			} else if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
         				redirectForm(Localization.CLOSING);
         			}
         		} else {
