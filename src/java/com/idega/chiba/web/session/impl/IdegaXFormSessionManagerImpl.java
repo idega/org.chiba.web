@@ -19,8 +19,8 @@ import org.chiba.web.session.XFormsSession;
 import org.chiba.web.session.XFormsSessionManager;
 import org.chiba.xml.xforms.config.Config;
 import org.chiba.xml.xforms.exception.XFormsException;
-import org.jdom.Attribute;
-import org.jdom.Element;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationEvent;
@@ -406,12 +406,12 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
 			return;
 		}
 
-		org.jdom.Document document = XmlUtil.getJDOMXMLDocument(doc);
+		org.jdom2.Document document = XmlUtil.getJDOMXMLDocument(doc);
 		if (document == null) {
 			return;
 		}
 
-		List<Element> divs = XmlUtil.getElementsByXPath(document, "div", XmlUtil.XHTML_NAMESPACE_ID);
+		List<Element> divs = XmlUtil.getElementsByXPath(document.getRootElement(), "div", XmlUtil.XHTML_NAMESPACE_ID);
 		if (ListUtil.isEmpty(divs)) {
 			return;
 		}
