@@ -94,7 +94,7 @@
  *    MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
  */
-// Copyright 2005 Chibacon Liss�/Turner GbR
+// Copyright 2005 Chibacon Liss /Turner GbR
 package org.chiba.web.servlet;
 
 import java.io.File;

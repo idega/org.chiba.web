@@ -28,12 +28,16 @@ if(Localization == null) {
 	Localization.CHARACTERS_LEFT					= null;
 }
 
+Localization.CONFIRM_TO_SAVE_FORM						= 'Save form before exit?';
 Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM		= 'Are you sure you want to navigate from unfinished form?';
 Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS	= 'Are you sure you want to navigate from this page while upload is in progress?';
+Localization.GO_TO_HOMEPAGE_BUTTON_LABEL = null;
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
+
+FluxInterfaceHelper.HOME_PAGE_LINK = null;
 
 FluxInterfaceHelper.SUBMITTED = false;
 FluxInterfaceHelper.FINISHED = false;
@@ -44,6 +48,7 @@ FluxInterfaceHelper.CLOSED_SESSIONS = [];
 var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
 FluxInterfaceHelper.repeatInputMaskInitialization = true;
+FluxInterfaceHelper.doShowSavingSuggestion = false;
 
 FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
@@ -60,17 +65,41 @@ registerEvent(window, 'load', function() {
 	var loadedAt = new Date();
 	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
 	
-	//	Checking if a form was submitted previously
-	var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
-	if (taskId != null) {
-		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
-			BPMProcessAssets.isTaskSubmitted(taskId, {
-				callback: function(result) {
-					FluxInterfaceHelper.FINISHED = result;
+	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
+		if (!FluxInterfaceHelper.SUBMITTED) {
+			//	Checking if a form was submitted previously
+			var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
+			if (taskId != null) {
+				BPMProcessAssets.isTaskSubmitted(taskId, {
+					callback: function(result) {
+						FluxInterfaceHelper.SUBMITTED = result;
+						FluxInterfaceHelper.FINISHED = result;
+					}
+				});
+			}
+		}
+		
+		BPMProcessAssets.doShowSuggestionForSaving({
+			callback: function(result) {
+				FluxInterfaceHelper.doShowSavingSuggestion = result;
+			}
+		});
+		
+		if (jQuery('.go_to_home_page_button').size() > 0) {
+			BPMProcessAssets.getHomepageLinkAndLocalizedString({
+				callback: function(value) {
+					if (value != null) {
+						FluxInterfaceHelper.HOME_PAGE_LINK = value.id;
+						
+						Localization.GO_TO_HOMEPAGE_BUTTON_LABEL = value.value;
+						jQuery('.go_to_home_page_button').each(function() {
+							jQuery(this).find('input').val(Localization.GO_TO_HOMEPAGE_BUTTON_LABEL);
+						});		
+					}
 				}
 			});
-		});
-	}
+		}	
+	});
 });
 
 /******************************************************************************
@@ -97,6 +126,43 @@ window.onbeforeunload = function(e) {
     return unload(e);
 }
 
+FluxInterfaceHelper.canSaveForm = function() {
+	return jQuery('.xforms_save_button').length > 0 && FluxInterfaceHelper.doShowSavingSuggestion;
+}
+
+FluxInterfaceHelper.doNavigateToHomePage = function() {
+	FluxInterfaceHelper.afterChibaActivate = function() {
+		FluxInterfaceHelper.FINISHED = true;
+		FluxInterfaceHelper.doShowSavingSuggestion = false;
+		if (FluxInterfaceHelper.HOME_PAGE_LINK != null) {
+			window.location.href = FluxInterfaceHelper.HOME_PAGE_LINK;
+		} else {			
+			window.location.href = '/pages';
+		}
+	}
+	
+	if (FluxInterfaceHelper.canSaveForm()) {
+		if (window.confirm(Localization.CONFIRM_TO_SAVE_FORM)) {
+			FluxInterfaceHelper.FINISHED = true;
+			FluxInterfaceHelper.doShowSavingSuggestion = false;
+			FluxInterfaceHelper.doSaveForm();
+		} else
+			FluxInterfaceHelper.afterChibaActivate();
+	} else
+		FluxInterfaceHelper.afterChibaActivate();
+}
+
+FluxInterfaceHelper.doSaveForm = function() {
+	var saved = false;
+	jQuery('input', jQuery('.xforms_save_button')).each(function() {
+		if (saved)
+			return;
+		
+		saved = true;
+		jQuery(this).trigger('click');
+	});
+}
+
 FluxInterfaceHelper.isSafeToLeave = function() {
 	if (FluxInterfaceHelper.SUBMITTED || FluxInterfaceHelper.FINISHED)
 		return true;
@@ -106,8 +172,15 @@ FluxInterfaceHelper.isSafeToLeave = function() {
 	var confirmedToLeave = false;
 	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
 		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
-	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
-		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED) {
+		if (jQuery('.xforms_save_button').length > 0 && FluxInterfaceHelper.doShowSavingSuggestion) {
+			confirmedToLeave = true;
+			FluxInterfaceHelper.doSaveForm();
+		} else {
+			confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+		}
+	}
+	
 	return confirmedToLeave;
 }
 
@@ -569,6 +642,8 @@ function updateUI(data, callback) {
 		callback();
 }
 
+FluxInterfaceHelper.onSubmitted = null;
+
 function _handleServerEvent(context, type, targetId, targetName, properties) {
     dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
     switch (type) {
@@ -619,7 +694,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         	closeAllLoadingMessages();
         	if (properties["level"] == "handlemanually") {
         		if (properties['message'] == 'true') {
-        			if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
+        			if (FluxInterfaceHelper.FINISHED) {
+        				redirectForm(Localization.CLOSING);
+        			} else if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
         				redirectForm(Localization.CLOSING);
         			}
         		} else {
@@ -692,6 +769,10 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         			jQuery('#backToCaseOverviewAfterSubmitted').trigger('click');
         		}, 500);
         	}
+        	
+        	if (FluxInterfaceHelper.onSubmitted != null)
+        		FluxInterfaceHelper.onSubmitted(false);
+        	
         	break;
         default:
             dojo.debug("Event " + type + " unknown");
@@ -797,7 +878,7 @@ function redirectForm(msg) {
 	humanMsg.displayMsg(msg, {
 		timeout: 3000,
 		callback: function() {
-			window.location.href = '/pages';
+			window.location.href = FluxInterfaceHelper.HOME_PAGE_LINK == null ? '/pages' : FluxInterfaceHelper.HOME_PAGE_LINK;
 		}
 	});
 }
