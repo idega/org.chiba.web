@@ -34,7 +34,7 @@ public class IWBundleStarter implements IWBundleStartable {
 	public static final String CHIBA_CSS = "xforms.css";
 	public static final String BUNDLE_IDENTIFIER = "org.chiba.web";
 	public static final String BUNDLE_STYLES_PATH = "/style/";
-	public static final String SLIDE_STYLES_PATH = CoreConstants.PUBLIC_PATH + BUNDLE_STYLES_PATH;
+	public static final String REPOSITORY_STYLES_PATH = CoreConstants.PUBLIC_PATH + BUNDLE_STYLES_PATH;
 	public static final String CSS_STYLE_PATH = "resources/style/";
 	
 	public static final String SESSION_KEY = "sessionKey";

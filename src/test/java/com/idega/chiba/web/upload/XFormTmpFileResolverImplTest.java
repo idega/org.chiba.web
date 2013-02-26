@@ -12,10 +12,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import com.idega.chiba.ChibaConstants;
 import com.idega.core.file.tmp.TmpFileResolver;
 import com.idega.core.file.tmp.TmpFileResolverType;
 import com.idega.core.file.tmp.TmpFilesModifyStrategy;
 import com.idega.core.test.base.IdegaBaseTest;
+import com.idega.util.CoreConstants;
 import com.idega.util.xml.XPathUtil;
 import com.idega.util.xml.XmlUtil;
 
@@ -34,7 +36,7 @@ public final class XFormTmpFileResolverImplTest extends IdegaBaseTest {
 	@TmpFileResolverType("xformVariables")
 	private TmpFileResolver tmpFileResolver;
 	@Autowired
-	@TmpFileResolverType("xformSlide")
+	@TmpFileResolverType(ChibaConstants.XFORM_REPOSITORY)
 	private TmpFilesModifyStrategy tmpFilesModifyStrategy;
 	
 	@Test
@@ -66,7 +68,7 @@ public final class XFormTmpFileResolverImplTest extends IdegaBaseTest {
 		
 		filesNodes = entryFilesXPath.getNodeset(submissionInstance);
 //		expecting 2 items
-		assertEquals("slide:/files/forms/saved/uploadedFiles/upload/submissionInstance2AttachmentsStart.xml", filesNodes.item(0).getTextContent());
-		assertEquals("slide:/files/forms/saved/uploadedFiles/upload/XFormTmpFileResolverImplTest-context.xml", filesNodes.item(1).getTextContent());
+		assertEquals(CoreConstants.REPOSITORY + ":/files/forms/saved/uploadedFiles/upload/submissionInstance2AttachmentsStart.xml", filesNodes.item(0).getTextContent());
+		assertEquals(CoreConstants.REPOSITORY + ":/files/forms/saved/uploadedFiles/upload/XFormTmpFileResolverImplTest-context.xml", filesNodes.item(1).getTextContent());
 	}
 }

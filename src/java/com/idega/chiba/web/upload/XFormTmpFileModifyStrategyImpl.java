@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Node;
 
+import com.idega.chiba.ChibaConstants;
 import com.idega.core.business.DefaultSpringBean;
 import com.idega.core.file.tmp.TmpFileResolverType;
 import com.idega.core.file.tmp.TmpFilesModifyStrategy;
@@ -29,12 +30,12 @@ import com.idega.util.CoreConstants;
  */
 
 @Service
-@TmpFileResolverType("xformSlide")
+@TmpFileResolverType(ChibaConstants.XFORM_REPOSITORY)
 @Scope(BeanDefinition.SCOPE_SINGLETON)
 public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements TmpFilesModifyStrategy {
 
-	static final String SLIDE_STORE_PATH = "/files/forms/saved/uploadedFiles/";
-	static final String SLIDE_SCHEME = "slide";
+	static final String REPOSITORY_STORE_PATH = "/files/forms/saved/uploadedFiles/";
+	static final String REPOSITORY_SCHEME = CoreConstants.REPOSITORY;
 
 	@Autowired
 	private FileURIHandlerFactory fileURIHandlerFactory;
@@ -63,8 +64,8 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 				parentFolder = String.valueOf(System.currentTimeMillis());
 
 //			building slide store path
-			String folder = SLIDE_STORE_PATH+parentFolder+CoreConstants.SLASH;
-			newUri = new URI(SLIDE_SCHEME, folder+finfo.getFileName(), null);
+			String folder = REPOSITORY_STORE_PATH+parentFolder+CoreConstants.SLASH;
+			newUri = new URI(REPOSITORY_SCHEME, folder+finfo.getFileName(), null);
 
 			item.setTextContent(newUri.toString());
 

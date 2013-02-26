@@ -41,7 +41,7 @@ public class StylesAutoloader extends DefaultSpringBean implements ApplicationLi
 			IWMainApplication iwma = ((RepositoryStartedEvent)applicationEvent).getIWMA();
 			IWApplicationContext iwac = iwma.getIWApplicationContext();
 
-			String path = IWBundleStarter.SLIDE_STYLES_PATH + IWBundleStarter.CHIBA_CSS;
+			String path = IWBundleStarter.REPOSITORY_STYLES_PATH + IWBundleStarter.CHIBA_CSS;
 
 			if (getExistence(iwac, path)) {
 				return;
@@ -51,7 +51,7 @@ public class StylesAutoloader extends DefaultSpringBean implements ApplicationLi
 			InputStream streamToBundleResource = null;
 			try {
 				streamToBundleResource = bundle.getResourceInputStream(IWBundleStarter.CSS_STYLE_PATH + IWBundleStarter.CHIBA_CSS);
-				getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.SLIDE_STYLES_PATH, IWBundleStarter.CHIBA_CSS, streamToBundleResource,
+				getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(IWBundleStarter.REPOSITORY_STYLES_PATH, IWBundleStarter.CHIBA_CSS, streamToBundleResource,
 						MimeTypeUtil.MIME_TYPE_CSS);
 			} catch (Exception e) {
 				logger.log(Level.WARNING, "Error uploading to " + path, e);
