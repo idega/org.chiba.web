@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import org.chiba.adapter.ui.UIGenerator;
 import org.chiba.adapter.ui.XSLTGenerator;
 import org.chiba.web.IWBundleStarter;
+import org.chiba.web.WebFactory;
 import org.chiba.web.flux.IdegaFluxAdapter;
 import org.chiba.web.servlet.ServletAdapter;
 import org.chiba.web.servlet.WebUtil;
@@ -28,6 +29,7 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.util.RequestUtil;
 
 /**
  * Idega implementation of a XFormsSessionBase.
@@ -75,6 +77,10 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
      */
     @Override
 	public synchronized void handleRequest() throws XFormsException {
+    	handleRequest(FacesContext.getCurrentInstance());
+    }
+
+    public synchronized void handleRequest(FacesContext context) throws XFormsException {
         boolean updating=false; //this will become true in case ServletAdapter is in use
         updateLRU();
 
@@ -96,7 +102,7 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
                     response.setContentType(WebUtil.HTML_CONTENT_TYPE);
                     //we got an initialization request (GET) - the session is not registered yet
-                    UIGenerator uiGenerator = createUIGenerator();
+                    UIGenerator uiGenerator = createUIGenerator(context);
                     //store UIGenerator in this session as a property
                     setProperty(XFormsSession.UIGENERATOR, uiGenerator);
                     //store queryString as 'referer' in XFormsSession
@@ -114,7 +120,6 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     }
 
                     //	Converting XForm to the HTML
-                    FacesContext context = FacesContext.getCurrentInstance();
                     uiGenerator.setInput(getAdapter().getXForms());
                     uiGenerator.setOutput(context.getResponseWriter());
                     uiGenerator.generate();
@@ -131,15 +136,21 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
     @Override
 	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
+    	return createUIGenerator(FacesContext.getCurrentInstance());
+    }
+
+    protected UIGenerator createUIGenerator(FacesContext context) throws URISyntaxException, XFormsException {
+    	IWContext iwc = IWContext.getIWContext(context);
+    	if (iwc.getRequest().getAttribute(WebFactory.SCRIPTED) == null)
+    		iwc.getRequest().setAttribute(WebFactory.SCRIPTED, Boolean.TRUE.toString());
+
     	XSLTGenerator generator = (XSLTGenerator) super.createUIGenerator();
-    	FacesContext context = FacesContext.getCurrentInstance();
 
     	IWBundle bundle = IWMainApplication.getDefaultIWMainApplication().getBundle(IWBundleStarter.BUNDLE_IDENTIFIER);
 		generator.setParameter("scriptPath", bundle.getVirtualPathWithFileNameString("javascript/"));
 		generator.setParameter("imagesPath", bundle.getVirtualPathWithFileNameString("style/images/"));
 
 		try {
-			IWContext iwc = IWContext.getIWContext(context);
 			IWResourceBundle iwrb = bundle.getResourceBundle(iwc);
 
 			generator.setParameter("standardLayerMsg", iwrb.getLocalizedString("chiba.standard_layer_message", "Processing data..."));
@@ -156,6 +167,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 					"The form was successfully saved. Do you want to continue filling the form?"));
 			generator.setParameter("userMustBeLoggedIn",
 					iwrb.getLocalizedString("chiba.user_must_be_logged_in", "Your session has expired, you must to login to continue your work"));
+
+			generator.setParameter(RequestUtil.HEADER_USER_AGENT.toLowerCase(), iwc.getUserAgent());
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
