@@ -1145,6 +1145,8 @@ FluxInterfaceHelper.countWords = function(event, limit) {
 		return true;
 		
 	if (value.match(/\S(?=\s)/gi) == null) {
+		jQuery('#' + textArea.id + '-counter').text(limit);
+		return true;
 	} else if (value.match(/\S(?=\s)/gi).length > limit - 1) {
 		var magicalSubstring = "";
 		
