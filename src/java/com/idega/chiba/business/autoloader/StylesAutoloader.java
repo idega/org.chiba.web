@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import org.chiba.web.IWBundleStarter;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ import com.idega.util.IOUtil;
  */
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class StylesAutoloader extends DefaultSpringBean implements ApplicationListener {
+public class StylesAutoloader extends DefaultSpringBean implements ApplicationListener<RepositoryStartedEvent> {
 
 	private final Logger logger;
 
@@ -36,9 +35,8 @@ public class StylesAutoloader extends DefaultSpringBean implements ApplicationLi
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationEvent applicationEvent) {
-		if (applicationEvent instanceof RepositoryStartedEvent) {
-			IWMainApplication iwma = ((RepositoryStartedEvent)applicationEvent).getIWMA();
+	public void onApplicationEvent(RepositoryStartedEvent applicationEvent) {
+			IWMainApplication iwma = applicationEvent.getIWMA();
 			IWApplicationContext iwac = iwma.getIWApplicationContext();
 
 			String path = IWBundleStarter.REPOSITORY_STYLES_PATH + IWBundleStarter.CHIBA_CSS;
@@ -58,7 +56,6 @@ public class StylesAutoloader extends DefaultSpringBean implements ApplicationLi
 			} finally {
 				IOUtil.close(streamToBundleResource);
 			}
-		}
 	}
 
 	private boolean getExistence(IWApplicationContext iwac, String path) {

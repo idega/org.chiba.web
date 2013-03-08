@@ -59,7 +59,7 @@ import com.idega.util.xml.XmlUtil;
 
 @Service
 @Scope(BeanDefinition.SCOPE_SINGLETON)
-public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements XFormsSessionManager, ApplicationListener {
+public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements XFormsSessionManager, ApplicationListener<ApplicationEvent> {
 
 	private static final String XFORMS_SESSIONS_CACHE_NAME = "idegaXFormsSessionsCache";
 
