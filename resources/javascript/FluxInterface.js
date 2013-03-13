@@ -1051,7 +1051,29 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			});
 		} else
 			FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
+		
+		if (Localization.WORDS_LEFT == null) {
+			WebUtil.getLocalizedString('org.chiba.web', 'words_left', 'Words left', {
+				callback: function(localizedText) {
+					Localization.WORDS_LEFT = localizedText;
+					FluxInterfaceHelper.setWordsLeftFunction(Localization.WORDS_LEFT);
+				}
+			});
+		} else
+			FluxInterfaceHelper.setWordsLeftFunction(Localization.WORDS_LEFT);
 	}, null);
+}
+
+FluxInterfaceHelper.setWordsLeftFunction = function(localizedText) {
+	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-20'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 20);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-100'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 100);
+	});
 }
 
 FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
@@ -1059,6 +1081,91 @@ FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
 		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
 		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1000);
 	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-200'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 200);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-2000'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 2000);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-1500'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1500);
+	});
+}
+
+FluxInterfaceHelper.initializeWordsCounter = function(textArea, text, limit) {
+	var hasInitializedMark = textArea.hasClass('xFormTextAreaWordMask_limit-initialized');
+	var nameWithoutRepeatKeyword = textArea.attr('name').indexOf('repeat') == -1;
+	if (nameWithoutRepeatKeyword) {
+		if (hasInitializedMark)
+			return true;
+	}
+	
+	textArea.addClass('xFormTextAreaWordMask_limit-initialized');
+	var addWordsCounter = function(textArea, text) {
+		jQuery('span.xformTextAreaWordsCounter', textArea.parent()).each(function() {
+			jQuery(this).remove();
+		});
+		var leftCharacters = limit - textArea.attr('value').length;
+		textArea.parent().append('<span class="xformTextAreaWordsCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">' + leftCharacters + '<span></span>');
+		textArea.keyup(function(event) {
+			FluxInterfaceHelper.countWords(event, limit);
+		});
+	};
+	
+	if (Localization.WORDS_LEFT == null) {
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
+			WebUtil.getLocalizedString('org.chiba.web', 'words_left', 'Words left', {
+				callback: function(localizedText) {
+					Localization.WORDS_LEFT = localizedText;
+					addWordsCounter(textArea, Localization.WORDS_LEFT);
+				}
+			});
+		}, null);
+	} else {
+		addWordsCounter(textArea, Localization.WORDS_LEFT);
+	}
+}
+
+FluxInterfaceHelper.countWords = function(event, limit) {
+	if (event == null)
+		return false;
+	
+	var textArea = event.target;
+	if (textArea == null)
+		return false;
+	
+	var value = jQuery(textArea).attr('value');
+	if (value == null)
+		return true;
+		
+	if (value.match(/\S(?=\s)/gi) == null) {
+		jQuery('#' + textArea.id + '-counter').text(limit);
+		return true;
+	} else if (value.match(/\S(?=\s)/gi).length > limit - 1) {
+		var magicalSubstring = "";
+		
+		var k = 0;
+		for (i = 0; k < limit; i++) {
+			var valueToAdd = value.split(/\s/)[i]
+			if (valueToAdd != null && valueToAdd != "" && valueToAdd != /\s/) {
+				magicalSubstring = magicalSubstring + valueToAdd + " ";
+				k = k + 1;
+			}
+		}
+		
+		jQuery(textArea).attr('value', magicalSubstring);
+		jQuery('#' + textArea.id + '-counter').text(0);
+		event.preventDefault();
+	} else {
+		jQuery('#' + textArea.id + '-counter').text(limit - value.match(/\S(?=\s)/gi).length);
+		return true;
+	}
 }
 
 FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit) {
@@ -1112,7 +1219,7 @@ FluxInterfaceHelper.countCharacters = function(event, limit) {
 		jQuery('#' + textArea.id + '-counter').text(0);
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(1000 - value.length);
+		jQuery('#' + textArea.id + '-counter').text(limit - value.length);
 		return true;
 	}
 }
