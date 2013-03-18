@@ -28,12 +28,16 @@ if(Localization == null) {
 	Localization.CHARACTERS_LEFT					= null;
 }
 
+Localization.CONFIRM_TO_SAVE_FORM						= 'Save form before exit?';
 Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM		= 'Are you sure you want to navigate from unfinished form?';
 Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS	= 'Are you sure you want to navigate from this page while upload is in progress?';
+Localization.GO_TO_HOMEPAGE_BUTTON_LABEL = null;
 
 if (FluxInterfaceHelper == null) var FluxInterfaceHelper = {};
 FluxInterfaceHelper.changingUriManually = false;
 FluxInterfaceHelper.WINDOW_KEY = null;
+
+FluxInterfaceHelper.HOME_PAGE_LINK = null;
 
 FluxInterfaceHelper.SUBMITTED = false;
 FluxInterfaceHelper.FINISHED = false;
@@ -44,6 +48,7 @@ FluxInterfaceHelper.CLOSED_SESSIONS = [];
 var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
 FluxInterfaceHelper.repeatInputMaskInitialization = true;
+FluxInterfaceHelper.doShowSavingSuggestion = false;
 
 FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
@@ -60,17 +65,41 @@ registerEvent(window, 'load', function() {
 	var loadedAt = new Date();
 	FluxInterfaceHelper.WINDOW_KEY = loadedAt.getTime();
 	
-	//	Checking if a form was submitted previously
-	var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
-	if (taskId != null) {
-		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
-			BPMProcessAssets.isTaskSubmitted(taskId, {
-				callback: function(result) {
-					FluxInterfaceHelper.FINISHED = result;
+	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/BPMProcessAssets.js'], function() {
+		if (!FluxInterfaceHelper.SUBMITTED) {
+			//	Checking if a form was submitted previously
+			var taskId = jQuery.url ? jQuery.url.param('tiId') : null;
+			if (taskId != null) {
+				BPMProcessAssets.isTaskSubmitted(taskId, {
+					callback: function(result) {
+						FluxInterfaceHelper.SUBMITTED = result;
+						FluxInterfaceHelper.FINISHED = result;
+					}
+				});
+			}
+		}
+		
+		BPMProcessAssets.doShowSuggestionForSaving({
+			callback: function(result) {
+				FluxInterfaceHelper.doShowSavingSuggestion = result;
+			}
+		});
+		
+		if (jQuery('.go_to_home_page_button').size() > 0) {
+			BPMProcessAssets.getHomepageLinkAndLocalizedString({
+				callback: function(value) {
+					if (value != null) {
+						FluxInterfaceHelper.HOME_PAGE_LINK = value.id;
+						
+						Localization.GO_TO_HOMEPAGE_BUTTON_LABEL = value.value;
+						jQuery('.go_to_home_page_button').each(function() {
+							jQuery(this).find('input').val(Localization.GO_TO_HOMEPAGE_BUTTON_LABEL);
+						});		
+					}
 				}
 			});
-		});
-	}
+		}	
+	});
 });
 
 /******************************************************************************
@@ -97,6 +126,43 @@ window.onbeforeunload = function(e) {
     return unload(e);
 }
 
+FluxInterfaceHelper.canSaveForm = function() {
+	return jQuery('.xforms_save_button').length > 0 && FluxInterfaceHelper.doShowSavingSuggestion;
+}
+
+FluxInterfaceHelper.doNavigateToHomePage = function() {
+	FluxInterfaceHelper.afterChibaActivate = function() {
+		FluxInterfaceHelper.FINISHED = true;
+		FluxInterfaceHelper.doShowSavingSuggestion = false;
+		if (FluxInterfaceHelper.HOME_PAGE_LINK != null) {
+			window.location.href = FluxInterfaceHelper.HOME_PAGE_LINK;
+		} else {			
+			window.location.href = '/pages';
+		}
+	}
+	
+	if (FluxInterfaceHelper.canSaveForm()) {
+		if (window.confirm(Localization.CONFIRM_TO_SAVE_FORM)) {
+			FluxInterfaceHelper.FINISHED = true;
+			FluxInterfaceHelper.doShowSavingSuggestion = false;
+			FluxInterfaceHelper.doSaveForm();
+		} else
+			FluxInterfaceHelper.afterChibaActivate();
+	} else
+		FluxInterfaceHelper.afterChibaActivate();
+}
+
+FluxInterfaceHelper.doSaveForm = function() {
+	var saved = false;
+	jQuery('input', jQuery('.xforms_save_button')).each(function() {
+		if (saved)
+			return;
+		
+		saved = true;
+		jQuery(this).trigger('click');
+	});
+}
+
 FluxInterfaceHelper.isSafeToLeave = function() {
 	if (FluxInterfaceHelper.SUBMITTED || FluxInterfaceHelper.FINISHED)
 		return true;
@@ -106,8 +172,15 @@ FluxInterfaceHelper.isSafeToLeave = function() {
 	var confirmedToLeave = false;
 	if (FluxInterfaceHelper.UPLOAD_IN_PROGRESS)
 		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_WHILE_UPLOAD_IN_PROGRESS);
-	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED)
-		confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+	if (!confirmedToLeave && !FluxInterfaceHelper.SUBMITTED) {
+		if (jQuery('.xforms_save_button').length > 0 && FluxInterfaceHelper.doShowSavingSuggestion) {
+			confirmedToLeave = true;
+			FluxInterfaceHelper.doSaveForm();
+		} else {
+			confirmedToLeave = window.confirm(Localization.CONFIRM_TO_LEAVE_NOT_SUBMITTED_FORM);
+		}
+	}
+	
 	return confirmedToLeave;
 }
 
@@ -184,6 +257,11 @@ function closeSession() {
  END OF SESSION HANDLING AND PAGE UNLOADING
  ******************************************************************************/
 
+window.onerror = function(msg, url, line) {
+	handleExceptions(msg, {lineNumber: line, url: url, message: msg});
+	return true;	//	Browser will not respond to the error
+}
+
 function handleExceptions(msg, ex) {
 	closeAllLoadingMessages();
 	
@@ -218,7 +296,8 @@ FluxInterfaceHelper.sendExceptionNotification = function(msg, ex) {
 		return false;
 	}
 	
-	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' || msg == 'OK' || msg == 'PresentationContext is not defined')
+	if (msg == 'Internal Server Error' || msg == 'Service Temporarily Unavailable' || msg == 'Timeout' || msg == 'Service Unavailable' ||
+		msg == 'OK' || msg == 'PresentationContext is not defined')
 		return;
 	
 	IWCORE.sendExceptionNotification(msg, ex, Localization.RELOAD_PAGE);
@@ -247,7 +326,7 @@ function chibaActivate(target) {
 		var originalElement = this;
 		var textArea = jQuery(originalElement);
 		var id = textArea.attr('id');
-		if (id != null && id != '' && id.indexOf('value') != -1) {
+		if (id != null && id != '' && id.indexOf('value') != -1 && id.indexOf('repeat') == -1) {
 			var changeEvent = jQuery.Event('change');
 			changeEvent.srcElement = originalElement;
 			changeEvent.forceControl = true;
@@ -563,6 +642,8 @@ function updateUI(data, callback) {
 		callback();
 }
 
+FluxInterfaceHelper.onSubmitted = null;
+
 function _handleServerEvent(context, type, targetId, targetName, properties) {
     dojo.debug("handleServerEvent: type=" + type + " targetId=" + targetId);
     switch (type) {
@@ -613,7 +694,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         	closeAllLoadingMessages();
         	if (properties["level"] == "handlemanually") {
         		if (properties['message'] == 'true') {
-        			if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
+        			if (FluxInterfaceHelper.FINISHED) {
+        				redirectForm(Localization.CLOSING);
+        			} else if (!window.confirm(Localization.CONTINUE_OR_STOP_FILLING_FORM)) {
         				redirectForm(Localization.CLOSING);
         			}
         		} else {
@@ -686,6 +769,10 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         			jQuery('#backToCaseOverviewAfterSubmitted').trigger('click');
         		}, 500);
         	}
+        	
+        	if (FluxInterfaceHelper.onSubmitted != null)
+        		FluxInterfaceHelper.onSubmitted(false);
+        	
         	break;
         default:
             dojo.debug("Event " + type + " unknown");
@@ -791,7 +878,7 @@ function redirectForm(msg) {
 	humanMsg.displayMsg(msg, {
 		timeout: 3000,
 		callback: function() {
-			window.location.href = '/pages';
+			window.location.href = FluxInterfaceHelper.HOME_PAGE_LINK == null ? '/pages' : FluxInterfaceHelper.HOME_PAGE_LINK;
 		}
 	});
 }
@@ -964,7 +1051,29 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			});
 		} else
 			FluxInterfaceHelper.setCharactersLeftFunction(Localization.CHARACTERS_LEFT);
+		
+		if (Localization.WORDS_LEFT == null) {
+			WebUtil.getLocalizedString('org.chiba.web', 'words_left', 'Words left', {
+				callback: function(localizedText) {
+					Localization.WORDS_LEFT = localizedText;
+					FluxInterfaceHelper.setWordsLeftFunction(Localization.WORDS_LEFT);
+				}
+			});
+		} else
+			FluxInterfaceHelper.setWordsLeftFunction(Localization.WORDS_LEFT);
 	}, null);
+}
+
+FluxInterfaceHelper.setWordsLeftFunction = function(localizedText) {
+	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-20'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 20);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-100'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 100);
+	});
 }
 
 FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
@@ -972,6 +1081,91 @@ FluxInterfaceHelper.setCharactersLeftFunction = function(localizedText) {
 		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
 		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1000);
 	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-200'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 200);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-2000'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 2000);
+	});
+	
+	jQuery.each(jQuery('.xFormTextAreaMask_limit-1500'), function() {
+		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
+		FluxInterfaceHelper.initializeCharactersCounter(textArea, localizedText, 1500);
+	});
+}
+
+FluxInterfaceHelper.initializeWordsCounter = function(textArea, text, limit) {
+	var hasInitializedMark = textArea.hasClass('xFormTextAreaWordMask_limit-initialized');
+	var nameWithoutRepeatKeyword = textArea.attr('name').indexOf('repeat') == -1;
+	if (nameWithoutRepeatKeyword) {
+		if (hasInitializedMark)
+			return true;
+	}
+	
+	textArea.addClass('xFormTextAreaWordMask_limit-initialized');
+	var addWordsCounter = function(textArea, text) {
+		jQuery('span.xformTextAreaWordsCounter', textArea.parent()).each(function() {
+			jQuery(this).remove();
+		});
+		var leftCharacters = limit - textArea.attr('value').length;
+		textArea.parent().append('<span class="xformTextAreaWordsCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">' + leftCharacters + '<span></span>');
+		textArea.keyup(function(event) {
+			FluxInterfaceHelper.countWords(event, limit);
+		});
+	};
+	
+	if (Localization.WORDS_LEFT == null) {
+		LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
+			WebUtil.getLocalizedString('org.chiba.web', 'words_left', 'Words left', {
+				callback: function(localizedText) {
+					Localization.WORDS_LEFT = localizedText;
+					addWordsCounter(textArea, Localization.WORDS_LEFT);
+				}
+			});
+		}, null);
+	} else {
+		addWordsCounter(textArea, Localization.WORDS_LEFT);
+	}
+}
+
+FluxInterfaceHelper.countWords = function(event, limit) {
+	if (event == null)
+		return false;
+	
+	var textArea = event.target;
+	if (textArea == null)
+		return false;
+	
+	var value = jQuery(textArea).attr('value');
+	if (value == null)
+		return true;
+		
+	if (value.match(/\S(?=\s)/gi) == null) {
+		jQuery('#' + textArea.id + '-counter').text(limit);
+		return true;
+	} else if (value.match(/\S(?=\s)/gi).length > limit - 1) {
+		var magicalSubstring = "";
+		
+		var k = 0;
+		for (i = 0; k < limit; i++) {
+			var valueToAdd = value.split(/\s/)[i]
+			if (valueToAdd != null && valueToAdd != "" && valueToAdd != /\s/) {
+				magicalSubstring = magicalSubstring + valueToAdd + " ";
+				k = k + 1;
+			}
+		}
+		
+		jQuery(textArea).attr('value', magicalSubstring);
+		jQuery('#' + textArea.id + '-counter').text(0);
+		event.preventDefault();
+	} else {
+		jQuery('#' + textArea.id + '-counter').text(limit - value.match(/\S(?=\s)/gi).length);
+		return true;
+	}
 }
 
 FluxInterfaceHelper.initializeCharactersCounter = function(textArea, text, limit) {
@@ -1025,7 +1219,7 @@ FluxInterfaceHelper.countCharacters = function(event, limit) {
 		jQuery('#' + textArea.id + '-counter').text(0);
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(1000 - value.length);
+		jQuery('#' + textArea.id + '-counter').text(limit - value.length);
 		return true;
 	}
 }

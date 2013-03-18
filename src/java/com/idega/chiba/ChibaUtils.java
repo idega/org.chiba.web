@@ -367,8 +367,13 @@ public class ChibaUtils extends DefaultSpringBean {
     	return firedActions.get(sessionId);
     }
 
-    private XFormsElement getXFormElement(XFormsSession session, String id) {
-    	return ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(id);
+    public XFormsElement getXFormElement(XFormsSession session, String id) {
+    	try {
+    		return ((IdegaFluxAdapter) session.getAdapter()).getChibaBean().getContainer().lookup(id);
+    	} catch (Exception e) {
+    		getLogger().log(Level.WARNING, "Error getting XFormsElement by session " + session + " and ID " + id, e);
+    	}
+    	return null;
     }
 
     public String getVariableNameByXFormElementId(String sessionKey, String xFormElementId) {
@@ -378,8 +383,17 @@ public class ChibaUtils extends DefaultSpringBean {
 			XFormsElement element = getXFormElement(session, xFormElementId);
 			String variableName = null;
 			if (element instanceof BindingElement && ((BindingElement) element).isBound()) {
-				for (Iterator<?> iter = submissionModel.getInstance("data-instance").iterateModelItems(((BindingElement) element).getLocationPath(), true);
-						(iter.hasNext() && StringUtil.isEmpty(variableName));) {
+				Iterator<?> items = null;
+				try {
+					items = submissionModel.getInstance("data-instance").iterateModelItems(((BindingElement) element).getLocationPath(), true);
+				} catch (Exception e) {
+					getLogger().log(Level.WARNING, "Error getting model items for element " + element, e);
+				}
+
+				if (items == null)
+					return null;
+
+				for (Iterator<?> iter = items; (iter.hasNext() && StringUtil.isEmpty(variableName));) {
 					Object item = iter.next();
 					if (item instanceof ModelItem) {
 						Object node = ((ModelItem) item).getNode();

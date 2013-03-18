@@ -123,15 +123,15 @@ function getClassComponent(className, position){
 function getXFormsControlValue(xformsControl){
     var widget = $(xformsControl.id + "-value");
     dojo.debug("getXFormsControlValue: xfromsControl: " + widget);
-    if(!widget){
+    if (widget == null) 
         return null;
-    }
+
     var value = null;
     if (_hasClass(xformsControl,"input")){
         if(_hasClass(xformsControl,"date")){
             var dateWidget = dojo.widget.byId(xformsControl.id + "-value");
             value = dateWidget.getValue();
-        } else if(widget.type.toLowerCase() == "checkbox") {
+        } else if(widget.type != null && widget.type.toLowerCase() == "checkbox") {
             if(widget.checked){
                 value = "true";
             }else{
@@ -141,10 +141,15 @@ function getXFormsControlValue(xformsControl){
             value = widget.value;
         }
     }else if (_hasClass(xformsControl,"output")){
-        if (widget.type.toLowerCase() == "a") {
+        if (widget.type != null && widget.type.toLowerCase() == "a") {
             value = widget.href;
-        }else if (widget.type.toLowerCase() == "span"){
+        } else if (widget.type != null && widget.type.toLowerCase() == "span"){
             value = widget.innerText;
+        } else {
+        	value = jQuery(widget).text();
+        	if (value == null || value == '')
+        		return null;
+        	return value;
         }
     }else if (_hasClass(xformsControl,"range")){
         value = widget.value;
@@ -152,7 +157,7 @@ function getXFormsControlValue(xformsControl){
         value = widget.value;
     }else if (_hasClass(xformsControl,"select")){
         var result="";
-        if (widget.type.toLowerCase() == "select-multiple") {
+        if (widget.type != null && widget.type.toLowerCase() == "select-multiple") {
             var options = widget.options.length;
             var option;
             for (var i = 0; i < options; i++) {
@@ -173,7 +178,7 @@ function getXFormsControlValue(xformsControl){
             value=result;
         }
     }else if (_hasClass(xformsControl,"select1")){
-        if (widget.type.toLowerCase() == "select-one") {
+        if (widget.type != null && widget.type.toLowerCase() == "select-one") {
             var options = widget.options.length;
             var option;
             for (var i = 0; i < options; i++) {
