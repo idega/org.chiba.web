@@ -1143,11 +1143,13 @@ FluxInterfaceHelper.countWords = function(event, limit) {
 	var value = jQuery(textArea).attr('value');
 	if (value == null)
 		return true;
-		
-	if (value.match(/\S(?=\s)/gi) == null) {
-		jQuery('#' + textArea.id + '-counter').text(limit);
+	
+	var matches = value.match(/\S(?=\s)/gi);
+	var foundWords = matches == null ? 0 : matches.length;
+	if (matches == null) {
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + limit);
 		return true;
-	} else if (value.match(/\S(?=\s)/gi).length > limit - 1) {
+	} else if (foundWords > limit - 1) {
 		var magicalSubstring = "";
 		
 		var k = 0;
@@ -1160,11 +1162,20 @@ FluxInterfaceHelper.countWords = function(event, limit) {
 		}
 		
 		jQuery(textArea).attr('value', magicalSubstring);
-		jQuery('#' + textArea.id + '-counter').text(0);
+		
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '0');
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(limit - value.match(/\S(?=\s)/gi).length);
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - foundWords - 1));
 		return true;
+	}
+}
+
+FluxInterfaceHelper.updateCounter = function(id, newValue) {
+	var counter = jQuery('#' + id);
+	if (counter != null && counter.length > 0) {
+		counter[0].innerHTML = '' + newValue;
+		counter.attr('text', '' + newValue);
 	}
 }
 
@@ -1216,10 +1227,10 @@ FluxInterfaceHelper.countCharacters = function(event, limit) {
 	
 	if (value.length > limit) {
 		jQuery(textArea).attr('value', value.substring(0, limit));
-		jQuery('#' + textArea.id + '-counter').text(0);
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '0');
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(limit - value.length);
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - value.length));
 		return true;
 	}
 }
