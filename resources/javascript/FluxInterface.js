@@ -1166,7 +1166,7 @@ FluxInterfaceHelper.countWords = function(event, limit) {
 		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '0');
 		event.preventDefault();
 	} else {
-		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - foundWords - 1));
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - foundWords));
 		return true;
 	}
 }
