@@ -375,7 +375,7 @@
     </xsl:template>
 
     <!-- overridden control template for compact repeat -->
-    <xsl:template match="xforms:input|xforms:output|xforms:range|xforms:secret|xforms:select|xforms:select1|idega:select1|xforms:textarea|xforms:upload" mode="compact-repeat">
+    <xsl:template match="xforms:input|idega:input|xforms:output|xforms:range|xforms:secret|xforms:select|xforms:select1|idega:select1|xforms:textarea|xforms:upload" mode="compact-repeat">
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="control-classes">
             <xsl:call-template name="assemble-control-classes"/>

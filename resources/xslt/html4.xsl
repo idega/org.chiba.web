@@ -437,7 +437,8 @@
     		xforms:select1|
     		xforms:textarea|
     		xforms:upload|
-    		idega:select1">
+    		idega:select1|
+            idega:input">
     
         <xsl:variable name="id" select="@id"/>
         <xsl:variable name="control-classes">
