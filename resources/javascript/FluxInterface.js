@@ -1065,14 +1065,15 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 }
 
 FluxInterfaceHelper.setWordsLeftFunction = function(localizedText) {
-	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-20'), function() {
+	jQuery.each(jQuery('div[class*="xFormTextAreaWordMask_limit-"]'), function() {
 		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
-		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 20);
-	});
-	
-	jQuery.each(jQuery('.xFormTextAreaWordMask_limit-100'), function() {
-		var textArea = jQuery(jQuery('textarea', jQuery(this))[0]);
-		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, 100);
+		
+		var className = jQuery(this).attr('class');
+		var index = className.indexOf('xFormTextAreaWordMask_limit-');
+		var limit = className.substring(index + 'xFormTextAreaWordMask_limit-'.length);		
+		limit--;
+		limit++;
+		FluxInterfaceHelper.initializeWordsCounter(textArea, localizedText, limit);
 	});
 }
 
@@ -1111,8 +1112,18 @@ FluxInterfaceHelper.initializeWordsCounter = function(textArea, text, limit) {
 		jQuery('span.xformTextAreaWordsCounter', textArea.parent()).each(function() {
 			jQuery(this).remove();
 		});
-		var leftCharacters = limit - textArea.attr('value').length;
+		
+		var leftCharacters = 0;
+		
+		var value = textArea.attr('value').match(/\S(?=\s)/gi);
+		if (value == null) {
+			leftCharacters = limit;
+		} else {
+			leftCharacters = limit - jQuery(value).length;
+		}
+		
 		textArea.parent().append('<span class="xformTextAreaWordsCounter">' + text + ': <span id="' + textArea.attr('id') + '-counter">' + leftCharacters + '<span></span>');
+
 		textArea.keyup(function(event) {
 			FluxInterfaceHelper.countWords(event, limit);
 		});
@@ -1134,20 +1145,22 @@ FluxInterfaceHelper.initializeWordsCounter = function(textArea, text, limit) {
 
 FluxInterfaceHelper.countWords = function(event, limit) {
 	if (event == null)
-		return false;
+		return 0;
 	
 	var textArea = event.target;
 	if (textArea == null)
-		return false;
+		return 0;
 	
 	var value = jQuery(textArea).attr('value');
 	if (value == null)
-		return true;
-		
-	if (value.match(/\S(?=\s)/gi) == null) {
-		jQuery('#' + textArea.id + '-counter').text(limit);
-		return true;
-	} else if (value.match(/\S(?=\s)/gi).length > limit - 1) {
+		return 0;
+	
+	var matches = value.match(/\S(?=\s)/gi);
+	var foundWords = matches == null ? 0 : matches.length;
+	if (matches == null) {
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + limit);
+		return 0;
+	} else if (foundWords > limit - 1) {
 		var magicalSubstring = "";
 		
 		var k = 0;
@@ -1160,11 +1173,20 @@ FluxInterfaceHelper.countWords = function(event, limit) {
 		}
 		
 		jQuery(textArea).attr('value', magicalSubstring);
-		jQuery('#' + textArea.id + '-counter').text(0);
+		
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '0');
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(limit - value.match(/\S(?=\s)/gi).length);
-		return true;
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - foundWords));
+		return limit - foundWords;
+	}
+}
+
+FluxInterfaceHelper.updateCounter = function(id, newValue) {
+	var counter = jQuery('#' + id);
+	if (counter != null && counter.length > 0) {
+		counter[0].innerHTML = '' + newValue;
+		counter.attr('text', '' + newValue);
 	}
 }
 
@@ -1216,10 +1238,10 @@ FluxInterfaceHelper.countCharacters = function(event, limit) {
 	
 	if (value.length > limit) {
 		jQuery(textArea).attr('value', value.substring(0, limit));
-		jQuery('#' + textArea.id + '-counter').text(0);
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '0');
 		event.preventDefault();
 	} else {
-		jQuery('#' + textArea.id + '-counter').text(limit - value.length);
+		FluxInterfaceHelper.updateCounter(textArea.id + '-counter', '' + (limit - value.length));
 		return true;
 	}
 }
