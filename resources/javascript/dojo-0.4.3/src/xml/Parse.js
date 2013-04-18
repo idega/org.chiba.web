@@ -55,6 +55,9 @@ dojo.xml.Parse = function(){
 			return tagName;
 		}
 		if(dojo.render.html.capable && dojo.render.html.ie && node.scopeName != 'HTML'){
+			if (node.scopeName == null)
+				return '';
+			
 			return node.scopeName.toLowerCase() + ':' + tagName;
 		}
 		// <dojoTag> => dojo:tag
