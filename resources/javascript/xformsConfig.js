@@ -5,7 +5,7 @@ XFormsConfig.maxStringValueLength = 255;
 
 if (djConfig == null) {	
 	var djConfig = {
-		baseScriptUri:	'/idegaweb/bundles/org.chiba.web.bundle/resources/javascript/dojo-0.4.3/',
+		baseScriptUri:	'/idegaweb/bundles/org.chiba.web.bundle/resources/javascript/dojo-0.4.4/',
 		debugAtAllCost:	false,
 		isDebug:		false
 	};

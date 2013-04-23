@@ -54,6 +54,10 @@ FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
 }
 
+jQuery(window).load(function() {
+	initXForms();
+});
+
 function initXForms(){
 	if(!chibaXFormsInited) {
 	    chibaXFormsInited = true;
