@@ -59,9 +59,12 @@ jQuery(window).load(function() {
 });
 
 function initXForms(){
-	if(!chibaXFormsInited) {
+	if (!chibaXFormsInited) {
 	    chibaXFormsInited = true;
-	    dojo.event.connect("before",window,"onunload","close");
+	    
+	    jQuery(window).on('beforeunload', function() {
+	    	close();
+	    });
 	}
 }
 
@@ -105,6 +108,21 @@ registerEvent(window, 'load', function() {
 		}	
 	});
 });
+
+if (typeof(dojo) == 'undefined' || typeof(dojo.event) == 'undefined') {
+	dojo.event = {};
+}
+if (typeof(dojo.event.connect == null)) {
+	dojo.event.connect = {};
+}
+dojo.event.connect = function(element, eventType, methodToCall) {
+	if (eventType.indexOf('on') == 0)
+		eventType = eventType.substring(2);
+	
+	jQuery(element).on(eventType, function(e) {
+		methodToCall(e);
+	});
+}
 
 /******************************************************************************
  SESSION HANDLING AND PAGE UNLOADING
@@ -542,9 +560,11 @@ function setRepeatIndex(e) {
     // get event target
     var target = _getEventTarget(e);
     if (!target) {
+    	FluxInterfaceBusyWithRepeatIndex = false;
     	return;
     } 
 	if (FluxInterfaceRepeatedIndexes[target.id] != null) {
+		FluxInterfaceBusyWithRepeatIndex = false;
 		return false;
 	}
 	FluxInterfaceRepeatedIndexes[target.id] = 'true';
@@ -557,10 +577,12 @@ function setRepeatIndex(e) {
     // maybe the user clicked on a whitespace node between to items *or*
     // on an already selected item, so there is no item to select
     if ((!target) || _hasClass(target, "repeat-index")) {
+    	FluxInterfaceBusyWithRepeatIndex = false;
         return;
     }
 
     chiba.setRepeatIndex(target);
+    FluxInterfaceBusyWithRepeatIndex = false;
 }
 
 /*
