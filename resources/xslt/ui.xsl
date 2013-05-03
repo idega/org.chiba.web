@@ -214,7 +214,9 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-                                		dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+            	jQuery(window).load(function() {
+            		dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+            	});
             </script>
         </xsl:if>
     </xsl:template>
@@ -297,9 +299,9 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-            
-                        	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
-
+            	jQuery(window).load(function() {
+                	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+				});
             </script>
         </xsl:if>
     </xsl:template>
@@ -484,9 +486,9 @@
             <!-- register index event handler -->
             <xsl:variable name="function-name" select="concat('register', generate-id())"/>
             <script type="text/javascript">
-			
-                        	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
-
+				jQuery(window).load(function() {
+                	dojo.event.connect(dojo.byId("<xsl:value-of select="$repeat-id"/>"),"onclick",setRepeatIndex);
+				});
             </script>
         </xsl:if>
     </xsl:template>
