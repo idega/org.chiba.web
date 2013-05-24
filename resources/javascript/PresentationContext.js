@@ -706,12 +706,26 @@ _updateSelectionOfClone = function(original_id, clone_id){
 updateSelectionOfOriginal = function(original_id, clone_id){
     //selection has changed on the clone so change the selection on the original
     var original = document.getElementById(original_id);
-    var clone = document.getElementById(clone_id);
-
-    for (var i = 0; i < clone.options.length; i++){
-        original.options[i].selected = clone.options[i].selected;
+    if (original == null || original.options == null) {
+    	alert('Original element by ID is ' + original_id + ' null');
+    	return;
     }
-    if (original.onchange){
+    
+    var clone = document.getElementById(clone_id);
+    if (clone == null || clone.options == null) {
+    	alert('Clone element by ID is ' + clone_id + ' null');
+    	return;
+    }
+
+    for (var i = 0; i < clone.options.length; i++) {
+    	var option = original.options[i];
+    	var cloneOption = clone.options[i];
+    	if (option != null && cloneOption != null) {
+    		option.selected = cloneOption.selected;
+    	}
+    }
+    
+    if (original.onchange) {
         setXFormsValue(original, true);
     }
 };
