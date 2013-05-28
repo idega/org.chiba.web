@@ -207,7 +207,7 @@ public class IdegaExtensionFunctions {
 
 			return value == null ? CoreConstants.EMPTY : value;
 		} catch (Exception e) {
-			throw new XFormsException(e);
+			throw new XFormsException("Unable to evaluate expression: " + exp, e);
 		}
 	}
 
