@@ -1,15 +1,5 @@
 package com.idega.chiba.web.xml.xforms.connector.context;
 
-import org.chiba.xml.xforms.connector.URIResolver;
-import org.chiba.xml.xforms.exception.XFormsException;
-import org.w3c.dom.Document;
-
-import com.idega.chiba.web.xml.xforms.connector.context.beans.ChoiceListData;
-import com.idega.chiba.web.xml.xforms.connector.context.beans.LocalizedEntries;
-import com.idega.util.StringUtil;
-import com.idega.util.text.Item;
-import com.idega.util.xml.XmlUtil;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
@@ -23,6 +13,17 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
+
+import org.chiba.xml.xforms.connector.URIResolver;
+import org.chiba.xml.xforms.exception.XFormsException;
+import org.w3c.dom.Document;
+
+import com.idega.chiba.web.xml.xforms.connector.context.beans.ChoiceListData;
+import com.idega.chiba.web.xml.xforms.connector.context.beans.LocalizedEntries;
+import com.idega.util.StringUtil;
+import com.idega.util.datastructures.map.MapUtil;
+import com.idega.util.text.Item;
+import com.idega.util.xml.XmlUtil;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
@@ -55,6 +56,10 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
     }
     
     protected Document createResponseDocument(Map<Locale, Map<String, String>> localizedItems) throws Exception {
+    	if (MapUtil.isEmpty(localizedItems)) {
+    		return null;
+    	}
+    	
     	ChoiceListData choiceListData = new ChoiceListData();
 		for (Entry<Locale, Map<String, String>> localizedItemsEntry : localizedItems.entrySet()) {
 			LocalizedEntries localizedEntries = new LocalizedEntries();
