@@ -939,6 +939,8 @@ FluxInterfaceHelper.initializeTextAreasAutoResize = function() {
 	});
 }
 
+FluxInterfaceHelper.tinyMCEParams = null;
+
 FluxInterfaceHelper.initializeTinyMCE = function() {
 	var textAreas = jQuery('textarea');
 	if (textAreas == null || textAreas.length == 0) {
@@ -953,7 +955,7 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 			var languageId = dojo.locale;
 			languageId = languageId.split('_')[0];
 			
-			textArea.tinymce({
+			var defaultParams = {
 				theme: 'advanced',
 				plugins: 'safari,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template',
 				
@@ -983,7 +985,15 @@ FluxInterfaceHelper.initializeTinyMCE = function() {
 						textArea.trigger('change');
 					});
 				}
-			});
+			};
+			
+			if (FluxInterfaceHelper.tinyMCEParams != null) {
+				for (param in FluxInterfaceHelper.tinyMCEParams) {
+					defaultParams[param] = FluxInterfaceHelper.tinyMCEParams[param];
+				}
+			}
+			
+			textArea.tinymce(defaultParams);
 		}
 	});
 }
