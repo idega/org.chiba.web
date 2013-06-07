@@ -21,6 +21,7 @@ import org.w3c.dom.Document;
 import com.idega.chiba.web.xml.xforms.connector.context.beans.ChoiceListData;
 import com.idega.chiba.web.xml.xforms.connector.context.beans.LocalizedEntries;
 import com.idega.util.StringUtil;
+import com.idega.util.datastructures.map.MapUtil;
 import com.idega.util.text.Item;
 import com.idega.util.xml.XmlUtil;
 
@@ -55,6 +56,10 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
     }
 
     protected Document createResponseDocument(Map<Locale, Map<String, String>> localizedItems) throws Exception {
+    	if (MapUtil.isEmpty(localizedItems)) {
+    		return null;
+    	}
+
     	ChoiceListData choiceListData = new ChoiceListData();
 		for (Entry<Locale, Map<String, String>> localizedItemsEntry : localizedItems.entrySet()) {
 			LocalizedEntries localizedEntries = new LocalizedEntries();
@@ -70,7 +75,8 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
         return choiceListData.getDocument();
 	}
 
-    public Map<Locale, Map<String, String>> resolveItems(String uri) {
+    @SuppressWarnings("unchecked")
+	public Map<Locale, Map<String, String>> resolveItems(String uri) {
     	if (StringUtil.isEmpty(uri)) {
     		LOGGER.log(Level.WARNING, "No URI was given. Nothing to resolve.");
     		return null;
