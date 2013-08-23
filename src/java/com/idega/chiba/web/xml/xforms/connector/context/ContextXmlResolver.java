@@ -133,8 +133,11 @@ public class ContextXmlResolver extends org.chiba.xml.xforms.connector.context.C
 	        if (value instanceof Map) {
 	        	@SuppressWarnings("unchecked")
 				Map<Locale, Map<String, String>> items = (Map<Locale, Map<String, String>>) value;
-	        	if (MapUtil.isEmpty(items))
+	        	if (MapUtil.isEmpty(items)) {
+	        		LOGGER.info("Returning null instead of empty map for XPath '" + xpath +	"') and expression ('" + expression + "')");
 	        		return null;
+	        	}
+
 	        	return items;
 	        } else {
 	        	LOGGER.warning("Value of wrong type was retrieved from the XPath ('" + xpath +	"') and expression ('" + expression +
