@@ -1077,6 +1077,13 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		input.mask('M99,99');
 	});
 	
+	jQuery.each(jQuery('.xFormInputMask_bankAccount input'), function() {
+		if (XFormsConfig.locale == 'is_IS') {
+			var input = jQuery(this);
+			input.mask('9999-99-999999');
+		}
+	});
+	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
 		if (Localization.CHARACTERS_LEFT == null) {
 			WebUtil.getLocalizedString('org.chiba.web', 'characters_left', 'Characters left', {
