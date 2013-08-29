@@ -430,4 +430,8 @@ public class ChibaUtils extends DefaultSpringBean {
     public Map<String, String> getEmptyXFormValues(String sessionKey) {
     	return emptyValues.remove(sessionKey);
     }
+
+    public boolean isValueSet(String value) {
+    	return !StringUtil.isEmpty(value);
+    }
 }
