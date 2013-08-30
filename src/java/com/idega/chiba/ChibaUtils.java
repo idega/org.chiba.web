@@ -432,6 +432,16 @@ public class ChibaUtils extends DefaultSpringBean {
     }
 
     public boolean isValueSet(String value) {
-    	return !StringUtil.isEmpty(value);
+    	if (StringUtil.isEmpty(value)) {
+    		return false;
+    	}
+
+    	if (value.startsWith("{") && value.endsWith("}")) {
+    		getLogger().warning("Value '" + value + "' is not set");
+    		return false;
+    	}
+
+    	getLogger().info("Value '" + value + "' is set");
+    	return true;
     }
 }
