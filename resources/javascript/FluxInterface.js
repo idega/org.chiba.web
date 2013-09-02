@@ -92,7 +92,7 @@ registerEvent(window, 'load', function() {
 			}
 		});
 		
-		if (jQuery('.go_to_home_page_button').size() > 0) {
+		if (jQuery('.go_to_home_page_button').size() > 0 || jQuery('.xforms_save_button').length > 0) {
 			BPMProcessAssets.getHomepageLinkAndLocalizedString({
 				callback: function(value) {
 					if (value != null) {
