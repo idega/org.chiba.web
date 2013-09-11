@@ -55,7 +55,7 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 		try {
 			FileInfo finfo = furihandler.getFileInfo(uri);
 
-//			trying to resolve parent folder, and reuse that
+			//	Trying to resolve parent folder, and reuse that
 			String path = uri.getPath();
 
 			String parentFolder = resolveParentFolder(path);
@@ -63,7 +63,7 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 			if(parentFolder == null)
 				parentFolder = String.valueOf(System.currentTimeMillis());
 
-//			building slide store path
+			//	Building repository store path
 			String folder = REPOSITORY_STORE_PATH+parentFolder+CoreConstants.SLASH;
 			newUri = new URI(REPOSITORY_SCHEME, folder+finfo.getFileName(), null);
 
