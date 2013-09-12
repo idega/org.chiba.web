@@ -3,13 +3,17 @@ package com.idega.chiba.web.session.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.myfaces.renderkit.html.util.HtmlBufferResponseWriterWrapper;
 import org.chiba.adapter.ui.UIGenerator;
 import org.chiba.adapter.ui.XSLTGenerator;
 import org.chiba.web.IWBundleStarter;
@@ -24,12 +28,23 @@ import org.chiba.web.session.impl.XFormsSessionBase;
 import org.chiba.xml.events.XMLEvent;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xforms.exception.XFormsException;
+import org.chiba.xml.xforms.ui.XformDocumentChange;
+import org.jdom.Document;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import com.idega.chiba.web.xml.xforms.bean.XformChangeBean;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.util.ListUtil;
+import com.idega.util.PresentationUtil;
 import com.idega.util.RequestUtil;
+import com.idega.util.expression.ELUtil;
+import com.idega.util.xml.XmlUtil;
 
 /**
  * Idega implementation of a XFormsSessionBase.
@@ -121,8 +136,9 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
 
                     //	Converting XForm to the HTML
                     uiGenerator.setInput(getAdapter().getXForms());
-                    uiGenerator.setOutput(context.getResponseWriter());
-                    uiGenerator.generate();
+                    writeXform(uiGenerator, context);
+                    
+                    
                 }
             } else {
             	handleExit(exitEvent);
@@ -134,6 +150,64 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
         }
     }
 
+    protected Logger getLogger(){
+    	return Logger.getLogger(getClass().getName());
+    }
+    private void writeXform(UIGenerator uiGenerator,FacesContext context) throws XFormsException, IOException{
+    	XformChangeBean xformChangeBean = ELUtil.getInstance().getBean(XformChangeBean.BEAN_NAME);
+    	List<XformDocumentChange> changeBeans = xformChangeBean.getXformDocumentChangeBeans();
+    	if(ListUtil.isEmpty(changeBeans)){
+    		generateUi(uiGenerator,context.getResponseWriter());
+    		return;
+    	}
+    	//TODO think of other way...
+    	IWContext iwc = IWContext.getIWContext(context);
+    	org.w3c.dom.Document w3Document = (org.w3c.dom.Document) getAdapter().getXForms();
+    	NodeList nodelist = w3Document.getElementsByTagName("link");
+    	int size = nodelist.getLength();
+    	for(int i = 0;i < size;i++){
+    		try{
+	    		Node item = nodelist.item(i);
+	    		Node href = item.getAttributes().getNamedItem("href");
+	    		String uri =  href.getNodeValue();
+	    		PresentationUtil.addStyleSheetToHeader(iwc,uri);
+    		}catch (Exception e) {
+    			break;
+			}
+    	}
+    	nodelist = w3Document.getElementsByTagName("script");
+    	size = nodelist.getLength();
+    	for(int i = 0;i < size;i++){
+    		try{
+	    		Node item = nodelist.item(i);
+	    		Node href = item.getAttributes().getNamedItem("src");
+	    		String uri =  href.getNodeValue();
+	    		PresentationUtil.addJavaScriptSourceLineToHeader(iwc, uri);
+    		}catch (Exception e) {
+				break;
+			}
+    	}
+    	//---------------
+    	HtmlBufferResponseWriterWrapper writer = null;
+		ResponseWriter responseWriter = context.getResponseWriter();
+		writer = HtmlBufferResponseWriterWrapper.getInstance(responseWriter);
+		generateUi(uiGenerator,writer);
+    	String rendered = writer.toString();
+    	Document document = XmlUtil.getJDOMXMLDocument(rendered, false);
+    	for(XformDocumentChange changeBean : changeBeans){
+    		document = changeBean.getChangedDocument(document);
+    	}
+		Format format = Format.getPrettyFormat();
+		format.setExpandEmptyElements(true);
+    	XMLOutputter outputter = new XMLOutputter(format);
+    	outputter.output(document, responseWriter);
+    }
+    
+    private void generateUi(UIGenerator uiGenerator,ResponseWriter writer) throws XFormsException{
+    	uiGenerator.setOutput(writer);
+    	uiGenerator.generate();
+    }
+    
     @Override
 	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
     	return createUIGenerator(FacesContext.getCurrentInstance());
