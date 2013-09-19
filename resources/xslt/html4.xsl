@@ -110,6 +110,8 @@
     <!-- ##################################### TEMPLATES ####################################################### -->
     <!-- ####################################################################################################### -->
 
+
+
     <xsl:template match="/">
         <xsl:apply-templates/>
     </xsl:template>
@@ -239,9 +241,15 @@
                 </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy>
-                    <xsl:apply-templates select="*|@*|text()"/>
-                </xsl:copy>
+            	<xsl:choose>
+	            	<xsl:when test="namespace-uri(.)='http://idega.com/xforms'">
+		            </xsl:when>
+		            <xsl:otherwise>
+		            	<xsl:copy>
+		                    <xsl:apply-templates select="*|@*|text()"/>
+		                </xsl:copy>
+		            </xsl:otherwise>
+		        </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
@@ -254,9 +262,15 @@
                 </xsl:element>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:copy>
-                    <xsl:apply-templates select="*|@*|text()" mode="inline"/>
-                </xsl:copy>
+                <xsl:choose>
+	            	<xsl:when test="namespace-uri(.)='http://idega.com/xforms'">
+		            </xsl:when>
+		            <xsl:otherwise>
+		            	<xsl:copy>
+		                    <xsl:apply-templates select="*|@*|text()"/>
+		                </xsl:copy>
+		            </xsl:otherwise>
+		        </xsl:choose>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
