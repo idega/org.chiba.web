@@ -689,6 +689,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		var link = properties["uri"] + '&showPDF=true';
         		jQuery(document.body).append('<a id="' + fancyBoxId + '" class="pdf" style="display: none;" />');
         		jQuery('#' + fancyBoxId).fancybox({
+        			type: 'iframe',
         			autoScale: false,
 					autoDimensions: false,
 					hideOnOverlayClick: false,
