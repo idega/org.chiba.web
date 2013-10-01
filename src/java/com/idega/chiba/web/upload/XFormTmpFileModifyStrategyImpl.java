@@ -25,6 +25,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.presentation.IWContext;
 import com.idega.slide.business.IWSlideService;
 import com.idega.util.CoreConstants;
+import com.idega.util.StringHandler;
 
 
 /**
@@ -58,7 +59,7 @@ public class XFormTmpFileModifyStrategyImpl implements TmpFilesModifyStrategy {
 		URI newUri = null;
 
 		try {
-			FileInfo finfo = furihandler.getFileInfo(uri);
+			FileInfo fInfo = furihandler.getFileInfo(uri);
 
 //			trying to resolve parent folder, and reuse that
 			String path = uri.getPath();
@@ -70,7 +71,13 @@ public class XFormTmpFileModifyStrategyImpl implements TmpFilesModifyStrategy {
 
 //			building slide store path
 			String folder = SLIDE_STORE_PATH+parentFolder+CoreConstants.SLASH;
-			newUri = new URI(SLIDE_SCHEME, folder+finfo.getFileName(), null);
+			String fileName = fInfo.getFileName();
+			fileName = StringHandler.stripNonRomanCharacters(fileName,
+					new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_', '.'});
+			fileName = StringHandler.removeWhiteSpace(fileName);
+			fInfo.setFileName(fileName);
+
+			newUri = new URI(SLIDE_SCHEME, folder+fileName, null);
 
 			item.setTextContent(newUri.toString());
 
@@ -79,7 +86,7 @@ public class XFormTmpFileModifyStrategyImpl implements TmpFilesModifyStrategy {
 				fis = furihandler.getFile(uri);
 
 				IWSlideService slideService = getIWSlideService();
-				slideService.uploadFileAndCreateFoldersFromStringAsRoot(folder, finfo.getFileName(), fis, null, false);
+				slideService.uploadFileAndCreateFoldersFromStringAsRoot(folder, fileName, fis, null, false);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -121,7 +128,7 @@ public class XFormTmpFileModifyStrategyImpl implements TmpFilesModifyStrategy {
 	private IWSlideService getIWSlideService() throws IBOLookupException {
 
 		try {
-			return (IWSlideService) IBOLookup.getServiceInstance(getIWApplicationContext(), IWSlideService.class);
+			return IBOLookup.getServiceInstance(getIWApplicationContext(), IWSlideService.class);
 		} catch (IBOLookupException e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error getting IWSlideService");
 			throw e;
