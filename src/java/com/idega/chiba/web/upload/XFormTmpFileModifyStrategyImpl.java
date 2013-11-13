@@ -21,6 +21,8 @@ import com.idega.core.file.util.FileURIHandler;
 import com.idega.core.file.util.FileURIHandlerFactory;
 import com.idega.core.test.base.IdegaBaseTest;
 import com.idega.util.CoreConstants;
+import com.idega.util.IOUtil;
+import com.idega.util.StringHandler;
 
 /**
  * @author <a href="mailto:civilis@idega.com">Vytautas Čivilis</a>
@@ -53,7 +55,7 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 		URI newUri = null;
 
 		try {
-			FileInfo finfo = furihandler.getFileInfo(uri);
+			FileInfo fInfo = furihandler.getFileInfo(uri);
 
 			//	Trying to resolve parent folder, and reuse that
 			String path = uri.getPath();
@@ -65,15 +67,20 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 
 			//	Building repository store path
 			String folder = REPOSITORY_STORE_PATH+parentFolder+CoreConstants.SLASH;
-			newUri = new URI(REPOSITORY_SCHEME, folder+finfo.getFileName(), null);
+			String fileName = fInfo.getFileName();
+			fileName = StringHandler.stripNonRomanCharacters(fileName, new char[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_', '.'});
+			fileName = StringHandler.removeWhiteSpace(fileName);
+			fInfo.setFileName(fileName);
+			newUri = new URI(REPOSITORY_SCHEME, folder+fileName, null);
 
 			item.setTextContent(newUri.toString());
 
-			if(System.getProperty(IdegaBaseTest.testSystemProp) == null) {
+			if (System.getProperty(IdegaBaseTest.testSystemProp) == null) {
 				fis = furihandler.getFile(uri);
-				getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(folder, finfo.getFileName(), fis, null);
+				if (!getRepositoryService().uploadFileAndCreateFoldersFromStringAsRoot(folder, fileName, fis, null)) {
+					Logger.getLogger(getClass().getName()).warning("Error while moving file resource from uri="+uri+" to uri="+newUri);
+				}
 			}
-
 		} catch (FileNotFoundException e) {
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while resolving file by uri="+uri+", skipping", e);
 			newUri = null;
@@ -81,9 +88,7 @@ public class XFormTmpFileModifyStrategyImpl extends DefaultSpringBean implements
 			Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Exception while moving file resource from uri="+uri+" to uri="+newUri, e);
 			newUri = null;
 		} finally {
-
-			if(fis != null)
-				try { fis.close(); } catch (Exception e) { Logger.getLogger(getClass().getName()).log(Level.WARNING, "Exception closing input stream", e);}
+			IOUtil.close(fis);
 		}
 
 		return newUri;

@@ -92,7 +92,7 @@ registerEvent(window, 'load', function() {
 			}
 		});
 		
-		if (jQuery('.go_to_home_page_button').size() > 0) {
+		if (jQuery('.go_to_home_page_button').size() > 0 || jQuery('.xforms_save_button').length > 0) {
 			BPMProcessAssets.getHomepageLinkAndLocalizedString({
 				callback: function(value) {
 					if (value != null) {
@@ -689,6 +689,7 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		var link = properties["uri"] + '&showPDF=true';
         		jQuery(document.body).append('<a id="' + fancyBoxId + '" class="pdf" style="display: none;" />');
         		jQuery('#' + fancyBoxId).fancybox({
+        			type: 'iframe',
         			autoScale: false,
 					autoDimensions: false,
 					hideOnOverlayClick: false,
@@ -1075,6 +1076,13 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 		var input = jQuery(this);
 		
 		input.mask('M99,99');
+	});
+	
+	jQuery.each(jQuery('.xFormInputMask_bankAccount input'), function() {
+		if (XFormsConfig.locale == 'is_IS') {
+			var input = jQuery(this);
+			input.mask('9999-99-999999');
+		}
 	});
 	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
