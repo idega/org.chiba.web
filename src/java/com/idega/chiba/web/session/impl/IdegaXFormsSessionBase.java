@@ -29,9 +29,9 @@ import org.chiba.xml.events.XMLEvent;
 import org.chiba.xml.xforms.config.XFormsConfigException;
 import org.chiba.xml.xforms.exception.XFormsException;
 import org.chiba.xml.xforms.ui.XformDocumentChange;
-import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -137,8 +137,8 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
                     //	Converting XForm to the HTML
                     uiGenerator.setInput(getAdapter().getXForms());
                     writeXform(uiGenerator, context);
-                    
-                    
+
+
                 }
             } else {
             	handleExit(exitEvent);
@@ -202,12 +202,12 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
     	XMLOutputter outputter = new XMLOutputter(format);
     	outputter.output(document, responseWriter);
     }
-    
+
     private void generateUi(UIGenerator uiGenerator,ResponseWriter writer) throws XFormsException{
     	uiGenerator.setOutput(writer);
     	uiGenerator.generate();
     }
-    
+
     @Override
 	protected UIGenerator createUIGenerator() throws URISyntaxException, XFormsException {
     	return createUIGenerator(FacesContext.getCurrentInstance());
