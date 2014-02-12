@@ -1084,6 +1084,24 @@ FluxInterfaceHelper.initializeMaskedInputs = function() {
 			input.mask('9999-99-999999');
 		}
 	});
+	jQuery.each(jQuery('.bankName input'), function() {
+		if (XFormsConfig.locale == 'is_IS') {
+			var input = jQuery(this);
+			input.mask('9999');
+		}
+	});
+	jQuery.each(jQuery('.bankAccountType input'), function() {
+		if (XFormsConfig.locale == 'is_IS') {
+			var input = jQuery(this);
+			input.mask('99');
+		}
+	});
+	jQuery.each(jQuery('.bankAccountNumber input'), function() {
+		if (XFormsConfig.locale == 'is_IS') {
+			var input = jQuery(this);
+			input.mask('999999');
+		}
+	});
 	
 	LazyLoader.loadMultiple(['/dwr/engine.js', '/dwr/interface/WebUtil.js'], function() {
 		if (Localization.CHARACTERS_LEFT == null) {
