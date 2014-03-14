@@ -62,7 +62,7 @@ public class KeyContextResolver extends org.chiba.xml.xforms.connector.context.C
             }
 	        return createResponseDocument(response, xpath).getDocumentElement();
         } catch (Exception e) {
-        	Logger.getLogger(getClass().getName()).warning("Unable to get value from " + key);
+        	Logger.getLogger(getClass().getName()).warning("Unable to get value from EL expresion '" + key + "'");
         	try {
         		return createResponseDocument(CoreConstants.EMPTY, "foobar").getDocumentElement();
 			} catch (Exception e2) {

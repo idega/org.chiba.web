@@ -63,7 +63,7 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
             						maxSize++;
             					}
             					
-            					if (attemptingToUpload < maxSize) {
+            					if (attemptingToUpload <= maxSize) {
             						uploadWidget._submitFile(uploadWidget.inputNode);
             						return true;
             					} else {
