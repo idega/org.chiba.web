@@ -49,6 +49,8 @@ var chibaXFormsInited = false;
 FluxInterfaceHelper.closeLoadingMessageAfterUIUpdated = false; 
 FluxInterfaceHelper.repeatInputMaskInitialization = true;
 FluxInterfaceHelper.doShowSavingSuggestion = false;
+FluxInterfaceHelper.STOP_ON_ERROR = false;
+FluxInterfaceHelper.ANY_ERROR = false;
 
 FluxInterfaceHelper.getXFormSessionKey = function() {
 	return jQuery('#chibaSessionKey').attr('value');
@@ -360,8 +362,32 @@ function chibaActivate(target) {
 		}
 	});
 	//	Executing custom functions
-	if (FluxInterfaceHelper.beforeChibaActivate != null)
+	if (FluxInterfaceHelper.beforeChibaActivate != null) {
 		FluxInterfaceHelper.beforeChibaActivate(target);
+	}
+	
+	var errors = false;
+	if (FluxInterfaceHelper.STOP_ON_ERROR) {
+		if (FluxInterfaceHelper.ANY_ERROR) {
+			return false;
+		}
+		
+		var spans = jQuery('span.alert', jQuery('div.invalid'));
+		if (spans != null && spans.length > 0) {
+			spans.each(function() {
+				var html = jQuery(this).html();
+				if (html != null && html != '') {
+					errors = true;
+					return false;
+				}
+			});
+		}
+		if (errors) {
+			return false;
+		} else {
+			FluxInterfaceHelper.ANY_ERROR = false;
+		}
+	}
 	
 	if (typeof(target) == 'string') {
 		target = document.getElementById(target);
