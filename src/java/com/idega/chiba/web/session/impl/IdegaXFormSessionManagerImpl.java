@@ -88,7 +88,7 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
     }
 
     @Override
-	public synchronized XFormsSession createXFormsSession(HttpServletRequest request, HttpServletResponse response, HttpSession session)
+	public XFormsSession createXFormsSession(HttpServletRequest request, HttpServletResponse response, HttpSession session)
     		throws XFormsException {
     	try {
          	Config config = IWBundleStarter.webFactory.getConfig();
@@ -273,7 +273,7 @@ public class IdegaXFormSessionManagerImpl extends DefaultSpringBean implements X
     }
 
     @Override
-	public synchronized void init() {}
+	public void init() {}
 
     private CacheMapListener<String, XFormsSession> getCacheListener() {
     	if (cacheListener == null) {

@@ -91,11 +91,11 @@ public class IdegaXFormsSessionBase extends XFormsSessionBase {
      * @throws URISyntaxException
      */
     @Override
-	public synchronized void handleRequest() throws XFormsException {
+	public void handleRequest() throws XFormsException {
     	handleRequest(FacesContext.getCurrentInstance());
     }
 
-    public synchronized void handleRequest(FacesContext context) throws XFormsException {
+    public void handleRequest(FacesContext context) throws XFormsException {
         boolean updating=false; //this will become true in case ServletAdapter is in use
         updateLRU();
 

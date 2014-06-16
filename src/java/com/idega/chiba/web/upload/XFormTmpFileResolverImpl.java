@@ -158,11 +158,9 @@ public class XFormTmpFileResolverImpl implements TmpFileResolver {
 		if (context instanceof Element && identifier.equals(((Element) context).getAttribute(ChibaConstants.MAPPING)))
 			return (Element) context;
 
-		synchronized (byVariableNameXpath) {
-			byVariableNameXpath.setVariable(VARIABLE_NAME_VAR, identifier);
-			Element n = (Element) byVariableNameXpath.getNode(context);
-			return n;
-		}
+		byVariableNameXpath.setVariable(VARIABLE_NAME_VAR, identifier);
+		Element n = (Element) byVariableNameXpath.getNode(context);
+		return n;
 	}
 
 	@Override
