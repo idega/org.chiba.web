@@ -3,6 +3,8 @@ package com.idega.chiba.web.xml.xforms.elements.action;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+import javax.faces.context.FacesContext;
+
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;
 import org.apache.xerces.dom.NodeImpl;
@@ -20,6 +22,7 @@ import org.w3c.dom.NodeList;
 import com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions;
 import com.idega.util.CoreConstants;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 import com.idega.util.text.TableRecord;
 
@@ -153,6 +156,14 @@ public class IdegaSetValueAction extends SetValueAction {
 		String currentPath = getParentContextPath(this.element);
 		context.getVariables().declareVariable("currentContextPath",
 				currentPath);
+		if (ELUtil.isExpression(valueAttribute)){
+			try{
+				FacesContext facesContext = FacesContext.getCurrentInstance();
+				return facesContext.getApplication().evaluateExpressionGet(facesContext, valueAttribute, String.class);
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		try {
 			String locationPath = getLocationPath();
 			context.getPointer(locationPath + "[chiba:declare('node-value', "
@@ -165,7 +176,7 @@ public class IdegaSetValueAction extends SetValueAction {
 		Object value = context.getValue("chiba:undeclare('node-value')");
 
 		if (value == null) {
-			//	 Checking if value is not provided with XPath expression
+//			Checking if value is not provided with XPath expression
 			try {
 				value = (new com.idega.util.xml.XPathUtil(valueAttribute)).getNode(this.element).getTextContent();
 			} catch (Exception e) {}
