@@ -797,6 +797,9 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         case "chiba-switch-toggled":
             context.handleSwitchToggled(properties["deselected"], properties["selected"]);
             closeAllLoadingMessages();
+            if (FluxInterfaceHelper.onPageChanged != null) {
+            	FluxInterfaceHelper.onPageChanged(targetId);
+            }
             break;
         case "upload-progress-event":
             var currentUpload = dojo.widget.byId(targetId + "-value");
@@ -835,6 +838,8 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
     if (FluxInterfaceHelper.repeatInputMaskInitialization)
     	FluxInterfaceHelper.initializeMaskedInputs();
 }
+
+FluxInterfaceHelper.onPageChanged = null;
 
 var submissionErrors = 0;
 function _highlightFailedRequired() {
