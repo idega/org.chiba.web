@@ -1,9 +1,8 @@
 package com.idega.chiba.web.xml.xforms.elements.action;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.faces.context.FacesContext;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.JXPathException;
@@ -20,9 +19,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions;
+import com.idega.presentation.IWContext;
 import com.idega.util.CoreConstants;
+import com.idega.util.CoreUtil;
 import com.idega.util.StringUtil;
-import com.idega.util.expression.ELUtil;
 import com.idega.util.text.Item;
 import com.idega.util.text.TableRecord;
 
@@ -154,23 +154,29 @@ public class IdegaSetValueAction extends SetValueAction {
 		JXPathContext context = instance.getInstanceContext();
 
 		String currentPath = getParentContextPath(this.element);
-		context.getVariables().declareVariable("currentContextPath",
-				currentPath);
-		if (ELUtil.isExpression(valueAttribute)){
-			try{
-				FacesContext facesContext = FacesContext.getCurrentInstance();
-				return facesContext.getApplication().evaluateExpressionGet(facesContext, valueAttribute, String.class);
-			}catch (Exception e) {
-				e.printStackTrace();
+		context.getVariables().declareVariable("currentContextPath", currentPath);
+
+		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.startsWith("#{") && valueAttribute.endsWith("}")) {
+			try {
+				IWContext iwc = CoreUtil.getIWContext();
+				if (iwc == null) {
+					LOGGER.warning("Unable to evaluate expression '" + valueAttribute + "' within FacesContext");
+				} else {
+					Object value = iwc.getApplication().evaluateExpressionGet(iwc, valueAttribute, String.class);
+					if (value != null) {
+						return value;
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.log(Level.WARNING, "Error evaluating expression '" + valueAttribute + "'", e);
 			}
 		}
+
 		try {
 			String locationPath = getLocationPath();
-			context.getPointer(locationPath + "[chiba:declare('node-value', "
-					+ valueAttribute + ")]");
+			context.getPointer(locationPath + "[chiba:declare('node-value', " + valueAttribute + ")]");
 		} catch (Exception e) {
-			throw new XFormsComputeException("invalid value expression at "
-					+ this, e, this.target, valueAttribute);
+			throw new XFormsComputeException("Invalid value expression at "	+ this, e, this.target, valueAttribute);
 		}
 
 		Object value = context.getValue("chiba:undeclare('node-value')");
