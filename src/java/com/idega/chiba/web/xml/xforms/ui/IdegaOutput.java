@@ -18,8 +18,11 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import com.idega.chiba.web.xml.xforms.ui.state.IdegaBoundElementState;
+import com.idega.idegaweb.IWMainApplication;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.StringHandler;
+import com.idega.util.StringUtil;
 import com.idega.util.xml.XPathUtil;
 import com.idega.util.xml.XmlUtil;
 
@@ -28,6 +31,8 @@ public class IdegaOutput extends Output {
 	private static final Logger LOGGER = Logger.getLogger(IdegaOutput.class.getName());
 
 	private String resolver;
+
+	private Boolean pdfView = null;
 
 	public IdegaOutput(Element element, Model model) {
         super(element, model);
@@ -61,6 +66,28 @@ public class IdegaOutput extends Output {
 		this.resolver = getXFormsAttribute("resolver");
 	}
 
+	public Boolean getPdfView() {
+		if (pdfView == null) {
+			Instance controlInstance = getModel().getInstance("control-instance");
+			if (controlInstance != null) {
+				String value = null;
+				try {
+					value = controlInstance.getNodeValue("instance('control-instance')/generatePdf");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				Boolean pdf = Boolean.valueOf(value);
+				setPdfView(pdf == null ? false : pdf);
+			}
+		}
+		return pdfView;
+	}
+
+	public void setPdfView(Boolean pdfView) {
+		this.pdfView = pdfView;
+	}
+
 	@Override
 	protected void dispatchValueChangeSequence() throws XFormsException {
 		super.dispatchValueChangeSequence();
@@ -90,16 +117,41 @@ public class IdegaOutput extends Output {
 						attributes.append("; ");
 				}
 			}
-			LOGGER.log(Level.WARNING, "Error while trying to resolve value for the output element: ID: " + this.id + ", attributes: " +
-					attributes.toString(), e);
+			LOGGER.log(Level.WARNING, "Error while trying to resolve value for the output element: ID: " + this.id + ", attributes: " + attributes.toString(), e);
 		}
-		if (value != null)
+		if (value != null) {
+			if (StringHandler.isNumeric(value.toString())) {
+				String valueAttribute = getValueAttribute();
+				if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
+					String property = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_increase_number_value");
+					if (!StringUtil.isEmpty(property)) {
+						String[] ids = property.split(CoreConstants.COMMA);
+						for (String id: ids) {
+							if (!StringUtil.isEmpty(id) && id.equals(this.id)) {
+								Integer number = null;
+								try {
+									number = Integer.valueOf(value.toString());
+								} catch (NumberFormatException e) {
+									LOGGER.warning("Error converting " + value + " to number");
+								}
+								if (number != null) {
+									number++;
+									value = String.valueOf(number);
+								}
+							}
+						}
+					}
+				}
+			}
+
 			return value;
+		}
 
         String pathExpression = BindingResolver.getExpressionPath(this, this.repeatItemId);
         Instance instance = this.model.getInstance(this.model.computeInstanceId(pathExpression));
-        if (!instance.existsNode(pathExpression))
+        if (!instance.existsNode(pathExpression)) {
             return null;
+        }
 
         String valueAttribute = getValueAttribute();
 
