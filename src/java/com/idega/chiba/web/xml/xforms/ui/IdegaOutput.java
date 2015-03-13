@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 
 import com.idega.chiba.web.xml.xforms.ui.state.IdegaBoundElementState;
 import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.StringHandler;
@@ -123,20 +124,28 @@ public class IdegaOutput extends Output {
 			if (StringHandler.isNumeric(value.toString())) {
 				String valueAttribute = getValueAttribute();
 				if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
-					String property = IWMainApplication.getDefaultIWMainApplication().getSettings().getProperty("xform_increase_number_value");
-					if (!StringUtil.isEmpty(property)) {
-						String[] ids = property.split(CoreConstants.COMMA);
-						for (String id: ids) {
-							if (!StringUtil.isEmpty(id) && id.equals(this.id)) {
-								Integer number = null;
-								try {
-									number = Integer.valueOf(value.toString());
-								} catch (NumberFormatException e) {
-									LOGGER.warning("Error converting " + value + " to number");
-								}
-								if (number != null) {
-									number++;
-									value = String.valueOf(number);
+					IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
+					boolean changeValue = true;
+					if (settings.getBoolean("xform_increase_nr_value_pdf", false) && !getPdfView()) {
+						changeValue = false;
+					}
+
+					if (changeValue) {
+						String property = settings.getProperty("xform_increase_number_value");
+						if (!StringUtil.isEmpty(property)) {
+							String[] ids = property.split(CoreConstants.COMMA);
+							for (String id: ids) {
+								if (!StringUtil.isEmpty(id) && id.equals(this.id)) {
+									Integer number = null;
+									try {
+										number = Integer.valueOf(value.toString());
+									} catch (NumberFormatException e) {
+										LOGGER.warning("Error converting " + value + " to number");
+									}
+									if (number != null) {
+										number++;
+										value = String.valueOf(number);
+									}
 								}
 							}
 						}
