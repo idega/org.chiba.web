@@ -45,7 +45,13 @@
     <dependency>
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.webface</artifactId>
-	</dependency>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>xmlParserAPIs</artifactId>
+      		<groupId>xml-apis</groupId>
+      	</exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>com.idega.block.platform</groupId>
       <artifactId>com.idega.jackrabbit</artifactId>
