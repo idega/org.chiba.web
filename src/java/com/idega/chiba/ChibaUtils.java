@@ -38,12 +38,14 @@ import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.presentation.IWContext;
+import com.idega.servlet.filter.RequestResponseProvider;
 import com.idega.user.data.bean.User;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
 import com.idega.util.ListUtil;
 import com.idega.util.SendMail;
 import com.idega.util.StringUtil;
+import com.idega.util.expression.ELUtil;
 
 @Service("chibaUtils")
 @Scope(BeanDefinition.SCOPE_SINGLETON)
@@ -308,6 +310,22 @@ public class ChibaUtils extends DefaultSpringBean {
 		}
     }
 
+    public String getElementValue(String elementId) {
+    	if (StringUtil.isEmpty(elementId)) {
+    		return null;
+    	}
+
+    	try {
+    		RequestResponseProvider provider = ELUtil.getInstance().getBean(RequestResponseProvider.class);
+    		String sessionKey = getSessionKey(provider.getRequest());
+    		return getElementValue(sessionKey, elementId);
+    	} catch (Exception e) {
+    		LOGGER.log(Level.WARNING, "Error getting value for element " + elementId, e);
+    	}
+
+    	return null;
+    }
+
     public String getElementValue(String xformSessionId, String elementId) {
     	if (StringUtil.isEmpty(xformSessionId) || StringUtil.isEmpty(elementId))
     		return null;
@@ -429,6 +447,11 @@ public class ChibaUtils extends DefaultSpringBean {
 
     public Map<String, String> getEmptyXFormValues(String sessionKey) {
     	return emptyValues.remove(sessionKey);
+    }
+
+    public boolean hasElementValue(String elementId) {
+    	String value = getElementValue(elementId);
+    	return !StringUtil.isEmpty(value);
     }
 
     public boolean isValueSet(String value) {
