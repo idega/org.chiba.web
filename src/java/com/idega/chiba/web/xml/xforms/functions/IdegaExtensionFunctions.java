@@ -76,8 +76,8 @@ public class IdegaExtensionFunctions {
 			Instance instance,
 			String expression,
 			String params,
-			boolean spaceOnError) {
-
+			boolean spaceOnError
+	) {
 		String resolvedParams = null;
 		if (!StringUtil.isEmpty(params)) {
 			if (spaceOnError) {
