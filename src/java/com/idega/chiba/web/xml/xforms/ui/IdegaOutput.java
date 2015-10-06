@@ -17,6 +17,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import com.idega.chiba.web.xml.xforms.functions.IdegaExtensionFunctions;
 import com.idega.chiba.web.xml.xforms.ui.state.IdegaBoundElementState;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
@@ -34,6 +35,8 @@ public class IdegaOutput extends Output {
 	private String resolver;
 
 	private Boolean pdfView = null;
+
+	private String ifCondition;
 
 	public IdegaOutput(Element element, Model model) {
         super(element, model);
@@ -65,6 +68,7 @@ public class IdegaOutput extends Output {
 		super.init();
 
 		this.resolver = getXFormsAttribute("resolver");
+		this.ifCondition = getXFormsAttribute("idega-if");
 	}
 
 	public Boolean getPdfView() {
@@ -102,6 +106,37 @@ public class IdegaOutput extends Output {
 		this.resolver = resolver;
 	}
 
+	private boolean canPerform() {
+		boolean perform = true;
+		if (StringUtil.isEmpty(ifCondition)) {
+			return perform;
+		}
+
+		Object result = null;
+		try {
+			String beanExpEnd = "',";
+			String beanExp = ifCondition.substring(
+							0,
+							ifCondition.indexOf(beanExpEnd) + (beanExpEnd.length() - 1));
+			beanExp = beanExp.replaceAll("'", CoreConstants.EMPTY);
+
+			String params = null;
+			int separator = ifCondition.indexOf(beanExpEnd);
+			if (separator != -1) {
+				params = ifCondition.substring(separator + beanExpEnd.length());
+			}
+
+			result = IdegaExtensionFunctions.resolveExpressionByInstance(this.model.getInstance(getInstanceId()), beanExp, params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (result instanceof Boolean) {
+			perform = (Boolean) result;
+		}
+		return perform;
+	}
+
 	@Override
 	public Object computeValueAttribute() throws XFormsException {
 		Object value = null;
@@ -120,9 +155,48 @@ public class IdegaOutput extends Output {
 			}
 			LOGGER.log(Level.WARNING, "Error while trying to resolve value for the output element: ID: " + this.id + ", attributes: " + attributes.toString(), e);
 		}
+
+		String valueAttribute = getValueAttribute();
+		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("resolveExpression") != -1) {
+			try {
+				if (canPerform()) {
+					String beanExpEnd = CoreConstants.QOUTE_SINGLE_MARK + CoreConstants.COMMA;
+					if (valueAttribute.indexOf(beanExpEnd) == -1) {
+						beanExpEnd = CoreConstants.QOUTE_SINGLE_MARK + CoreConstants.BRACKET_RIGHT;
+					}
+					String beanExp = valueAttribute.substring(0, valueAttribute.indexOf(beanExpEnd) + (beanExpEnd.length() - 1));
+					beanExp = beanExp.replaceAll(CoreConstants.QOUTE_SINGLE_MARK, CoreConstants.EMPTY);
+					beanExp = StringHandler.replace(beanExp, "idega:resolveExpression(", CoreConstants.EMPTY);
+
+					String params = null;
+					int separator = valueAttribute.indexOf(beanExpEnd);
+					if (separator != -1) {
+						params = valueAttribute.substring(separator + beanExpEnd.length());
+					}
+					if (params != null) {
+						params = params.trim();
+
+						if (params.startsWith(CoreConstants.QOUTE_SINGLE_MARK)) {
+							params = params.substring(1);
+						}
+
+						if (params.endsWith(CoreConstants.BRACKET_RIGHT)) {
+							params = params.substring(0, params.length() - 1);
+						}
+						if (params.endsWith(CoreConstants.QOUTE_SINGLE_MARK)) {
+							params = params.substring(0, params.length() - 1);
+						}
+					}
+					value = IdegaExtensionFunctions.resolveExpressionByInstance(this.model.getInstance(getInstanceId()), beanExp, params);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		if (value != null) {
 			if (StringHandler.isNumeric(value.toString())) {
-				String valueAttribute = getValueAttribute();
+				valueAttribute = getValueAttribute();
 				if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
 					IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
 					boolean changeValue = true;
@@ -162,7 +236,7 @@ public class IdegaOutput extends Output {
             return null;
         }
 
-        String valueAttribute = getValueAttribute();
+        valueAttribute = getValueAttribute();
 
         JXPathContext context = instance.getInstanceContext();
 
