@@ -1,8 +1,15 @@
 package com.idega.chiba.web.xml.xforms.ui;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.jxpath.JXPathContext;
 import org.chiba.xml.ns.NamespaceResolver;
@@ -23,6 +30,7 @@ import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.util.CoreConstants;
 import com.idega.util.CoreUtil;
+import com.idega.util.ListUtil;
 import com.idega.util.StringHandler;
 import com.idega.util.StringUtil;
 import com.idega.util.xml.XPathUtil;
@@ -139,6 +147,53 @@ public class IdegaOutput extends Output {
 
 	@Override
 	public Object computeValueAttribute() throws XFormsException {
+		String valueAttribute = getValueAttribute();
+		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
+			IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
+			boolean changeValue = true;
+			if (settings.getBoolean("xform_increase_nr_value_pdf", false) && !getPdfView()) {
+				changeValue = false;
+			}
+
+			if (changeValue) {
+				List<String> properties = Arrays.asList(settings.getProperty("xform_increase_number_value").split(CoreConstants.COMMA));
+				if (!ListUtil.isEmpty(properties) && properties.contains(id)) {
+					List<String> nodes = getNodes(valueAttribute);
+					if (!StringUtil.isEmpty(valueAttribute)) {
+						Instance data = model.getInstance("data-instance");
+						Map<String, String> values = new HashMap<>();
+						for (String node: nodes) {
+							String path = "instance('data-instance')/" + node;
+							String nodeValue = data.getNodeValue(path);
+
+							values.put(node, nodeValue);
+
+							if (!StringUtil.isEmpty(nodeValue)) {
+								Integer number = null;
+								try {
+									number = Integer.valueOf(nodeValue.toString());
+								} catch (NumberFormatException e) {
+									LOGGER.warning("Error converting " + nodeValue + " to number");
+								}
+								if (number != null && number == -1) {
+									number++;
+									nodeValue = String.valueOf(number);
+
+									data.setNodeValue(path, nodeValue);
+								}
+							}
+						}
+						nodes.removeAll(values.keySet());
+						for (String nodeWithoutValue: nodes) {
+							data.setNodeValue("instance('data-instance')/" + nodeWithoutValue, String.valueOf(0));
+						}
+
+						LOGGER.info("Values: " + values);
+					}
+				}
+			}
+		}
+
 		Object value = null;
 		try {
 			value = super.computeValueAttribute();
@@ -149,14 +204,14 @@ public class IdegaOutput extends Output {
 				for (int i = 0; i < map.getLength(); i++) {
 					Node attribute = map.item(i);
 					attributes.append(attribute.toString());
-					if (i + 1 < map.getLength())
+					if (i + 1 < map.getLength()) {
 						attributes.append("; ");
+					}
 				}
 			}
 			LOGGER.log(Level.WARNING, "Error while trying to resolve value for the output element: ID: " + this.id + ", attributes: " + attributes.toString(), e);
 		}
 
-		String valueAttribute = getValueAttribute();
 		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("resolveExpression") != -1) {
 			try {
 				if (canPerform()) {
@@ -192,42 +247,6 @@ public class IdegaOutput extends Output {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		if (value != null) {
-			if (StringHandler.isNumeric(value.toString())) {
-				valueAttribute = getValueAttribute();
-				if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
-					IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
-					boolean changeValue = true;
-					if (settings.getBoolean("xform_increase_nr_value_pdf", false) && !getPdfView()) {
-						changeValue = false;
-					}
-
-					if (changeValue) {
-						String property = settings.getProperty("xform_increase_number_value");
-						if (!StringUtil.isEmpty(property)) {
-							String[] ids = property.split(CoreConstants.COMMA);
-							for (String id: ids) {
-								if (!StringUtil.isEmpty(id) && id.equals(this.id)) {
-									Integer number = null;
-									try {
-										number = Integer.valueOf(value.toString());
-									} catch (NumberFormatException e) {
-										LOGGER.warning("Error converting " + value + " to number");
-									}
-									if (number != null) {
-										number++;
-										value = String.valueOf(number);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return value;
 		}
 
         String pathExpression = BindingResolver.getExpressionPath(this, this.repeatItemId);
@@ -277,6 +296,35 @@ public class IdegaOutput extends Output {
 
         return value;
     }
+
+	private static final Pattern nodeSetPattern = Pattern.compile("([A-Z])\\w+");
+	private static final Pattern lowerCaseNodeSetPattern = Pattern.compile("([a-z])\\w+\\,");
+
+	private List<String> getNodes(String valueAttribute) {
+		Map<String, Boolean> nodes = new HashMap<>();
+		if (StringUtil.isEmpty(valueAttribute)) {
+			return new ArrayList<>(nodes.keySet());
+		}
+
+		Matcher matcher = nodeSetPattern.matcher(valueAttribute);
+		while (matcher.find()) {
+			nodes.put(valueAttribute.substring(matcher.start(), matcher.end()), Boolean.TRUE);
+		}
+
+		matcher = lowerCaseNodeSetPattern.matcher(valueAttribute);
+		while (matcher.find()) {
+			int start = matcher.start();
+			if (valueAttribute.substring(start - 1, start).equals(CoreConstants.BRACKET_LEFT)) {
+				String node = valueAttribute.substring(start, matcher.end());
+				if (node.endsWith(CoreConstants.COMMA)) {
+					node = node.substring(0, node.length() - 1);
+				}
+				nodes.put(node, Boolean.TRUE);
+			}
+		}
+
+		return new ArrayList<>(nodes.keySet());
+	}
 
 	@Override
 	protected UIElementState createElementState() throws XFormsException {
