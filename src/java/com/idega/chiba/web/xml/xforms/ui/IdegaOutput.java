@@ -159,37 +159,35 @@ public class IdegaOutput extends Output {
 				List<String> properties = Arrays.asList(settings.getProperty("xform_increase_number_value").split(CoreConstants.COMMA));
 				if (!ListUtil.isEmpty(properties) && properties.contains(id)) {
 					List<String> nodes = getNodes(valueAttribute);
-					if (!StringUtil.isEmpty(valueAttribute)) {
-						Instance data = model.getInstance("data-instance");
-						Map<String, String> values = new HashMap<>();
-						for (String node: nodes) {
-							String path = "instance('data-instance')/" + node;
-							String nodeValue = data.getNodeValue(path);
+					Instance data = model.getInstance("data-instance");
+					Map<String, String> values = new HashMap<>();
+					for (String node: nodes) {
+						String path = "instance('data-instance')/" + node;
+						String nodeValue = data.getNodeValue(path);
 
-							values.put(node, nodeValue);
+						values.put(node, nodeValue);
 
-							if (!StringUtil.isEmpty(nodeValue)) {
-								Integer number = null;
-								try {
-									number = Integer.valueOf(nodeValue.toString());
-								} catch (NumberFormatException e) {
-									LOGGER.warning("Error converting " + nodeValue + " to number");
-								}
-								if (number != null && number == -1) {
-									number++;
-									nodeValue = String.valueOf(number);
+						if (!StringUtil.isEmpty(nodeValue)) {
+							Integer number = null;
+							try {
+								number = Integer.valueOf(nodeValue.toString());
+							} catch (NumberFormatException e) {
+								LOGGER.warning("Error converting " + nodeValue + " to number");
+							}
+							if (number != null && number == -1) {
+								number++;
+								nodeValue = String.valueOf(number);
 
-									data.setNodeValue(path, nodeValue);
-								}
+								data.setNodeValue(path, nodeValue);
 							}
 						}
-						nodes.removeAll(values.keySet());
-						for (String nodeWithoutValue: nodes) {
-							data.setNodeValue("instance('data-instance')/" + nodeWithoutValue, String.valueOf(0));
-						}
-
-						LOGGER.info("Values: " + values);
 					}
+					nodes.removeAll(values.keySet());
+					for (String nodeWithoutValue: nodes) {
+						data.setNodeValue("instance('data-instance')/" + nodeWithoutValue, String.valueOf(0));
+					}
+
+					LOGGER.info("Values: " + values);
 				}
 			}
 		}
