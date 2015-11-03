@@ -145,50 +145,58 @@ public class IdegaOutput extends Output {
 		return perform;
 	}
 
+	private static final Pattern number = Pattern.compile("(?:\\d*\\.)?\\d+");
+
+	private String getNumber(String value) {
+		if (StringUtil.isEmpty(value)) {
+			return value;
+		}
+
+		Matcher matcher = number.matcher(value);
+		if (matcher.find()) {
+			value = value.substring(matcher.start(), matcher.end());
+		}
+
+		return value;
+	}
+
 	@Override
 	public Object computeValueAttribute() throws XFormsException {
 		String valueAttribute = getValueAttribute();
 		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
 			IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
-			boolean changeValue = true;
-			if (settings.getBoolean("xform_increase_nr_value_pdf", false) && !getPdfView()) {
-				changeValue = false;
-			}
+			List<String> ids = Arrays.asList(settings.getProperty("xform_increase_number_value").split(CoreConstants.COMMA));
+			if (!ListUtil.isEmpty(ids) && ids.contains(id)) {
+				List<String> nodes = getNodes(valueAttribute);
+				Instance data = model.getInstance("data-instance");
+				Map<String, String> values = new HashMap<>();
+				for (String node: nodes) {
+					String path = "instance('data-instance')/" + node;
+					String nodeValue = getNumber(data.getNodeValue(path));
 
-			if (changeValue) {
-				List<String> properties = Arrays.asList(settings.getProperty("xform_increase_number_value").split(CoreConstants.COMMA));
-				if (!ListUtil.isEmpty(properties) && properties.contains(id)) {
-					List<String> nodes = getNodes(valueAttribute);
-					Instance data = model.getInstance("data-instance");
-					Map<String, String> values = new HashMap<>();
-					for (String node: nodes) {
-						String path = "instance('data-instance')/" + node;
-						String nodeValue = data.getNodeValue(path);
+					values.put(node, nodeValue);
 
-						values.put(node, nodeValue);
+					if (!StringUtil.isEmpty(nodeValue)) {
+						Integer number = null;
+						try {
+							number = Integer.valueOf(nodeValue.toString());
+						} catch (NumberFormatException e) {
+							LOGGER.warning("Error converting " + nodeValue + " to number");
+						}
+						if (number != null && number == -1) {
+							number++;
+							nodeValue = String.valueOf(number);
 
-						if (!StringUtil.isEmpty(nodeValue)) {
-							Integer number = null;
-							try {
-								number = Integer.valueOf(nodeValue.toString());
-							} catch (NumberFormatException e) {
-								LOGGER.warning("Error converting " + nodeValue + " to number");
-							}
-							if (number != null && number == -1) {
-								number++;
-								nodeValue = String.valueOf(number);
-
-								data.setNodeValue(path, nodeValue);
-							}
+							data.setNodeValue(path, nodeValue);
 						}
 					}
-					nodes.removeAll(values.keySet());
-					for (String nodeWithoutValue: nodes) {
-						data.setNodeValue("instance('data-instance')/" + nodeWithoutValue, String.valueOf(0));
-					}
-
-					LOGGER.info("Values: " + values);
 				}
+				nodes.removeAll(values.keySet());
+				for (String nodeWithoutValue: nodes) {
+					data.setNodeValue("instance('data-instance')/" + nodeWithoutValue, String.valueOf(0));
+				}
+
+				LOGGER.info("Values: " + values);
 			}
 		}
 
