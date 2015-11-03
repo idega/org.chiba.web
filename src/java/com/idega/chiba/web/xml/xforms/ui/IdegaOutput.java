@@ -154,7 +154,12 @@ public class IdegaOutput extends Output {
 
 		Matcher matcher = number.matcher(value);
 		if (matcher.find()) {
-			value = value.substring(matcher.start(), matcher.end());
+			String number = value.substring(matcher.start(), matcher.end());
+			if (value.startsWith(CoreConstants.MINUS)) {
+				value = CoreConstants.MINUS.concat(number);
+			} else {
+				value = number;
+			}
 		}
 
 		return value;
@@ -163,6 +168,7 @@ public class IdegaOutput extends Output {
 	@Override
 	public Object computeValueAttribute() throws XFormsException {
 		String valueAttribute = getValueAttribute();
+		int numberOfMinusOne = 0;
 		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("translate") != -1) {
 			IWMainApplicationSettings settings = IWMainApplication.getDefaultIWMainApplication().getSettings();
 			List<String> ids = Arrays.asList(settings.getProperty("xform_increase_number_value").split(CoreConstants.COMMA));
@@ -197,6 +203,12 @@ public class IdegaOutput extends Output {
 				}
 
 				LOGGER.info("Values: " + values);
+
+				for (String value: values.values()) {
+					if (value.equals(String.valueOf(-1))) {
+						numberOfMinusOne++;
+					}
+				}
 			}
 		}
 
@@ -216,6 +228,12 @@ public class IdegaOutput extends Output {
 				}
 			}
 			LOGGER.log(Level.WARNING, "Error while trying to resolve value for the output element: ID: " + this.id + ", attributes: " + attributes.toString(), e);
+		}
+
+		if (numberOfMinusOne > 0 && value instanceof String && StringHandler.isNumeric((String) value)) {
+			Integer finalValue = Integer.valueOf(value.toString()) + numberOfMinusOne;
+			value = String.valueOf(finalValue);
+			return value;
 		}
 
 		if (!StringUtil.isEmpty(valueAttribute) && valueAttribute.indexOf("resolveExpression") != -1) {
