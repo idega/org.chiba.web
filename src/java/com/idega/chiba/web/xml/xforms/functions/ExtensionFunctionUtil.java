@@ -232,13 +232,6 @@ public class ExtensionFunctionUtil {
     				if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
     					value = CoreConstants.EMPTY;
     				}
-    				
-    				if (returnsSpaceOnFailure) {
-    					if (value == null || value.toString().equals(CoreConstants.EMPTY)) {
-    	        	 			return CoreConstants.SPACE;
-    					}
-    				}
-    				
     			} else {
     				value = param;
     			}
