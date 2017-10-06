@@ -929,6 +929,24 @@ FluxInterfaceHelper.startUsingXForm = function() {
 	FluxInterfaceHelper.initializeTextAreasAutoResize();
 	FluxInterfaceHelper.initializeTinyMCE();
 	FluxInterfaceHelper.initializeMaskedInputs();
+	
+	var secure = window.location.href.indexOf('https://') == 0;
+	if (secure) {
+		jQuery('form').each(function(index) {
+			var form = jQuery(this);
+			var action = form.attr('action');
+        	if (action.indexOf('http://') == 0) {
+        		var secureAction = action.replace('http://', 'https://');
+        		form.attr('action', secureAction);
+        	}
+        	
+        	action = form.attr('action');
+        	if (action.indexOf(':80/') != -1) {
+        		var secureDefaultPort = action.replace(':80/', '/');
+        		form.attr('action', secureDefaultPort);
+        	}
+		});
+	}
 }
 
 function redirectForm(msg) {

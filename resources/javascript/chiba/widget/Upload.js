@@ -152,6 +152,21 @@ dojo.widget.defineWidget("chiba.widget.Upload", dojo.widget.HtmlWidget,	{
         	}
         },
         _submitFile: function() {
+        	var secure = window.location.href.indexOf('https://') == 0;
+        	if (secure) {
+	        	var action = document.forms["chibaform"].action;
+	        	if (action.indexOf('http://') == 0) {
+	        		var secureAction = action.replace('http://', 'https://');
+	        		document.forms["chibaform"].action = secureAction;
+	        	}
+	        	
+	        	action = document.forms["chibaform"].action;
+	            if (action.indexOf(':80/') != -1) {
+	            	var secureDefaultPort = action.replace(':80/', '/');
+	            	document.forms["chibaform"].action = secureDefaultPort;
+	           	}
+        	}
+        	
         	var path = this.inputNode.value;
             if (path == null || path == '') {
 				this._chooseFile();
