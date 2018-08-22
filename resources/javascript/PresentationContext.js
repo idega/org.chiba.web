@@ -1209,7 +1209,11 @@ PresentationContext._insertRepeatItem = function(targetId, originalId, position)
 
     // insert prototype clone
     prototypeClone.setAttribute("style","display:none;");
-    if (Effect && Effect.Appear) {
+    var effectAvailable = false;
+    try {
+    	effectAvailable = Effect != null && Effect.Appear != null;
+    } catch (e) {}
+    if (effectAvailable) {
     	Effect.Appear(prototypeClone,{duration:0.5});
     	repeatElement.insertBefore(prototypeClone, referenceNode);
     } else {
@@ -1347,7 +1351,11 @@ PresentationContext._deleteRepeatItem = function(targetId, originalId, position)
     }
 
     // delete item
-    if (Effect && Effect.Fade) {
+    var effectAvailable = false;
+    try {
+    	effectAvailable = Effect != null && Effect.Fade != null;
+    } catch (e) {}
+    if (effectAvailable) {
     	Effect.Fade(deleteItem.id,{duration:0.5});
     } else {
     	jQuery('#' + deleteItem.id).hide('normal', function() {
