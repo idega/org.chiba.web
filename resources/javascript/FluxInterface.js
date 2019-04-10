@@ -704,7 +704,14 @@ function _handleServerEvent(context, type, targetId, targetName, properties) {
         		FluxInterfaceHelper.changingUriManually = true;
         		closeAllLoadingMessages();
         		humanMsg.displayMsg(Localization.DOWNLOADING_PDF_FOR_XFORM_MESSAGE);
-				window.location.href = properties["uri"];
+				var id = 'download_pdf_' + new Date().getTime();
+        		var link = properties["uri"];
+        		var a = document.createElement('A');
+        		a.href = link;
+        		a.download = link.substr(link.lastIndexOf('/') + 1);
+        		document.body.appendChild(a);
+        		a.click();
+        		document.body.removeChild(a);
 				FluxInterfaceHelper.changingUriManually = false;
 				
 				break;
